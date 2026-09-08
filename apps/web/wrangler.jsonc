@@ -1,0 +1,54 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "hivemind-web-dev",
+  // Custom entry that wraps the OpenNext worker and proxies /realtime/* to the
+  // realtime Worker over the REALTIME service binding.
+  "main": "cloudflare-worker.ts",
+  "compatibility_date": "2026-08-15",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "observability": { "enabled": true },
+  "assets": { "binding": "ASSETS", "directory": ".open-next/assets" },
+  "services": [
+    { "binding": "WORKER_SELF_REFERENCE", "service": "hivemind-web-dev" },
+    { "binding": "REALTIME", "service": "hivemind-realtime-dev" },
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hivemind-dev",
+      // Placeholder works for local dev. For a remote DB run
+      //   bunx wrangler d1 create hivemind-dev
+      // and paste the returned id here.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
+  // Future bindings (RFP §82-84). Uncomment once the resources exist:
+  // "kv_namespaces": [{ "binding": "CACHE", "id": "..." }],
+  // "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "hivemind-artifacts" }],
+  "vars": { "NEXTJS_ENV": "development" },
+  "env": {
+    "production": {
+      "name": "hivemind-web",
+      "workers_dev": true,
+      // "routes": [{ "pattern": "hivemind.example.com", "custom_domain": true }],
+      "compatibility_date": "2026-08-15",
+      "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+      "observability": { "enabled": true },
+      "assets": { "binding": "ASSETS", "directory": ".open-next/assets" },
+      "services": [
+        { "binding": "WORKER_SELF_REFERENCE", "service": "hivemind-web" },
+        { "binding": "REALTIME", "service": "hivemind-realtime" },
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "hivemind",
+          "database_id": "00000000-0000-0000-0000-000000000000",
+          "migrations_dir": "migrations",
+        },
+      ],
+      "vars": { "NEXTJS_ENV": "production" },
+    },
+  },
+}

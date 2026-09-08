@@ -1,0 +1,14 @@
+node_modules
+.next
+.open-next
+.wrangler
+bun.lock
+coverage
+dist
+playwright-report
+test-results
+**/worker-configuration.d.ts
+**/cloudflare-env.generated.d.ts
+**/next-env.d.ts
+docs/RFP.md
+docs/STAGE_*.md

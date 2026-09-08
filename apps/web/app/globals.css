@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-hive-amber: #f5b83d;
+  --color-hive-amber-dim: #b8862a;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}

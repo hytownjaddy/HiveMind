@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["vitest.config.ts", "playwright.config.ts", "tests/**/*.ts"]
+}

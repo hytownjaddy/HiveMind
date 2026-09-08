@@ -1,0 +1,21 @@
+{
+  "name": "@hivemind/realtime-worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "cf-typegen": "wrangler types --env-interface Env worker-configuration.generated.d.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test/tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hivemind/protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
+    "@cloudflare/workers-types": "^5.20260908.1",
+    "vitest": "^4.1.11",
+    "wrangler": "^4.130.0"
+  }
+}

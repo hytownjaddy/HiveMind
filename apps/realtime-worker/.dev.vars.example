@@ -1,0 +1,2 @@
+# Copy to .dev.vars (gitignored). Must match apps/web/.dev.vars.
+GUEST_SESSION_SECRET=replace-with-at-least-32-random-bytes
