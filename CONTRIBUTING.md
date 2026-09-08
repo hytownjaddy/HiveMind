@@ -1,0 +1,62 @@
+# Contributing to HiveMind
+
+This repository is worked on by Jacob and by Claude Code sessions. The rules below exist so
+that a fresh context can contribute without re-deriving decisions.
+
+## Before you start
+
+1. Read `CLAUDE.md` (→ `AGENTS.md`), `DECISIONS.md`, `ARCHITECTURE.md`.
+2. Read the stage you are working on in `STAGES/` and its prerequisites.
+3. If you are executing a work order, read it from `.hivemind/work-orders/` and the authoring
+   guide it references (`COURSE_AUTHORING.md`, `LAB_AUTHORING.md`).
+4. Do not start work that belongs to another stage. Propose a decision entry instead.
+
+## Working rules
+
+- Contracts first (D-021). Changes to schemas, the database model, the course format, the
+  lab-provider interface, ProblemSpec, or the grader contract are made in
+  `packages/hivemind-core` with a version bump and a migration, never ad hoc elsewhere.
+- Python for orchestration, graders, faults, agents, compiler, workflows; TypeScript for
+  the frontend (D-007).
+- Every acceptance criterion in a stage is a test or a scripted check. Do not weaken one to
+  pass (invariant 13).
+- Content is data: no course-specific branches in application code (invariants 1–2).
+- Historical rows are immutable (invariant 9): new algorithm or grader versions produce new
+  rows, never rewrites.
+- Anything AI-generated that executes goes through a schema and a controlled implementation
+  (invariant 4) and through review before publication (invariant 10).
+
+## Verification
+
+Run the full verification before any commit that claims a task is done:
+
+```bash
+bun run verify          # TypeScript: format, lint, boundaries, typecheck, tests, build
+make verify             # once Stage 1 lands: Python lint, types, tests + the above
+```
+
+Worker/provider tests that need Docker run on a Linux host (CI runner or the lab host), not
+on macOS.
+
+## Commits (D-025)
+
+- One coherent commit per completed task or change-set.
+- Conventional-style messages: `feat(labs): …`, `fix(grading): …`, `test(bgp): …`,
+  `docs(stage-02): …`, `chore: …`, `refactor(api): …`.
+- Never commit a knowingly broken state. At stage milestones the tree is clean, all
+  verification passes, and a milestone commit (and tag if useful) is created.
+- Claude Code makes the commits; Jacob reviews diffs.
+
+## Work orders (D-009)
+
+- Work orders live in `.hivemind/work-orders/<id>.md` with a YAML header and a human prompt.
+- Statuses: `draft → exported → in_progress → implemented → validation_failed |
+review_required → approved → done`.
+- A work order is done only when its validation commands pass and its change report is
+  written back.
+
+## Documentation duties
+
+When a task changes topology, contracts, or conventions, update `ARCHITECTURE.md`,
+the relevant authoring guide, and the stage file in the same change-set. Add a `DECISIONS.md`
+entry for anything a future context would otherwise have to guess.
