@@ -44,7 +44,7 @@ Each stage lists the screens it implements under "UI specifications". Screen con
 
 | Stage | Name                                                       | Status      | Milestone commit/tag |
 | ----- | ---------------------------------------------------------- | ----------- | -------------------- |
-| 01    | Foundation and contracts                                   | not started |                      |
+| 01    | Foundation and contracts                                   | done        | `stage-01`           |
 | 02    | Lab worker runtime                                         | not started |                      |
 | 03    | Problem engine, faults, graders, validation                | not started |                      |
 | 04    | Lab workspace and guided/challenge modes                   | not started |                      |

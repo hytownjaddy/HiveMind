@@ -17,13 +17,16 @@ career readiness.
 
 ## Current state
 
-The tree holds the initial Cloudflare scaffold (Next 16 on OpenNext, a Durable Object
-realtime worker, D1). Per D-007/D-026 the control plane moves to the Worker API, D1, the session object's deadline queue,
-and a Python lab worker in Stage 01; the Durable Object, D1, and demo UI are removed then.
+Stage 01 (foundation and contracts) is complete: canonical Zod contracts with JSON Schema,
+an append-only version lock, and generated Pydantic; D1 schema v1 with a tested down
+script; `packages/core` services behind thin route handlers; Cloudflare Access identity;
+the `hivemind` CLI; the content compiler and the gold-standard lesson; the canonical
+workstation shell with the Control Center, Course Workspace, Work Orders, and Settings;
+nightly exports and a restore drill. Stage 02 (lab worker runtime) is next:
+`STAGES/STAGE_02.md`.
 
 ```bash
-bun install
-bun run verify      # TypeScript checks, tests, OpenNext build
+bun install && brew install uv
+bun run db:migrate:local && bun run dev      # http://localhost:3000 with the Access dev bypass in apps/web/.dev.vars
+bun run verify && bun run verify:py
 ```
-
-Stage 01 is the next unit of work: `STAGES/STAGE_01.md`.

@@ -446,3 +446,44 @@ in CI and drift fails the build (D-032). A dedicated test round-trips the worker
 envelope and every discriminated union through both TypeScript and the generated Python.
 If the generator cannot represent a construct faithfully, the Zod schema is simplified
 rather than the Python hand-edited.
+
+---
+
+## Stage 01 proposals (2026-09-09, for Jacob to lock or amend)
+
+## D-044 · 2026-09-09 · Proposed (Stage 01) · Lesson bodies are Markdown with a fixed directive set, compiled to a render tree; no MDX
+
+`lesson.md` is CommonMark + GFM plus a closed set of directives (`:::callout`,
+`:::exercise`, `::question{id}`, `:claim[id]`, `:kbd[…]`, fenced `ascii`/`mermaid`
+diagrams) with each `##` section tagged by its RFP §110 element (`{#motivation}` …
+`{#mastery_evaluation}`). `hivemind content compile` turns it into the `LessonSection[]`
+render tree in `packages/schema` (contract `BlockNode`/`InlineNode`); the web app renders
+that tree with React components. Reason: MDX evaluates JSX with `new Function`, which
+Workers forbid, and it would let executable content bypass the schema boundary
+(invariant 4). Questions and claims are structured data in `questions.yaml` and
+`claims.yaml`, never markup. Consequence: `ARCHITECTURE.md` and the course-workspace
+companion say "compiled Markdown" where they said MDX; the compiler rejects HTML, images
+(until an asset pipeline exists), and footnotes.
+
+## D-045 · 2026-09-09 · Proposed (Stage 01) · Identity binding: the seeded learner binds to the first validated Access identity; pinned keys are an explicit option
+
+`resolveLearner` maps a validated Access identity to a learner by email. While exactly
+one learner exists and has no email, the first validated identity binds to it; afterwards
+only that email maps, and any other identity gets 403 even when Access admits it. This
+keeps the Access policy and the application record independent (D-033) and makes
+multi-user a matter of adding learner rows. Verification uses the team JWKS by default;
+`ACCESS_JWKS` pins a key set for tests and air-gapped drills and must stay unset in
+production. Break-glass: clear the learner's email with one SQL statement
+(`docs/runbooks/access.md`).
+
+## D-046 · 2026-09-09 · Proposed (Stage 01) · Contract conventions: snake_case fields, UTC string timestamps, and an append-only version lock
+
+All `packages/schema` contracts use snake_case field names shared verbatim by D1
+columns, YAML content, and generated Pydantic; timestamps are UTC ISO-8601 strings with a
+trailing `Z`; UUIDs, emails, and URLs are pattern-checked strings rather than JSON Schema
+`format`s so the generated Python round-trips documents byte for byte (D-043).
+`schemas/contracts.lock.json` records a SHA-256 per `<Contract>@<version>` and is
+append-only: a schema whose hash changes at an unchanged version fails
+`bun run schema:export`, `schema:check`, and CI (acceptance 3); bump the version in
+`packages/schema/src/contracts.ts` instead. The scaffold's browser↔session transport
+(`lab-session.ts`) keeps its camelCase wire format until Stage 02 realigns it.

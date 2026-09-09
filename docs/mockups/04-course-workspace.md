@@ -32,7 +32,8 @@ Canonical. Status bar: content version, QA state, lesson id.
 ## Layout
 
 - Left: course tree (courses › modules › lessons › labs/assessments) with QA-state dots.
-- Center: lesson (MDX) with numbered sections, callouts, tables, diagrams; prev/next.
+- Center: lesson (compiled Markdown render tree, D-044) with numbered sections, callouts,
+  tables, diagrams; prev/next.
 - Right: tabs `Lesson | Lab | Notes | Sources | Mastery`.
   - Lesson: objectives checklist, estimated time, prerequisites.
   - Lab: related archetypes with `launch` (Stage 04).
@@ -43,7 +44,7 @@ order` action.
 
 ## Required Data
 
-Course version, module, lesson MDX, metadata (skills, objectives, difficulty, time),
+Course version, module, compiled lesson tree, metadata (skills, objectives, difficulty, time),
 claims with source ids, related archetypes, learner notes, skill states.
 
 ## Lifecycle States

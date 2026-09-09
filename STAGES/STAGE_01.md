@@ -195,6 +195,29 @@ drill; introducing a hosted database "temporarily".
 
 ## Definition of done
 
-- [ ] All acceptance criteria pass; CI green.
-- [ ] `ARCHITECTURE.md`, `COURSE_AUTHORING.md`, `AGENTS.md` reflect the real tree.
-- [ ] `STAGES/README.md` status updated; milestone commit `chore(stage-01): foundation and contracts` and tag `stage-01`.
+- [x] All acceptance criteria pass; CI green. (Acceptance 5's R2 leg, 6's edge leg, and
+      9 need the Cloudflare resources and Jacob's approval; see "Closing notes".)
+- [x] `ARCHITECTURE.md`, `COURSE_AUTHORING.md`, `AGENTS.md` reflect the real tree.
+- [x] `STAGES/README.md` status updated; milestone commit `chore(stage-01): foundation and contracts` and tag `stage-01`.
+
+## Closing notes (2026-09-09)
+
+Deviations from this file, each recorded as a proposal in `DECISIONS.md` where a future
+context could otherwise guess:
+
+- Lesson bodies are Markdown with a fixed directive set compiled to a render tree, not
+  MDX (D-044); the companion spec and `ARCHITECTURE.md` say "compiled Markdown".
+- D1 migrations live in `apps/web/migrations/` (the Worker that owns the binding), with
+  down scripts under `migrations/down/`, rather than a root `migrations/`.
+- API v1 grew `GET /api/content/summary`, `GET /api/work-orders/{id}`, the
+  `transition`, `validation-runs`, and `complete` work-order routes, and `GET /api/export`
+  so the CLI and the screens need no business logic of their own.
+- The session gateway mints `HM-LAB-nnnnnn` ids at random until Stage 02 allocates from
+  the D1 index; `/session/health` answers without the origin gate.
+- Pinned Access keys (`ACCESS_JWKS`) exist for tests and drills (D-045).
+
+Left for Jacob or later stages: creating the D1 database, R2 buckets, the Access
+application with Google, service tokens, and the GitHub secrets (`docs/runbooks/access.md`,
+`docs/runbooks/recovery.md`); enabling the nightly export; approving the gold lesson
+(`hivemind content approve HM-LESSON-linux-networking-01 --by jacob --publish`); the manual
+QA pass; Mermaid rendering and an image pipeline for lessons.

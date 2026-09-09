@@ -65,34 +65,36 @@ running a Python lab agent exists only for privileged networking (containerlab, 
 Claude Code executes work orders from `.hivemind/work-orders/`; no AI API is required for
 normal operation. Domain: `hivemindjrr.com`.
 
-## Repository state and target layout (D-039)
+## Repository layout (D-039, as of Stage 01)
 
-The tree is the Cloudflare scaffold being reshaped in Stage 01. `apps/realtime-worker`
-becomes `apps/session-worker`; `packages/protocol` becomes `packages/schema`. The guest
-HMAC session, placeholder pages, and demo labs UI are removed in Stage 01; do not extend
-them.
+Stage 01 is done: the layout below is real, the guest HMAC session, placeholder pages, and
+demo labs UI are gone, and `apps/session-worker` keeps the scaffold's `LabSession` object
+until Stage 02 refactors it to the capability/provider model.
 
 ```text
-apps/web/               Next.js 16 (TypeScript) on Workers via OpenNext; UI + thin route handlers
-apps/session-worker/    LabSession Durable Object, gateway, lab provider API
-packages/schema/        Zod contracts (canonical) → schemas/*.json → generated Pydantic
-packages/core/          application services + domain logic (D1/DO/R2 access, algorithms)
-packages/cli/           `hivemind` CLI (Bun)
-services/lab-worker/    Python 3.13 lab agent + worker CLI (uv, ruff, pyright, pytest)
-content/                skills, courses, sources, careers, problems, topologies
-docs/mockups/           NN-name.png + NN-name.md product-direction inputs
+apps/web/               Next.js 16 (TypeScript) on Workers via OpenNext; UI + thin route handlers; D1 migrations
+apps/session-worker/    LabSession Durable Object, gateway (Access identity), lab provider API
+packages/schema/        Zod contracts (canonical) → schemas/*.schema.json + lock + fixtures → generated Pydantic
+packages/core/          application services + domain logic (D1/R2 access, identity, work orders, content compiler)
+packages/cli/           `hivemind` CLI (Bun): content, work, export, db
+services/lab-worker/    Python 3.13 lab agent + worker CLI (uv, ruff, pyright, pytest); generated contracts
+content/                skills, sources, careers, courses (gold lesson: linux/networking)
+docs/mockups/           NN-name.png + NN-name.md product-direction inputs; docs/runbooks/ recovery and Access
 .hivemind/work-orders/  work orders consumed by Claude Code
+tools/backup/           nightly export and restore drill
 STAGES/                 stage contracts; docs/ holds the RFP and its review
 ```
 
 ## Commands
 
 ```text
-bun install                      TypeScript deps (bun 1.3.14, see .bun-version)
-bun run dev                      web dev server + session worker side by side
-bun run verify                   TS format, lint, boundaries, typecheck, tests, OpenNext build
-uv run --directory services/lab-worker task verify   (from Stage 01) ruff, pyright, pytest
-hivemind …                       (from Stage 01) content, work orders, careers, export, lab orchestration
+bun install                      TypeScript deps (bun 1.3.14, see .bun-version); `brew install uv` for Python
+bun run dev                      web dev server + session worker side by side (needs apps/*/.dev.vars, see .dev.vars.example)
+bun run db:migrate:local         apply D1 migrations to the local database before the first dev run
+bun run verify                   TS format, lint, boundaries, typecheck, schema lock, tests, OpenNext build
+bun run verify:py                ruff, pyright, contract drift check, pytest (uv run --directory services/lab-worker task verify)
+bun run hivemind -- …            content compile|diff|approve|publish, work new|pull|validate|complete|list, export, db migrate
+bun run test:e2e                 Playwright smoke against next dev (bunx playwright install chromium once)
 ```
 
 ## Conventions

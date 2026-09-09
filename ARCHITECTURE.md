@@ -1,7 +1,7 @@
 # HiveMind Architecture
 
-Status: target architecture as of 2026-09-08, per `DECISIONS.md` D-030 to D-040 (which
-supersede the earlier FastAPI/PostgreSQL/Redis direction). Cloudflare owns the
+Status: as built at the end of Stage 01 (2026-09-09), per `DECISIONS.md` D-030 to D-046
+(which supersede the earlier FastAPI/PostgreSQL/Redis direction). Cloudflare owns the
 durable/control-plane side; a disposable Ubuntu lab worker exists only for workloads
 Cloudflare cannot faithfully execute. Read `DECISIONS.md` first; this document explains how
 the pieces fit, not why they were chosen.
@@ -66,7 +66,7 @@ rules, mastery formulas, readiness, work-order state machines) has no knowledge 
 | `packages/schema`     | TypeScript (Zod) | Canonical contracts; JSON Schema export; Pydantic generation                                                                                      | Runtime logic                                                          |
 | `packages/cli`        | TypeScript (Bun) | `hivemind` CLI: content, sources, work orders, careers, certs, validate, export, orchestration commands                                           | Lab execution                                                          |
 | `services/lab-worker` | Python 3.13      | Lab agent; providers for Class B/C; fault modules; graders; reference solutions; validation runner; worker CLI                                    | Holding authoritative state; deciding mastery                          |
-| `content/`            | YAML/MDX         | Skills registry, courses, sources, careers, problem archetypes, topology archetypes, declarative parts of faults/graders                          | Code that bypasses contracts                                           |
+| `content/`            | YAML/Markdown    | Skills registry, courses, sources, careers, problem archetypes, topology archetypes, declarative parts of faults/graders                          | Code that bypasses contracts                                           |
 | Cloudflare            | —                | DNS, Access, Tunnel, Workers, D1, Durable Objects, R2, Sandbox (Class A), Queues/KV as needed                                                     | Privileged networking                                                  |
 
 Data ownership (D-030): D1 = learner, courses, skills, mastery, attempts, career targets,
@@ -106,29 +106,41 @@ persisted on an immutable `attempts` row in D1 → versioned mastery update → 
 methodology review as an External Work Order prompt (default) or via an API executor →
 destroy; recording finalized to R2 with redaction, 90-day TTL unless pinned.
 
-**Author content.** Work order created from page context (deterministic assembly) →
-`.hivemind/work-orders/HM-WO-nnnn.md` → Claude Code executes in the repo → `hivemind work
-validate` runs schema checks and, for problems, the RFP §46 pipeline through the worker →
-review item in Jacob's queue → approve → `hivemind content publish` creates an immutable
-content version in D1.
+**Author content.** Work order created from page context (deterministic assembly, D1 row)
+→ `hivemind work pull` writes `.hivemind/work-orders/HM-WO-nnnn.md` → Claude Code executes
+in the repo → `hivemind work complete` records the change report → `hivemind work validate`
+checks the file and runs its validation commands (Stage 03 adds the RFP §46 pipeline for
+problems) → review item in Jacob's queue → approve → `hivemind content approve` records
+approval in `metadata.yaml` → `hivemind content publish` compiles `content/` (Markdown +
+directives → render tree, D-044) and creates an immutable content version in D1.
 
 **Maintenance.** Same loop in batches: `packages/core` computes what is due and emits a
 batch work order; Claude Code runs it; results and change reports are imported.
 
-## Contracts (canonical in `packages/schema`, D-032)
+## Contracts (canonical in `packages/schema`, D-032, D-046)
 
-SkillDefinition/SkillGraph, CourseManifest/Module/Lesson/Claim/SourceRecord, Capability,
-LabSpec and `LabProvider` interface, ProblemSpec/ProblemInstance (seed + generator, course,
-topology, fault, grader versions + spec hash), FaultSpec, Grader manifest/GraderResult,
-Attempt/AttemptResult/Evidence/MasteryUpdate (algorithm version recorded), RoleProfile/
-Competency/Readiness (gates, confidence), WorkOrder/ReviewItem, worker protocol messages.
-Pydantic models for `services/lab-worker` are generated in CI and drift fails the build.
+Learner, SkillDefinition/SkillGraph, SourceRecord/Claim, the lesson render tree
+(InlineNode/BlockNode/LessonSection), Question/Lesson/Module/CourseManifest,
+ContentBundle/ContentVersion, Capability, LabSpec and the `LabProvider` interface with its
+request/result messages, CheckSpec/FaultSpec, GraderManifest/GraderResult,
+ProblemSpec/ProblemInstance (seed, pinned versions, spec hash, §46 validation steps),
+Attempt/AttemptResult/Evidence/MasteryUpdate (algorithm version recorded),
+Competency/RoleProfile/CareerProfile/ReadinessSnapshot (gates, confidence), WorkOrder
+(with the state machine) and ReviewItem, and the worker protocol envelope with named job,
+event, and result messages. `bun run schema:export` writes `schemas/<Contract>.schema.json`
+with relative `$ref`s, validated fixtures under `schemas/fixtures/`, and the append-only
+`schemas/contracts.lock.json`; Pydantic models for `services/lab-worker` are generated with
+`datamodel-code-generator` (D-043) and every fixture round-trips through them. Drift on
+either side fails CI.
 
-## Identity (D-033)
+## Identity (D-033, D-045)
 
-Google → Cloudflare Access → Worker reads and validates the Access JWT → `learner_id`
-(seeded single record). Server-to-server calls (CLI publish, worker callbacks) use Access
-service tokens. No in-app auth.
+Google → Cloudflare Access → both Workers verify the Access JWT (`jose`, team JWKS with
+rotation, application AUD) through `packages/core` → `learner_id`. The seeded learner
+binds to the first validated identity; other identities get 403. Service tokens are
+recognised by `common_name` and scoped per caller (`SERVICE_TOKEN_SCOPES`): `hivemind`
+publishes with `content:publish`. Local development uses `ACCESS_DEV_BYPASS_EMAIL` only
+when `HIVEMIND_ENV=development`. Runbook and break-glass: `docs/runbooks/access.md`.
 
 ## Security model (D-001)
 
@@ -143,11 +155,14 @@ service tokens. No in-app auth.
 
 ## Durability (D-020, D-030)
 
-D1 Time Travel (30 days) plus a scheduled export of D1 to R2 (GitHub Actions nightly
-`wrangler d1 export`, retained long-term) plus `hivemind export` for a portable archive of
-learner history and approved content. A scripted restore drill (fresh D1 from export →
-smoke test) is part of Stage 1 acceptance and rerun at each milestone. The lab worker is
-rebuilt from `tools/host/provision.sh` and holds no history.
+D1 Time Travel (30 days) plus the nightly export (`.github/workflows/d1-export.yml` →
+`tools/backup/nightly-export.sh` → R2 `hivemind-exports/exports/d1/`) plus `hivemind export`
+for a portable archive of learner history and content. `tools/backup/restore-drill.sh`
+restores an export into a fresh database and checks it; `packages/core/test/restore-drill.test.ts`
+reads the gold lesson back through the service layer; CI runs both on every push after
+seeding a disposable database with `hivemind content publish --sql-out`. Runbook:
+`docs/runbooks/recovery.md`. The lab worker is rebuilt from `tools/host/provision.sh`
+(Stage 02) and holds no history.
 
 ## Environments and deployment
 
@@ -163,17 +178,25 @@ workspace, environment, seed, runtime versions, last check), dense panes, trees,
 logs, terminals. Identifier formats and lifecycle vocabulary per D-038. Global UI rules live in
 `docs/ui/UI-SYSTEM.md`; per-screen contracts in `docs/mockups/NN-name.md` (D-041).
 
-## Transition from the scaffold
+## State after Stage 01
 
-Kept: `apps/web` (OpenNext, shell, tooling), `apps/realtime-worker` → renamed
-`apps/session-worker` and refactored to the capability/provider model in Stage 2,
-`packages/protocol` → `packages/schema` (Zod canonical), D1 binding and migrations, deploy
-script, CI, tests. Removed in Stage 1: guest HMAC sessions (replaced by Access identity →
-`learner_id`), placeholder pages, demo labs UI, the echo provider once a Class A/C provider
-exists (Stage 2).
+`apps/web` (OpenNext, canonical shell, Control Center, Courses/Course Workspace, Work
+Orders, Settings, API v1 thin handlers), `apps/session-worker` (renamed from the
+scaffold's realtime Worker; Access identity, learner-owned sessions, shared D1 binding;
+the capability/provider refactor is Stage 02), `packages/schema`, `packages/core`,
+`packages/cli`, `services/lab-worker` (skeleton), `content/` (registry plus the gold
+lesson), `schemas/`, `.hivemind/work-orders/`, `docs/runbooks/`, `tools/backup/`. Removed:
+guest HMAC sessions, placeholder pages, the demo labs UI, the scaffold D1 helpers. D1
+migrations live in `apps/web/migrations/` (with down scripts under `down/`) because the
+web Worker owns the binding; the session Worker binds the same database. The echo
+provider stays until a Class A/C provider exists (Stage 02).
 
 ## Open points
 
 - Sandbox SDK fit for Class C (Stage 2 benchmark).
 - Topology renderer (React Flow vs Cytoscape), decided with the Lab Workspace mockup.
 - Whether to add Queues for provisioning jobs or keep DO → worker calls direct (Stage 2).
+- Mermaid rendering in lessons (source is shown verbatim until a renderer ships with the
+  Lab Workspace); an asset pipeline for images.
+- Realigning the scaffold's camelCase session transport with the snake_case contracts
+  (Stage 2, D-046).

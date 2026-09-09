@@ -52,8 +52,9 @@ break this shape even when lint passes.
 Run the full verification before any commit that claims a task is done:
 
 ```bash
-bun run verify          # TypeScript: format, lint, boundaries, typecheck, tests, build
-uv run --directory services/lab-worker task verify   # once Stage 1 lands: ruff, pyright, pytest
+bun run verify          # TypeScript: format, lint, boundaries, typecheck, schema lock, tests, build
+bun run verify:py       # Python: ruff, pyright, contract drift check, pytest
+bun run test:e2e        # Playwright smoke against next dev (optional locally; needs chromium installed)
 ```
 
 Worker/provider tests that need Docker run on a Linux host (CI runner or the lab host), not
