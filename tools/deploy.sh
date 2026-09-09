@@ -33,8 +33,8 @@ apps/web/wrangler.jsonc and apps/session-worker/wrangler.jsonc. See docs/runbook
 
 Variables:
   HIVEMIND_SERVICE_TOKEN_SCOPES
-      JSON map of Access service-token common names to scopes, e.g.
-      {"hivemind-cli":["content:publish","export:read"]}
+      JSON map of Access service-token Client IDs (the JWT common_name) to scopes, e.g.
+      {"<client-id>.access":["content:publish","export:read"]}
 USAGE
 }
 

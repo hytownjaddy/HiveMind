@@ -19,8 +19,10 @@ out.
    and `apps/session-worker/wrangler.jsonc`), then deploy.
 4. **Service token for the CLI.** Zero Trust → Access → Service Auth → Create token
    `hivemind-cli`. Add an `Allow` policy on the application with `Service Auth` = that
-   token. Grant scopes on the Workers:
-   `HIVEMIND_SERVICE_TOKEN_SCOPES='{"hivemind-cli":["content:publish","export:read"]}' tools/deploy.sh secrets production`.
+   token. Grant scopes on the Workers, keyed by the token's **Client ID** (the
+   `…​.access` value; Access puts the Client ID, not the token name, in the JWT's
+   `common_name` claim):
+   `HIVEMIND_SERVICE_TOKEN_SCOPES='{"<client-id>.access":["content:publish","export:read"]}' tools/deploy.sh secrets production`.
    Locally export `HIVEMIND_ACCESS_CLIENT_ID` / `HIVEMIND_ACCESS_CLIENT_SECRET` and
    `HIVEMIND_API_URL=https://hivemind.jryans.dev` for `hivemind content publish`.
 5. **First sign-in.** The seeded learner `HM-LRN-000001` binds to the first validated

@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 /*
- * Service-token scopes (D-033, Stage 01 security constraints). Access service
- * tokens are identified by their common name; this map, set as a Worker
- * secret/var (JSON), grants each caller the scopes it may use. Unknown
- * callers get nothing.
+ * Service-token scopes (D-033, Stage 01 security constraints). Access puts a
+ * service token's Client ID (`<id>.access`) in the JWT's `common_name` claim;
+ * this map, set as a Worker secret (JSON keyed by Client ID), grants each
+ * caller the scopes it may use. Unknown callers get nothing.
  */
 
 export const SERVICE_SCOPES = [
