@@ -24,6 +24,7 @@ export default defineConfig(async () => {
     ],
     test: {
       include: ["src/**/*.test.ts", "test/**/*.test.ts"],
+      exclude: ["**/node_modules/**", "src/content/compiler/**"],
       setupFiles: ["./test/setup.ts"],
       testTimeout: 15_000,
     },

@@ -5,8 +5,14 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["packages/**/*.test.ts", "apps/web/**/*.test.ts"],
-    exclude: ["**/node_modules/**", "packages/core/**"],
+    include: [
+      "packages/schema/**/*.test.ts",
+      // packages/core runs inside workerd (its own config); only the node-side
+      // content compiler tests belong here.
+      "packages/core/src/content/compiler/**/*.test.ts",
+      "apps/web/**/*.test.ts",
+    ],
+    exclude: ["**/node_modules/**"],
     passWithNoTests: false,
   },
 });

@@ -1,0 +1,4 @@
+id: demo-course.basics
+title: Basics
+summary: The first module.
+lessons: [01-first, 02-second]

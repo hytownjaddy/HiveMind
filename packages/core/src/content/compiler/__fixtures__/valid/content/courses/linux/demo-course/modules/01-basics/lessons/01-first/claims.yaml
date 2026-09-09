@@ -1,0 +1,4 @@
+- id: lpm
+  statement: The kernel selects the longest matching prefix.
+  source_ids: [src.iproute2.ip-route]
+  verification: verified

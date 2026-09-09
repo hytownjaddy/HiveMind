@@ -1,0 +1,12 @@
+id: bgp-operations
+version: 1.0.0
+name: BGP operations
+category: routing
+description: Configure, verify, and troubleshoot eBGP and iBGP sessions in production.
+status: active
+skills:
+  - skill_id: networking.bgp.session_establishment
+    weight: 0.5
+    min_mastery: 0.7
+  - skill_id: linux.networking.routing_table
+    weight: 0.2

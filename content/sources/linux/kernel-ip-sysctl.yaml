@@ -1,0 +1,10 @@
+id: src.kernel.ip-sysctl
+title: Linux kernel networking documentation — ip-sysctl
+kind: official_documentation
+trust_tier: official
+url: https://www.kernel.org/doc/html/latest/networking/ip-sysctl.html
+ingested: true
+retrieved_at: "2026-09-09"
+notes: |
+  Forwarding, reverse-path filtering (`rp_filter`), and related per-interface settings
+  that change how the routing table is consulted.

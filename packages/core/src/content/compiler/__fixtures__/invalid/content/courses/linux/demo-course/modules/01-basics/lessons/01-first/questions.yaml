@@ -1,0 +1,13 @@
+- id: predict-default
+  kind: prediction
+  prompt: Which next hop is used?
+  options:
+    - id: a
+      text: 10.0.0.1
+      correct: false
+    - id: b
+      text: 10.0.0.2
+      correct: true
+  explanation: Longest prefix wins.
+  skill_ids: [linux.networking.routing_table]
+  difficulty: 2

@@ -1,0 +1,21 @@
+id: meta-network-infrastructure-engineer
+version: 0.1.0
+title: Network Infrastructure Engineer
+company: Meta
+family: network-infrastructure
+level: IC4
+summary: |
+  Operates large-scale data-center and backbone networks: BGP, IS-IS, MPLS, automation,
+  incident response. Schema fixture for Stage 01; the modeled requirements are refined
+  with sources in Stage 06 (D-002).
+status: active
+competencies:
+  - competency_id: bgp-operations
+    weight: 0.3
+    required: true
+    min_readiness: 0.7
+  - competency_id: linux-host-networking
+    weight: 0.2
+    required: true
+    min_readiness: 0.6
+source_ids: []

@@ -1,0 +1,11 @@
+id: linux.networking.routing_table
+version: 1.0.0
+name: Linux routing table and ip route
+domain: linux
+description: Read, query, and change the kernel routing table.
+status: active
+prerequisites: []
+related: []
+tags: [routing]
+evidence_modes: [learn, guided_lab, practice]
+blind_assessable: true

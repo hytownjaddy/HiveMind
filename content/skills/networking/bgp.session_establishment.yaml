@@ -1,0 +1,14 @@
+id: networking.bgp.session_establishment
+version: 1.0.0
+name: BGP session establishment
+domain: networking
+description: |
+  Bring up and verify an eBGP or iBGP session: neighbor configuration, AS numbers,
+  TCP reachability, the finite-state machine from Idle to Established, and the
+  misconfigurations that keep a session down.
+status: active
+prerequisites: [linux.networking.routing_table]
+related: [networking.ipv4.subnetting]
+tags: [bgp, routing, frr]
+evidence_modes: [learn, guided_lab, practice, challenge, blind_incident, interview]
+blind_assessable: true

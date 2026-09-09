@@ -1,0 +1,13 @@
+id: networking.ipv4.subnetting
+version: 1.0.0
+name: IPv4 prefixes and subnetting
+domain: networking
+description: |
+  Convert between dotted masks and prefix lengths, determine whether an address falls
+  inside a prefix, and reason about overlapping prefixes.
+status: active
+prerequisites: []
+related: [linux.networking.routing_table]
+tags: [ipv4, addressing]
+evidence_modes: [learn, practice, interview]
+blind_assessable: false

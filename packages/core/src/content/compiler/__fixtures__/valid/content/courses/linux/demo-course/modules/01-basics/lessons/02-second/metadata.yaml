@@ -1,0 +1,13 @@
+id: HM-LESSON-demo-course-02
+version: 0.1.0
+slug: second
+title: The second lesson
+summary: A draft with only a few sections.
+qa_state: draft
+objectives:
+  - id: o1
+    text: Something
+skill_ids: [linux.networking.routing_table]
+prerequisite_lesson_ids: [HM-LESSON-demo-course-01]
+difficulty: 1
+estimated_minutes: 10

@@ -1,0 +1,10 @@
+id: src.rhcsa.networking-objectives
+title: RHCSA (EX200) exam objectives — networking
+kind: certification_objectives
+trust_tier: vendor
+url: https://www.redhat.com/en/services/training/ex200-red-hat-certified-system-administrator-rhcsa-exam
+ingested: true
+retrieved_at: "2026-09-09"
+notes: |
+  Coverage reference only: configure IPv4 addresses and routes, troubleshoot basic
+  connectivity. Wording in lessons is original (D-011).

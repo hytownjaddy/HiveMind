@@ -1,0 +1,12 @@
+id: demo-course
+version: 0.1.0
+title: Demo Course
+domain: linux
+summary: A two-lesson course used by the compiler tests.
+status: active
+tracks: [network-infrastructure]
+prerequisite_course_ids: []
+skill_ids: [linux.networking.routing_table]
+capabilities: [shell.linux]
+modules: [01-basics]
+source_ids: [src.iproute2.ip-route]

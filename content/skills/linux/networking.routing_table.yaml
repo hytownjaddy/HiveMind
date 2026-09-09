@@ -1,0 +1,15 @@
+id: linux.networking.routing_table
+version: 1.0.0
+name: Linux routing table and ip route
+domain: linux
+description: |
+  Explain how the kernel selects a route by longest-prefix match, read and query the
+  routing table with `ip route show` and `ip route get`, manage default routes, metrics,
+  and static routes, and diagnose the common failures: wrong gateway, missing route,
+  asymmetric return path.
+status: active
+prerequisites: [linux.networking.interfaces_addresses]
+related: [networking.ipv4.subnetting]
+tags: [iproute2, routing, troubleshooting]
+evidence_modes: [learn, guided_lab, practice, challenge, blind_incident]
+blind_assessable: true

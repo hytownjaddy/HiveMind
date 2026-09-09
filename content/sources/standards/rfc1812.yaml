@@ -1,0 +1,9 @@
+id: src.rfc1812
+title: RFC 1812 — Requirements for IP Version 4 Routers
+kind: rfc
+trust_tier: official
+url: https://www.rfc-editor.org/rfc/rfc1812
+ingested: true
+retrieved_at: "2026-09-09"
+notes: |
+  Section 5.2.4 defines forwarding semantics and longest-prefix ("most specific") match.

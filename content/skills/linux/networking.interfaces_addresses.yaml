@@ -1,0 +1,13 @@
+id: linux.networking.interfaces_addresses
+version: 1.0.0
+name: Linux interfaces and addresses
+domain: linux
+description: |
+  Identify network interfaces, read and assign IPv4 addresses with `ip address`,
+  and relate interface state to reachability.
+status: active
+prerequisites: []
+related: [linux.networking.routing_table]
+tags: [iproute2, interfaces, addressing]
+evidence_modes: [learn, guided_lab, practice, challenge]
+blind_assessable: true

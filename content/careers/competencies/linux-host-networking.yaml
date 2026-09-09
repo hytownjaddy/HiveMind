@@ -1,0 +1,13 @@
+id: linux-host-networking
+version: 1.0.0
+name: Linux host networking
+category: linux
+description: "Diagnose and repair host-level connectivity: interfaces, addresses, routes, name resolution."
+status: active
+skills:
+  - skill_id: linux.networking.interfaces_addresses
+    weight: 0.4
+    min_mastery: 0.7
+  - skill_id: linux.networking.routing_table
+    weight: 0.6
+    min_mastery: 0.7

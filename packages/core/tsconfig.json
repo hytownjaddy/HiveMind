@@ -5,5 +5,5 @@
     "types": ["@cloudflare/workers-types", "node"]
   },
   "include": ["src/**/*.ts", "vitest.config.ts"],
-  "exclude": ["src/content/compiler/**", "src/**/*.test.ts", "test"]
+  "exclude": ["src/**/*.test.ts", "test"]
 }

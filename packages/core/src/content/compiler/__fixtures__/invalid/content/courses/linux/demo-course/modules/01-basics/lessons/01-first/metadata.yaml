@@ -1,0 +1,17 @@
+id: HM-LESSON-demo-course-01
+version: 0.1.0
+slug: first
+title: The first lesson
+summary: Covers every element so the compiler can check them.
+qa_state: approved
+objectives:
+  - id: read
+    text: Read a routing table
+    skill_id: linux.networking.routing_table
+skill_ids: [linux.networking.unknown]
+difficulty: 2
+estimated_minutes: 30
+labs:
+  - problem_id: linux.routing.static_route
+    mode: guided_lab
+    title: Add a static route
