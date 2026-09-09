@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import {
@@ -8,6 +8,7 @@ import {
   summarizeBundle,
   type CompileResult,
 } from "@hivemind/core/compiler";
+import { parseDocument } from "yaml";
 
 import type { HiveMindApi } from "../api";
 import { optionFlag, optionString, type ParsedArgs } from "../args";
@@ -18,6 +19,8 @@ import { CliError, type Output } from "../output";
  * hivemind content compile [dir] [--out file]    validate content/ and write the bundle
  * hivemind content diff [dir]                    compare with the latest published version
  * hivemind content publish [dir] [--note text]    compile, refuse unbumped changes, POST the bundle
+ * hivemind content approve <lesson-id> --by name [--publish]
+ *                                                 record Jacob's approval in metadata.yaml (invariant 10)
  */
 
 export interface ContentDeps {
@@ -116,5 +119,43 @@ export async function contentPublish(
     `${reused ? "already published as" : "published"} ${version.id} (${version.counts.lessons} lesson(s), hash ${version.content_hash.slice(0, 12)})`,
   );
   deps.out.log(formatDiff(diff));
+  return 0;
+}
+
+/**
+ * Approval is a file change so it is reviewable in git: sets review.approved_by,
+ * review.approved_at, and qa_state approved (or published with --publish).
+ */
+export async function contentApprove(
+  args: ParsedArgs,
+  deps: ContentDeps,
+): Promise<number> {
+  const lessonId = args.positionals[2];
+  const by = optionString(args, "by");
+  if (lessonId === undefined || by === undefined || by.trim().length === 0) {
+    throw new CliError(
+      "usage: hivemind content approve <lesson-id> --by <name> [--publish]",
+    );
+  }
+  const result = await compileContent({
+    root: deps.config.root,
+    generatedAt: deps.now(),
+  });
+  const lesson = result.bundle?.lessons.find((candidate) => candidate.id === lessonId);
+  if (lesson === undefined || lesson.source_path === undefined) {
+    throw new CliError(
+      `lesson ${lessonId} not found in a compilable tree${result.diagnostics.hasErrors ? `:\n${result.diagnostics.format()}` : ""}`,
+    );
+  }
+  const path = join(deps.config.root, lesson.source_path, "metadata.yaml");
+  const document = parseDocument(readFileSync(path, "utf8"));
+  const state = optionFlag(args, "publish") ? "published" : "approved";
+  document.set("qa_state", state);
+  document.setIn(["review", "approved_by"], by.trim());
+  document.setIn(["review", "approved_at"], deps.now());
+  writeFileSync(path, document.toString());
+  deps.out.log(
+    `${lessonId}: qa_state ${state}, approved by ${by.trim()} → ${lesson.source_path}/metadata.yaml`,
+  );
   return 0;
 }

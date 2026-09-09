@@ -1,0 +1,148 @@
+- id: predict-lpm
+  kind: prediction
+  prompt: >-
+    The table holds `default via 10.0.0.1 dev eth0`, `10.1.0.0/16 via 10.0.0.2 dev eth0`,
+    and `10.1.2.0/24 via 10.0.0.3 dev eth0`. A packet leaves for 10.1.2.3. Which next hop
+    carries it?
+  options:
+    - id: a
+      text: 10.0.0.1, because the default route is listed first
+      correct: false
+      feedback: Order in the listing plays no part; the lookup is by prefix length.
+    - id: b
+      text: 10.0.0.2, because /16 is the first route that contains 10.1.2.3
+      correct: false
+      feedback: /16 does contain it, but a more specific route also matches.
+    - id: c
+      text: 10.0.0.3, because /24 is the longest prefix that contains 10.1.2.3
+      correct: true
+      feedback: Longest-prefix match; /24 beats /16, which beats /0.
+  explanation: >-
+    All three routes contain 10.1.2.3. The kernel picks the most specific one, the /24,
+    regardless of listing order or which route was added first.
+  skill_ids: [linux.networking.routing_table]
+  difficulty: 2
+- id: predict-gateway
+  kind: prediction
+  prompt: >-
+    eth0 has 10.0.0.10/24. You run `ip route add 192.168.50.0/24 via 172.16.0.1`.
+    What happens?
+  options:
+    - id: a
+      text: The route is installed and traffic to 192.168.50.0/24 goes to 172.16.0.1
+      correct: false
+      feedback: The kernel has no way to reach 172.16.0.1 on any interface.
+    - id: b
+      text: The command fails because 172.16.0.1 is not on a connected network
+      correct: true
+      feedback: The gateway must be reachable through a connected route on the interface.
+    - id: c
+      text: The route is installed but marked unreachable until 172.16.0.1 answers ARP
+      correct: false
+      feedback: Route installation is checked against the table, not against ARP.
+  explanation: >-
+    A gateway must be on-link: reachable through a connected route on the interface the
+    route uses. 172.16.0.1 is not within any connected prefix, so the kernel rejects the
+    route with "Nexthop has invalid gateway".
+  skill_ids: [linux.networking.routing_table]
+  difficulty: 3
+- id: check-default
+  kind: knowledge_check
+  prompt: What prefix does the word `default` stand for in an IPv4 routing table?
+  options:
+    - id: a
+      text: 0.0.0.0/0
+      correct: true
+    - id: b
+      text: 0.0.0.0/32
+      correct: false
+      feedback: A /32 matches exactly one address, the opposite of a catch-all.
+    - id: c
+      text: The prefix of the interface's own network
+      correct: false
+      feedback: That is a connected route, added automatically with the address.
+  explanation: default is shorthand for 0.0.0.0/0, the least specific route possible.
+  skill_ids: [linux.networking.routing_table]
+  difficulty: 1
+- id: check-get
+  kind: knowledge_check
+  prompt: >-
+    Which command shows the exact route the kernel would use for 10.1.2.3 and the source
+    address it would pick, without sending any packet?
+  options:
+    - id: a
+      text: ip route show 10.1.2.3
+      correct: false
+      feedback: show filters the listing; it does not perform a lookup.
+    - id: b
+      text: ip route get 10.1.2.3
+      correct: true
+    - id: c
+      text: traceroute 10.1.2.3
+      correct: false
+      feedback: traceroute sends packets and reports the path, not the local decision.
+  explanation: >-
+    ip route get runs the kernel's lookup for that destination and prints the decision,
+    including dev and src.
+  skill_ids: [linux.networking.routing_table]
+  difficulty: 1
+- id: reflect-asymmetric
+  kind: reflection
+  prompt: >-
+    Your host can send packets to 10.1.2.3 but never sees replies, and the route on your
+    host is correct. Explain, in two or three sentences, where the missing piece is and
+    which host you would inspect next.
+  answer: >-
+    Routing is decided independently at every hop in each direction. The reply is routed
+    by 10.1.2.3 and the routers on its way back, so the missing route (or the wrong
+    gateway) is on the remote host or a router in the return path, not on this host;
+    inspect 10.1.2.3's table first, then the router that should carry the return traffic.
+  explanation: >-
+    Each direction is a separate lookup on a different machine; a correct outbound route
+    says nothing about the return path.
+  skill_ids: [linux.networking.routing_table]
+  difficulty: 3
+- id: mastery-metric
+  kind: mastery
+  prompt: >-
+    Two routes exist for 10.1.0.0/16: `via 10.0.0.2 metric 100` and `via 10.0.0.3
+    metric 50`. Which one carries traffic to 10.1.7.7?
+  options:
+    - id: a
+      text: via 10.0.0.2, because it was listed first
+      correct: false
+    - id: b
+      text: via 10.0.0.3, because the lower metric wins between equal prefixes
+      correct: true
+    - id: c
+      text: Both, alternately, because the prefixes are identical
+      correct: false
+      feedback: Equal-cost sharing needs an explicit multipath route, not two separate routes.
+  explanation: >-
+    The prefixes are equal, so the metric decides; the lower value is preferred.
+  skill_ids: [linux.networking.routing_table]
+  difficulty: 2
+- id: mastery-diagnose
+  kind: mastery
+  prompt: >-
+    `ip route get 10.1.2.3` prints `10.1.2.3 via 10.0.0.1 dev eth0 src 10.0.0.10`, yet
+    10.1.2.0/24 sits behind 10.0.0.3 on the same segment. What is wrong, and what is the
+    smallest fix?
+  options:
+    - id: a
+      text: The default route is wrong; replace it with via 10.0.0.3
+      correct: false
+      feedback: That would send every other destination to 10.0.0.3 as well.
+    - id: b
+      text: There is no route for 10.1.2.0/24, so the default matched; add 10.1.2.0/24 via 10.0.0.3
+      correct: true
+    - id: c
+      text: The host needs IP forwarding enabled
+      correct: false
+      feedback: Forwarding concerns packets from other hosts, not this host's own traffic.
+  explanation: >-
+    The lookup fell through to the default route because nothing more specific matched;
+    a static /24 route toward 10.0.0.3 is the smallest change that fixes exactly this
+    destination.
+  skill_ids: [linux.networking.routing_table]
+  difficulty: 3

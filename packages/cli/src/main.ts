@@ -3,7 +3,12 @@ import { isoNow } from "@hivemind/core";
 
 import { ApiError, HiveMindApi } from "./api";
 import { parseArgs, type ParsedArgs } from "./args";
-import { contentCompile, contentDiff, contentPublish } from "./commands/content";
+import {
+  contentApprove,
+  contentCompile,
+  contentDiff,
+  contentPublish,
+} from "./commands/content";
 import { dbMigrate } from "./commands/db";
 import { exportArchive } from "./commands/export";
 import { workComplete, workList, workNew, workPull, workValidate } from "./commands/work";
@@ -20,6 +25,7 @@ const USAGE = `hivemind <group> <command> [options]
   content compile [dir] [--out file]
   content diff [dir]
   content publish [dir] [--note text]
+  content approve <lesson-id> --by <name> [--publish]
   work new <template> --lesson <id> | --module <course> --module <module> | --course <id> | --skill <id> | --problem <id> | --area <a>
            [--instructions text] [--title text] [--priority p] [--label l]…
   work pull [id] [--no-start]
@@ -45,6 +51,7 @@ const COMMANDS: Readonly<Record<string, Handler>> = {
   "content compile": contentCompile,
   "content diff": contentDiff,
   "content publish": contentPublish,
+  "content approve": contentApprove,
   "work new": workNew,
   "work pull": workPull,
   "work validate": workValidate,

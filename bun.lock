@@ -66,6 +66,7 @@
       "dependencies": {
         "@hivemind/core": "workspace:*",
         "@hivemind/schema": "workspace:*",
+        "yaml": "^2.9.0",
         "zod": "^4.5.4",
       },
       "devDependencies": {

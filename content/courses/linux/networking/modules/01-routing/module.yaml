@@ -1,0 +1,6 @@
+id: linux-networking.routing
+title: Routing on a Linux host
+summary: |
+  The kernel routing table: how a route is chosen, how to read and query the table,
+  how to add and remove routes, and the three failures every operator meets first.
+lessons: [01-routing-table-ip-route]

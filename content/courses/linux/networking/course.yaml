@@ -1,0 +1,22 @@
+id: linux-networking
+version: 0.1.0
+title: Linux Networking
+domain: linux
+summary: |
+  How a Linux host names, addresses, routes, and troubleshoots its own network
+  connections: interfaces and addresses, the routing table, and the failures that
+  show up as "unreachable". The first module anchors the network-infrastructure track.
+status: active
+tracks: [network-infrastructure]
+prerequisite_course_ids: []
+skill_ids:
+  - linux.networking.interfaces_addresses
+  - linux.networking.routing_table
+capabilities: [shell.linux]
+modules: [01-routing]
+source_ids:
+  - src.iproute2.ip-route
+  - src.iproute2.ip-address
+  - src.kernel.ip-sysctl
+  - src.rhcsa.networking-objectives
+  - src.rfc1812

@@ -1,0 +1,36 @@
+id: HM-LESSON-linux-networking-01
+version: 0.1.0
+slug: routing-table-ip-route
+title: The Linux routing table and ip route
+summary: |
+  How the kernel selects a route by longest-prefix match, how to read and query the
+  table with ip route show and ip route get, how default routes, metrics, and static
+  routes work, and how wrong gateways, missing routes, and asymmetric return paths fail.
+qa_state: technical_review
+review:
+  notes: |
+    Gold-standard lesson (D-010, D-042). Drafted by Claude Code against the sources in
+    claims.yaml; awaiting Jacob's technical and instructional review before approval.
+objectives:
+  - id: predict-route
+    text: Predict which route the kernel selects for a destination and why
+    skill_id: linux.networking.routing_table
+  - id: read-and-query
+    text: Read ip route show output and confirm a decision with ip route get
+    skill_id: linux.networking.routing_table
+  - id: change-routes
+    text: Add, replace, and delete static and default routes safely
+    skill_id: linux.networking.routing_table
+  - id: diagnose-failures
+    text: Diagnose a wrong gateway, a missing route, and an asymmetric return path
+    skill_id: linux.networking.routing_table
+skill_ids: [linux.networking.routing_table]
+difficulty: 2
+estimated_minutes: 50
+labs:
+  - problem_id: linux.routing.static_route
+    mode: guided_lab
+    title: Add and verify a static route
+  - problem_id: linux.routing.unreachable_subnet
+    mode: practice
+    title: A subnet the host cannot reach

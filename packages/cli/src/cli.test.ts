@@ -291,6 +291,47 @@ describe("hivemind CLI", () => {
     expect(out.errors.at(-1)).toContain("expected a work-order id");
   });
 
+  it("records approval in metadata.yaml", async () => {
+    const { cpSync } = await import("node:fs");
+    cpSync(COMPILER_FIXTURE, join(root, "tree"), { recursive: true });
+    const treeConfig = { ...config, root: join(root, "tree") };
+    const out = capture();
+    const deps = {
+      config: treeConfig,
+      api: new HiveMindApi(treeConfig, fakeApi().fetch),
+      out,
+      now: () => "2026-09-09T12:00:00Z",
+    };
+    expect(
+      await run(
+        ["content", "approve", "HM-LESSON-demo-course-01", "--by", "jacob", "--publish"],
+        deps,
+      ),
+    ).toBe(0);
+    const metadata = readFileSync(
+      join(
+        root,
+        "tree",
+        "content",
+        "courses",
+        "linux",
+        "demo-course",
+        "modules",
+        "01-basics",
+        "lessons",
+        "01-first",
+        "metadata.yaml",
+      ),
+      "utf8",
+    );
+    expect(metadata).toContain("qa_state: published");
+    expect(metadata).toContain("approved_by: jacob");
+    expect(metadata).toContain("approved_at: 2026-09-09T12:00:00Z");
+    expect(
+      await run(["content", "approve", "HM-LESSON-nope-01", "--by", "jacob"], deps),
+    ).toBe(1);
+  });
+
   it("writes the export archive", async () => {
     const api = fakeApi();
     const out = capture();
