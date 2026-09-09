@@ -424,3 +424,25 @@ authority order: `DECISIONS.md` → `UI-SYSTEM.md` → companion spec → stage 
 image. Every companion carries `REFERENCE ONLY` and this order. The canonical shell is the
 one in mockups 12–18; screens 1–11 keep their layouts and are re-skinned. Stage files list
 the companions they implement.
+
+## D-042 · 2026-09-09 · Locked · Gold-standard lesson topic: the Linux routing table and `ip route`
+
+The first lesson (D-010) is "The Linux routing table and `ip route`": how the kernel
+selects a route (longest-prefix match), reading and querying the table (`ip route show`,
+`ip route get`), default routes and metrics, adding and removing routes, and the common
+failures (wrong gateway, missing route, asymmetric return path). It anchors the first
+Linux Networking module, needs only a single container for its guided lab, and is a
+prerequisite for the BGP track. Sources: iproute2 manual pages (`ip-route(8)`), Linux
+kernel networking documentation, RHCSA networking objectives, RFC 1812 for forwarding
+semantics; wording original per D-011. It must meet all twelve RFP §110 elements and is
+the benchmark for every later lesson.
+
+## D-043 · 2026-09-09 · Locked · Pydantic generation uses `datamodel-code-generator`
+
+Generated Pydantic v2 models for `services/lab-worker` come from `schemas/*.json` via
+`datamodel-code-generator` (pinned version, `--output-model-type pydantic_v2.BaseModel`,
+`--use-annotated`, `--collapse-root-models`, `--use-title-as-name` off). Generation runs
+in CI and drift fails the build (D-032). A dedicated test round-trips the worker protocol
+envelope and every discriminated union through both TypeScript and the generated Python.
+If the generator cannot represent a construct faithfully, the Zod schema is simplified
+rather than the Python hand-edited.

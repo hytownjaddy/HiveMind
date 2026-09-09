@@ -53,11 +53,9 @@ leaves the lesson and learner intact.
   left tree, command palette scaffold, tabs `Lesson | Lab | Notes | Sources | Mastery` with
   only Lesson and Sources live); remove placeholder pages and demo labs UI; Work Order
   copy/export panel (deterministic assembly).
-- Gold-standard lesson: topic agreed with Jacob (proposed: the Linux routing table and
-  `ip route`, anchor of the first Linux Networking module); coverage and sequencing
-  grounded in named authoritative sources (iproute2 documentation, `ip-route(8)`, RHCSA
-  objectives, Red Hat networking guide, relevant RFCs), original wording; `claims.yaml`
-  provenance; meets RFP §110.
+- Gold-standard lesson per D-042: "The Linux routing table and `ip route`", anchor of the
+  first Linux Networking module; coverage and sequencing grounded in the sources named in
+  D-042, original wording; `claims.yaml` provenance; meets all twelve RFP §110 elements.
 - Documentation set: `ARCHITECTURE.md` updated to actual, `COURSE_AUTHORING.md` TBD(1)
   filled, `CONTRIBUTING.md` verified; companion specs already exist for every screen
   (D-041) and are inputs, not deliverables.
@@ -91,7 +89,8 @@ Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui
 ## Architecture decisions already locked
 
 D-001, D-002, D-008, D-009, D-010, D-011, D-014, D-019, D-020, D-021, D-022, D-023,
-D-024, D-025, D-030, D-031, D-032, D-033, D-034, D-036, D-037, D-038, D-039, D-040.
+D-024, D-025, D-030, D-031, D-032, D-033, D-034, D-036, D-037, D-038, D-039, D-040,
+D-041, D-042, D-043. No open questions remain for this stage.
 
 ## Files/modules owned by this stage
 
@@ -185,8 +184,8 @@ content is publishing a previous version. Scaffold removals are single reviewabl
 - Over-designing contracts without content: mitigate with the gold lesson plus a drafted
   BGP `ProblemSpec` fixture used only to validate schemas.
 - Access misconfiguration locking Jacob out: document a break-glass path.
-- Pydantic generation fidelity for discriminated unions: choose the generator early and
-  test with the worker protocol envelope.
+- Pydantic generation fidelity for discriminated unions: `datamodel-code-generator` per
+  D-043; the round-trip test on the worker protocol envelope is written first.
 
 ## Forbidden shortcuts
 
