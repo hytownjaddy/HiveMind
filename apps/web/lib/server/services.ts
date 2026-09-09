@@ -9,6 +9,7 @@ import {
   LabSessionIndexRepository,
   LearnerRepository,
   LearnerService,
+  ReviewItemRepository,
   systemClock,
   WorkOrderRepository,
   WorkOrderService,
@@ -43,6 +44,7 @@ export async function services() {
     contentRepository: content,
     workOrders: new WorkOrderService(orders, systemClock),
     labSessions: new LabSessionIndexRepository(env.DB, systemClock),
+    reviewItems: new ReviewItemRepository(env.DB),
     exportStore,
     export: new ExportService(learners, content, orders, attempts, () => isoNow()),
     health: new HealthService({

@@ -28,7 +28,9 @@ export interface HealthReport {
 export interface HealthDeps {
   readonly db: Database;
   readonly exports?: ExportStore | undefined;
-  readonly sessionWorker?: { fetch(request: Request): Promise<Response> } | undefined;
+  /** Service binding to the session Worker; called with a string URL so it works under the dev platform proxy too. */
+  readonly sessionWorker?:
+    { fetch(input: string, init?: RequestInit): Promise<Response> } | undefined;
   readonly version: string;
   readonly environment: string;
   readonly runtimeVersions: Readonly<Record<string, string>>;
@@ -77,9 +79,10 @@ export class HealthService {
         component: "session_worker",
         ...(await timed(async () => {
           const response = await worker.fetch(
-            new Request("https://hivemind-web.internal/session/health", {
+            "https://hivemind-web.internal/session/health",
+            {
               headers: { origin: "https://hivemind-web.internal" },
-            }),
+            },
           );
           if (!response.ok) {
             throw new Error(`session worker responded ${response.status}`);

@@ -160,6 +160,14 @@ async function route(request: Request, env: Env): Promise<Response> {
 
 export default {
   async fetch(request, env): Promise<Response> {
+    // Liveness needs no identity or origin: the web Worker probes it over the
+    // service binding, and dev proxies do not forward Origin.
+    if (
+      new URL(request.url).pathname === `${PREFIX}/health` &&
+      request.method === "GET"
+    ) {
+      return jsonResponse({ ok: true });
+    }
     const origin = normalizeOrigin(request.headers.get("origin"));
     const allowed = origin !== null && isAllowedOrigin(origin, env.ALLOWED_ORIGINS);
     if (request.method === "OPTIONS") {

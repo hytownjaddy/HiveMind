@@ -21,7 +21,7 @@ export default defineConfig({
   webServer: [
     {
       command: `bun --cwd apps/session-worker dev --port ${sessionPort}`,
-      url: `http://localhost:${sessionPort}/health`,
+      url: `http://localhost:${sessionPort}/session/health`,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },

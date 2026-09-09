@@ -116,9 +116,16 @@ function sendClient(socket: WebSocket, message: Record<string, unknown>): void {
 }
 
 describe("gateway", () => {
+  it("answers health without an origin or identity", async () => {
+    const response = await SELF.fetch(`${BASE}/session/health`);
+    expect(response.status).toBe(200);
+  });
+
   it("rejects requests from unknown origins", async () => {
-    const response = await SELF.fetch(`${BASE}/session/health`, {
-      headers: { origin: "https://evil.example" },
+    const response = await SELF.fetch(`${BASE}/session/labs`, {
+      method: "POST",
+      headers: { origin: "https://evil.example", "content-type": "application/json" },
+      body: JSON.stringify({ capability: "shell.linux" }),
     });
     expect(response.status).toBe(403);
   });
