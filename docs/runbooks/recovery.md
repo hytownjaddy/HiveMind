@@ -22,13 +22,16 @@ apps/web/node_modules/.bin/wrangler r2 bucket lifecycle add hivemind-exports --p
 
 ## Restore drill (run at every stage milestone)
 
+Wrangler's `r2 object get|put` and `d1 execute` talk to **local** miniflare storage unless
+`--remote` is given; every command below that touches the real account says `--remote`.
+
 The drill imports an export into a **fresh** database and checks that the seeded learner,
 the migration record, the immutability trigger, and the latest content version with the
 gold lesson are all present. It never touches the live database.
 
 ```bash
 # from the latest nightly export in R2
-apps/web/node_modules/.bin/wrangler r2 object get hivemind-exports/exports/d1/<stamp>.sql --file /tmp/export.sql
+apps/web/node_modules/.bin/wrangler r2 object get hivemind-exports/exports/d1/<stamp>.sql --remote --file /tmp/export.sql
 tools/backup/restore-drill.sh /tmp/export.sql                       # fresh local D1
 tools/backup/restore-drill.sh /tmp/export.sql --remote hivemind-drill  # fresh remote D1, then delete it
 

@@ -19,8 +19,11 @@ STAMP="$(date -u +%Y-%m-%dT%H%M%SZ)"
 mkdir -p "$OUT_DIR"
 FILE="$OUT_DIR/d1-$STAMP.sql"
 
-echo "==> Exporting D1 ($TARGET) to $FILE"
-"$WRANGLER" d1 export DB --remote --output "$FILE" -c apps/web/wrangler.jsonc "${ENV_ARGS[@]}"
-echo "==> Uploading to r2://$BUCKET/exports/d1/$STAMP.sql"
-"$WRANGLER" r2 object put "$BUCKET/exports/d1/$STAMP.sql" --file "$FILE" --content-type application/sql
+# Progress goes to stderr so callers can capture stdout (the file path) with $(…).
+echo "==> Exporting D1 ($TARGET) to $FILE" >&2
+"$WRANGLER" d1 export DB --remote --output "$FILE" -c apps/web/wrangler.jsonc "${ENV_ARGS[@]}" >&2
+echo "==> Uploading to r2://$BUCKET/exports/d1/$STAMP.sql" >&2
+# --remote is required: without it wrangler writes to local miniflare storage and exits 0.
+"$WRANGLER" r2 object put "$BUCKET/exports/d1/$STAMP.sql" --file "$FILE" --content-type application/sql --remote >&2
+echo "==> Uploaded exports/d1/$STAMP.sql" >&2
 echo "$FILE"
