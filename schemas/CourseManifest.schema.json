@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract CourseManifest v1.0.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract CourseManifest v1.1.0; generated from packages/schema, do not edit",
   "$id": "CourseManifest.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -59,6 +59,10 @@
         "type": "string"
       },
       "type": "array"
+    },
+    "source_path": {
+      "minLength": 1,
+      "type": "string"
     },
     "status": {
       "$ref": "DefinitionStatus.schema.json"

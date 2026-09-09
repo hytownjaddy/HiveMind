@@ -50,6 +50,7 @@ class Lesson(BaseModel):
     skill_ids: Annotated[list[SkillId], Field(min_length=1)]
     slug: Annotated[str, Field(max_length=128, min_length=1, pattern="^[a-z0-9][a-z0-9._-]*$")]
     source_ids: list[SourceId]
+    source_path: Annotated[str | None, Field(min_length=1)] = None
     summary: Annotated[str, Field(max_length=600, min_length=1)]
     title: Annotated[str, Field(max_length=200, min_length=1)]
     version: Annotated[str, Field(pattern="^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$")]

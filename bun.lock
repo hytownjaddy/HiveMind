@@ -53,6 +53,23 @@
         "wrangler": "^4.130.0",
       },
     },
+    "packages/core": {
+      "name": "@hivemind/core",
+      "version": "0.0.0",
+      "dependencies": {
+        "@hivemind/schema": "workspace:*",
+        "jose": "^6.2.12",
+        "yaml": "^2.9.0",
+        "zod": "^4.5.4",
+      },
+      "devDependencies": {
+        "@cloudflare/vitest-pool-workers": "^0.22.0",
+        "@cloudflare/workers-types": "^5.20260908.1",
+        "@types/node": "^26.5.0",
+        "vitest": "^4.1.11",
+        "wrangler": "^4.130.0",
+      },
+    },
     "packages/schema": {
       "name": "@hivemind/schema",
       "version": "0.0.0",
@@ -308,6 +325,8 @@
     "@eslint/object-schema": ["@eslint/object-schema@2.1.7", "", {}, "sha512-VtAOaymWVfZcmZbp6E2mympDIHvyjXs/12LqWYjVw6qjrfF+VK+fyG33kChz3nnK+SU5/NeHOqrTEHS8sXO3OA=="],
 
     "@eslint/plugin-kit": ["@eslint/plugin-kit@0.4.1", "", { "dependencies": { "@eslint/core": "^0.17.0", "levn": "^0.4.1" } }, "sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA=="],
+
+    "@hivemind/core": ["@hivemind/core@workspace:packages/core"],
 
     "@hivemind/schema": ["@hivemind/schema@workspace:packages/schema"],
 
@@ -1150,6 +1169,8 @@
     "jackspeak": ["jackspeak@4.2.3", "", { "dependencies": { "@isaacs/cliui": "^9.0.0" } }, "sha512-ykkVRwrYvFm1nb2AJfKKYPr0emF6IiXDYUaFx4Zn9ZuIH7MrzEZ3sD5RlqGXNRpHtvUHJyOnCEFxOlNDtGo7wg=="],
 
     "jiti": ["jiti@2.7.0", "", { "bin": { "jiti": "lib/jiti-cli.mjs" } }, "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ=="],
+
+    "jose": ["jose@6.2.12", "", {}, "sha512-9NiFmJEex0sy2Dk58j2UGBSHgUs2ypF9eZSu4L6vjOX3Dp96Sw1F3uL+H+D1sx02jZZdzUT0HgvCy59CuvXcWw=="],
 
     "js-tokens": ["js-tokens@4.0.0", "", {}, "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ=="],
 

@@ -26,6 +26,7 @@ class CourseManifest(BaseModel):
     prerequisite_course_ids: list[PrerequisiteCourseId]
     skill_ids: Annotated[list[SkillId], Field(min_length=1)]
     source_ids: list[SourceId]
+    source_path: Annotated[str | None, Field(min_length=1)] = None
     status: definition_status.DefinitionStatus
     summary: Annotated[str, Field(max_length=600, min_length=1)]
     title: Annotated[str, Field(max_length=200, min_length=1)]

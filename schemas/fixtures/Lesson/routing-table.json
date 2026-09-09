@@ -194,6 +194,7 @@
   "source_ids": [
     "src.iproute2.ip-route"
   ],
+  "source_path": "content/courses/linux/networking/modules/01-routing/lessons/01-routing-table-ip-route",
   "summary": "How the kernel selects a route and how to read and change the table.",
   "title": "The Linux routing table and ip route",
   "version": "0.1.0"

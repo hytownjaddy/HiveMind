@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract Lesson v1.0.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract Lesson v1.1.0; generated from packages/schema, do not edit",
   "$id": "Lesson.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -194,6 +194,10 @@
         "type": "string"
       },
       "type": "array"
+    },
+    "source_path": {
+      "minLength": 1,
+      "type": "string"
     },
     "summary": {
       "maxLength": 600,

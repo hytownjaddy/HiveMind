@@ -36,7 +36,7 @@ Run the full verification before any commit that claims a task is done:
 
 ```bash
 bun run verify          # TypeScript: format, lint, boundaries, typecheck, tests, build
-uv run --project services/lab-worker task verify   # once Stage 1 lands: ruff, pyright, pytest
+uv run --directory services/lab-worker task verify   # once Stage 1 lands: ruff, pyright, pytest
 ```
 
 Worker/provider tests that need Docker run on a Linux host (CI runner or the lab host), not

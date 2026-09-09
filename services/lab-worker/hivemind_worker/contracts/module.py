@@ -29,6 +29,7 @@ class Module(BaseModel):
     lesson_ids: list[LessonId]
     order: Annotated[int, Field(ge=1, le=9007199254740991)]
     skill_ids: list[SkillId]
+    source_path: Annotated[str | None, Field(min_length=1)] = None
     summary: Annotated[str, Field(max_length=600, min_length=1)]
     title: Annotated[str, Field(max_length=200, min_length=1)]
 

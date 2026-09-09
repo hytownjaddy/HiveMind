@@ -236,6 +236,8 @@ export const lessonFixture: Lesson = {
   ],
   source_ids: ["src.iproute2.ip-route"],
   body_hash: SHA,
+  source_path:
+    "content/courses/linux/networking/modules/01-routing/lessons/01-routing-table-ip-route",
 };
 
 export const moduleFixture: Module = {

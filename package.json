@@ -19,7 +19,7 @@
     "lint": "eslint . --max-warnings=0",
     "boundaries": "bunx --bun depcruise apps packages --config dependency-cruiser.config.cjs",
     "typecheck": "bun run --filter '*' typecheck",
-    "test": "bun run test:unit && bun run test:worker",
+    "test": "bun run test:unit && bun run test:core && bun run test:worker",
     "test:unit": "vitest run --config vitest.config.ts",
     "test:worker": "bun --cwd apps/session-worker test",
     "test:e2e": "playwright test",
@@ -33,8 +33,9 @@
     "verify": "bun run format:check && bun run lint && bun run boundaries && bun run typecheck && bun run schema:check && bun run test && bun run build:web",
     "schema:export": "bun --cwd packages/schema schema:export",
     "schema:check": "bun --cwd packages/schema schema:check",
-    "verify:py": "uv run --project services/lab-worker task verify",
-    "verify:all": "bun run verify && bun run verify:py"
+    "verify:py": "uv run --directory services/lab-worker task verify",
+    "verify:all": "bun run verify && bun run verify:py",
+    "test:core": "bun --cwd packages/core test"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

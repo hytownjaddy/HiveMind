@@ -117,6 +117,8 @@ export const lessonSchema = z.strictObject({
   source_ids: z.array(sourceIdSchema),
   /** SHA-256 of the canonical compiled body; changes force a version bump. */
   body_hash: sha256Schema,
+  /** Repository directory the lesson was compiled from; work orders point Claude Code here. */
+  source_path: z.string().min(1).optional(),
 });
 export type Lesson = z.infer<typeof lessonSchema>;
 
@@ -128,6 +130,7 @@ export const moduleSchema = z.strictObject({
   order: positiveIntSchema,
   lesson_ids: z.array(lessonIdSchema),
   skill_ids: z.array(skillIdSchema),
+  source_path: z.string().min(1).optional(),
 });
 export type Module = z.infer<typeof moduleSchema>;
 
@@ -148,6 +151,7 @@ export const courseManifestSchema = z.strictObject({
   capabilities: z.array(capabilitySchema),
   module_ids: z.array(moduleIdSchema).min(1),
   source_ids: z.array(sourceIdSchema),
+  source_path: z.string().min(1).optional(),
 });
 export type CourseManifest = z.infer<typeof courseManifestSchema>;
 

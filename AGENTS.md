@@ -91,7 +91,7 @@ STAGES/                 stage contracts; docs/ holds the RFP and its review
 bun install                      TypeScript deps (bun 1.3.14, see .bun-version)
 bun run dev                      web dev server + session worker side by side
 bun run verify                   TS format, lint, boundaries, typecheck, tests, OpenNext build
-uv run --project services/lab-worker task verify   (from Stage 01) ruff, pyright, pytest
+uv run --directory services/lab-worker task verify   (from Stage 01) ruff, pyright, pytest
 hivemind …                       (from Stage 01) content, work orders, careers, export, lab orchestration
 ```
 
