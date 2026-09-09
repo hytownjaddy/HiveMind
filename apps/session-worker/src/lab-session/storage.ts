@@ -20,7 +20,7 @@ import {
 interface SessionRow {
   [key: string]: SqlStorageValue;
   session_id: string;
-  guest_id: string;
+  learner_id: string;
   capability: string;
   problem_ref: string | null;
   status: string;
@@ -70,7 +70,7 @@ export class LabSessionRepository {
       CREATE TABLE IF NOT EXISTS session (
         id INTEGER PRIMARY KEY CHECK (id = 1),
         session_id TEXT NOT NULL,
-        guest_id TEXT NOT NULL,
+        learner_id TEXT NOT NULL,
         capability TEXT NOT NULL,
         problem_ref TEXT,
         status TEXT NOT NULL,
@@ -117,7 +117,7 @@ export class LabSessionRepository {
     }
     return {
       sessionId: row.session_id,
-      guestId: row.guest_id,
+      learnerId: row.learner_id,
       capability: row.capability,
       problemRef: row.problem_ref,
       status: row.status as LabStatus,
@@ -134,11 +134,11 @@ export class LabSessionRepository {
   create(request: InternalCreateRequest, now: number): SessionRecord {
     this.sql.exec(
       `INSERT INTO session (
-         id, session_id, guest_id, capability, problem_ref, status, schema_version,
+         id, session_id, learner_id, capability, problem_ref, status, schema_version,
          revision, created_at, updated_at, last_activity_at
        ) VALUES (1, ?, ?, ?, ?, 'queued', ?, 0, ?, ?, ?)`,
       request.sessionId,
-      request.guestId,
+      request.learnerId,
       request.capability,
       request.problemRef,
       SCHEMA_VERSION,

@@ -10,12 +10,14 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@hivemind/schema": "workspace:*"
+    "@hivemind/schema": "workspace:*",
+    "@hivemind/core": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.22.0",
     "@cloudflare/workers-types": "^5.20260908.1",
     "vitest": "^4.1.11",
-    "wrangler": "^4.130.0"
+    "wrangler": "^4.130.0",
+    "jose": "^6.2.12"
   }
 }

@@ -1,23 +1,46 @@
 import {
   CLOSE_CODES,
-  GUEST_SESSION_COOKIE,
   PROTOCOL_VERSION,
-  issueGuestSession,
   labServerMessageSchema,
   labSessionSummarySchema,
   type LabServerMessage,
   type LabSessionSummary,
 } from "@hivemind/schema";
-import { SELF } from "cloudflare:test";
-import { describe, expect, it } from "vitest";
+import { env, SELF } from "cloudflare:test";
+import { importPKCS8, SignJWT } from "jose";
+import { beforeAll, describe, expect, it } from "vitest";
 
-const SECRET = "test-secret-that-is-at-least-32-bytes-long";
 const ORIGIN = "http://localhost:3000";
 const BASE = "https://session.test";
+const TEAM = "https://hivemind-test.cloudflareaccess.com";
+const AUD = "test-aud";
 
-async function guestHeaders(): Promise<Record<string, string>> {
-  const { token } = await issueGuestSession(SECRET);
-  return { cookie: `${GUEST_SESSION_COOKIE}=${token}`, origin: ORIGIN };
+let privateKey: CryptoKey;
+
+/*
+ * Access identity for tests: vitest.config.ts pins a throwaway public key
+ * through ACCESS_JWKS and hands the private half over as a binding, so the
+ * gateway runs the real verification path (D-033) without network access.
+ */
+beforeAll(async () => {
+  privateKey = await importPKCS8(env.TEST_ACCESS_PRIVATE_KEY, "RS256");
+});
+
+async function accessToken(email: string): Promise<string> {
+  return new SignJWT({ email })
+    .setProtectedHeader({ alg: "RS256", kid: "test-key" })
+    .setIssuer(TEAM)
+    .setAudience(AUD)
+    .setIssuedAt()
+    .setExpirationTime("10m")
+    .sign(privateKey);
+}
+
+/** Headers for the seeded learner; the first call binds the identity (D-033). */
+async function learnerHeaders(
+  email = "jacob@example.com",
+): Promise<Record<string, string>> {
+  return { "cf-access-jwt-assertion": await accessToken(email), origin: ORIGIN };
 }
 
 async function createSession(
@@ -26,7 +49,7 @@ async function createSession(
   const response = await SELF.fetch(`${BASE}/session/labs`, {
     method: "POST",
     headers: { ...headers, "content-type": "application/json" },
-    body: JSON.stringify({ capability: "terminal.linux", problemRef: "scaffold.echo#1" }),
+    body: JSON.stringify({ capability: "shell.linux", problemRef: "scaffold.echo#1" }),
   });
   expect(response.status).toBe(201);
   return labSessionSummarySchema.parse(await response.json());
@@ -110,17 +133,17 @@ describe("gateway", () => {
     expect(response.headers.get("access-control-allow-credentials")).toBe("true");
   });
 
-  it("requires a guest session", async () => {
+  it("rejects requests without an Access identity", async () => {
     const response = await SELF.fetch(`${BASE}/session/labs`, {
       method: "POST",
       headers: { origin: ORIGIN, "content-type": "application/json" },
-      body: JSON.stringify({ capability: "terminal.linux" }),
+      body: JSON.stringify({ capability: "shell.linux" }),
     });
     expect(response.status).toBe(401);
   });
 
   it("validates the create payload", async () => {
-    const headers = await guestHeaders();
+    const headers = await learnerHeaders();
     const response = await SELF.fetch(`${BASE}/session/labs`, {
       method: "POST",
       headers: { ...headers, "content-type": "application/json" },
@@ -132,7 +155,7 @@ describe("gateway", () => {
 
 describe("LabSession", () => {
   it("provisions to ready through alarms", async () => {
-    const headers = await guestHeaders();
+    const headers = await learnerHeaders();
     const created = await createSession(headers);
     expect(created.status).toBe("queued");
     expect(created.expiresAt).not.toBeNull();
@@ -144,24 +167,34 @@ describe("LabSession", () => {
     expect(ready.revision).toBeGreaterThanOrEqual(3);
   });
 
-  it("hides sessions from other guests", async () => {
-    const owner = await guestHeaders();
-    const other = await guestHeaders();
-    const created = await createSession(owner);
-
-    const summary = await SELF.fetch(`${BASE}/session/labs/${created.sessionId}`, {
-      headers: other,
+  it("rejects an identity that is not the seeded learner", async () => {
+    await createSession(await learnerHeaders());
+    const response = await SELF.fetch(`${BASE}/session/labs`, {
+      method: "POST",
+      headers: {
+        ...(await learnerHeaders("stranger@example.com")),
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ capability: "shell.linux" }),
     });
-    expect(summary.status).toBe(404);
+    expect(response.status).toBe(403);
+  });
 
-    const socket = await SELF.fetch(`${BASE}/session/labs/${created.sessionId}/ws`, {
-      headers: { ...other, upgrade: "websocket" },
+  it("rejects a forged token", async () => {
+    const response = await SELF.fetch(`${BASE}/session/labs`, {
+      method: "POST",
+      headers: {
+        "cf-access-jwt-assertion": "eyJ.forged.token",
+        origin: ORIGIN,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ capability: "shell.linux" }),
     });
-    expect(socket.status).toBe(404);
+    expect(response.status).toBe(401);
   });
 
   it("streams lifecycle events and echoes terminal input", async () => {
-    const headers = await guestHeaders();
+    const headers = await learnerHeaders();
     const created = await createSession(headers);
     const { socket, inbox } = await openSocket(headers, created.sessionId);
 
@@ -207,7 +240,7 @@ describe("LabSession", () => {
   });
 
   it("rejects terminal input before the session is ready", async () => {
-    const headers = await guestHeaders();
+    const headers = await learnerHeaders();
     const created = await createSession(headers);
     const { socket, inbox } = await openSocket(headers, created.sessionId);
     await waitFor(() => inbox.find((message) => message.type === "snapshot"));
@@ -225,7 +258,7 @@ describe("LabSession", () => {
   });
 
   it("rejects malformed messages without dropping the socket", async () => {
-    const headers = await guestHeaders();
+    const headers = await learnerHeaders();
     const created = await createSession(headers);
     const { socket, inbox } = await openSocket(headers, created.sessionId);
     await waitFor(() => inbox.find((message) => message.type === "snapshot"));
@@ -244,7 +277,7 @@ describe("LabSession", () => {
   });
 
   it("destroys a session, closes sockets, and refuses new ones", async () => {
-    const headers = await guestHeaders();
+    const headers = await learnerHeaders();
     const created = await createSession(headers);
     const { inbox, closes } = await openSocket(headers, created.sessionId);
     await waitFor(() => inbox.find((message) => message.type === "snapshot"));

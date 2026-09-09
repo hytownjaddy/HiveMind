@@ -1,2 +1,5 @@
-# Copy to .dev.vars (gitignored). Must match apps/web/.dev.vars.
-GUEST_SESSION_SECRET=replace-with-at-least-32-random-bytes
+# Copy to .dev.vars (gitignored). Local development only.
+# Act as this learner when no Access token is present (HIVEMIND_ENV=development only).
+ACCESS_DEV_BYPASS_EMAIL=you@example.com
+# Optional: JSON map of Access service-token common names to scopes.
+# SERVICE_TOKEN_SCOPES={"hivemind-cli":["content:publish","export:read"]}

@@ -9,7 +9,7 @@ import {
 
 import { reconnectDelayMs } from "./backoff";
 import { sessionSocketUrl } from "./origin";
-import { ensureGuestSession, fetchLabSession, SessionError } from "./session";
+import { fetchLabSession, SessionError } from "./transport";
 import { useLabStore } from "./store";
 
 export type WebSocketFactory = (url: string) => WebSocket;
@@ -34,7 +34,7 @@ function hasCurrentProtocolVersion(
 }
 
 /**
- * Browser side of one lab session: guest session, ownership check, socket
+ * Browser side of one lab session: ownership check, socket
  * lifecycle, ordered event application, resync, and bounded reconnect.
  * Terminal bytes bypass the store and go straight to subscribed listeners.
  */
@@ -62,7 +62,6 @@ export class LabSocket {
     store.reset(this.sessionId);
     store.setStatus("connecting");
     this.terminalBuffer = null;
-    await ensureGuestSession(this.fetchImpl);
     await fetchLabSession(this.sessionId, this.fetchImpl);
     this.bindLifecycle();
     this.openSocket();
@@ -241,8 +240,7 @@ export class LabSocket {
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
       store.setStatus("connecting");
-      void ensureGuestSession(this.fetchImpl)
-        .then(() => fetchLabSession(this.sessionId, this.fetchImpl))
+      void fetchLabSession(this.sessionId, this.fetchImpl)
         .then((summary) => {
           if (summary.status === "destroyed" || summary.status === "failed") {
             this.intentionalClose = true;

@@ -11,14 +11,14 @@ import {
   withCors,
 } from "./gateway/cors";
 import { consumeGatewayBurst } from "./gateway/rate-limit";
-import { authenticateGuest } from "./gateway/session";
+import { authenticateRequest } from "./gateway/session";
 
 export { LabSession } from "./lab-session";
 
 /**
- * Gateway Worker. Authenticates the guest cookie, applies transport limits,
- * and routes to the owning LabSession Durable Object. It never mutates
- * session state itself.
+ * Gateway Worker. Validates the Cloudflare Access identity (D-033), applies
+ * transport limits, and routes to the owning LabSession Durable Object. It
+ * never mutates session state itself.
  *
  * Public surface (same-origin via the web Worker in production):
  *   POST /session/labs                 create a session
@@ -56,16 +56,16 @@ function sessionStub(env: Env, sessionId: string): DurableObjectStub {
   return env.LAB_SESSIONS.get(env.LAB_SESSIONS.idFromName(sessionId));
 }
 
-function internal(path: string, guestId: string, init?: RequestInit): Request {
+function internal(path: string, learnerId: string, init?: RequestInit): Request {
   const url = new URL(`https://lab.internal${path}`);
-  url.searchParams.set("guestId", guestId);
+  url.searchParams.set("learnerId", learnerId);
   return new Request(url, init);
 }
 
 async function createSession(
   request: Request,
   env: Env,
-  guestId: string,
+  learnerId: string,
 ): Promise<Response> {
   let body: unknown;
   try {
@@ -79,12 +79,12 @@ async function createSession(
   }
   const sessionId = formatLabSessionId(randomSessionSequence());
   return sessionStub(env, sessionId).fetch(
-    internal("/internal/create", guestId, {
+    internal("/internal/create", learnerId, {
       method: "POST",
       headers: JSON_HEADERS,
       body: JSON.stringify({
         sessionId,
-        guestId,
+        learnerId,
         capability: parsed.data.capability,
         problemRef: parsed.data.problemRef ?? null,
       }),
@@ -95,7 +95,7 @@ async function createSession(
 function connect(
   request: Request,
   env: Env,
-  guestId: string,
+  learnerId: string,
   sessionId: string,
 ): Promise<Response> {
   if (request.headers.get("upgrade")?.toLowerCase() !== "websocket") {
@@ -104,9 +104,10 @@ function connect(
   // Browser credentials stop here; identity crosses into the object explicitly.
   const headers = new Headers(request.headers);
   headers.delete("cookie");
+  headers.delete("cf-access-jwt-assertion");
   headers.delete("origin");
   return sessionStub(env, sessionId).fetch(
-    internal("/internal/ws", guestId, { headers }),
+    internal("/internal/ws", learnerId, { headers }),
   );
 }
 
@@ -127,16 +128,17 @@ async function route(request: Request, env: Env): Promise<Response> {
     return jsonResponse({ error: "not-found" }, 404);
   }
 
-  const session = await authenticateGuest(request, env.GUEST_SESSION_SECRET);
-  if (session === null) {
-    return jsonResponse({ error: "unauthorized" }, 401);
+  const auth = await authenticateRequest(request, env);
+  if (!auth.ok) {
+    return jsonResponse({ error: auth.error }, auth.status);
   }
-  if (!consumeGatewayBurst(`${session.guestId}:${request.method}:${url.pathname}`)) {
+  const learnerId = auth.learnerId;
+  if (!consumeGatewayBurst(`${learnerId}:${request.method}:${url.pathname}`)) {
     return jsonResponse({ error: "rate-limited" }, 429);
   }
 
   if (isCreate) {
-    return createSession(request, env, session.guestId);
+    return createSession(request, env, learnerId);
   }
   const rawId = (summaryMatch ?? destroyMatch ?? socketMatch)?.[1];
   const sessionId = labSessionIdSchema.safeParse(rawId);
@@ -145,15 +147,15 @@ async function route(request: Request, env: Env): Promise<Response> {
   }
   if (isSummary) {
     return sessionStub(env, sessionId.data).fetch(
-      internal("/internal/summary", session.guestId),
+      internal("/internal/summary", learnerId),
     );
   }
   if (isDestroy) {
     return sessionStub(env, sessionId.data).fetch(
-      internal("/internal/destroy", session.guestId, { method: "POST" }),
+      internal("/internal/destroy", learnerId, { method: "POST" }),
     );
   }
-  return connect(request, env, session.guestId, sessionId.data);
+  return connect(request, env, learnerId, sessionId.data);
 }
 
 export default {

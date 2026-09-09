@@ -6,20 +6,18 @@ import {
 
 import { sessionHttpOrigin } from "./origin";
 
+/*
+ * Browser calls to the session Worker (same origin in production; the web
+ * Worker proxies /session/* and Access supplies the identity). Stage 04
+ * mounts the Lab Workspace on top of this.
+ */
+
 export class SessionError extends Error {
   constructor(
     readonly code: string,
     readonly status: number,
   ) {
     super(code);
-  }
-}
-
-/** Ensure a guest session cookie exists before any session traffic. */
-export async function ensureGuestSession(fetchImpl: typeof fetch = fetch): Promise<void> {
-  const response = await fetchImpl("/api/session", { method: "POST" });
-  if (!response.ok) {
-    throw new SessionError("session-unavailable", response.status);
   }
 }
 
@@ -51,38 +49,41 @@ export async function createLabSession(
   request: CreateLabSessionRequest,
   fetchImpl: typeof fetch = fetch,
 ): Promise<LabSessionSummary> {
-  const response = await sessionFetch(
-    "/session/labs",
-    {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(request),
-    },
-    fetchImpl,
+  return parseSummary(
+    await sessionFetch(
+      "/session/labs",
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(request),
+      },
+      fetchImpl,
+    ),
   );
-  return parseSummary(response);
 }
 
 export async function fetchLabSession(
   sessionId: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<LabSessionSummary> {
-  const response = await sessionFetch(
-    `/session/labs/${encodeURIComponent(sessionId)}`,
-    { method: "GET" },
-    fetchImpl,
+  return parseSummary(
+    await sessionFetch(
+      `/session/labs/${encodeURIComponent(sessionId)}`,
+      { method: "GET" },
+      fetchImpl,
+    ),
   );
-  return parseSummary(response);
 }
 
 export async function destroyLabSession(
   sessionId: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<LabSessionSummary> {
-  const response = await sessionFetch(
-    `/session/labs/${encodeURIComponent(sessionId)}/destroy`,
-    { method: "POST" },
-    fetchImpl,
+  return parseSummary(
+    await sessionFetch(
+      `/session/labs/${encodeURIComponent(sessionId)}/destroy`,
+      { method: "POST" },
+      fetchImpl,
+    ),
   );
-  return parseSummary(response);
 }

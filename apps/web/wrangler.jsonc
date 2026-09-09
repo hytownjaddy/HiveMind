@@ -23,15 +23,21 @@
       "migrations_dir": "migrations",
     },
   ],
-  // Future bindings (RFP §82-84). Uncomment once the resources exist:
-  // "kv_namespaces": [{ "binding": "CACHE", "id": "..." }],
-  // "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "hivemind-artifacts" }],
-  "vars": { "NEXTJS_ENV": "development" },
+  // Nightly D1 exports and portable archives (D-020). Local dev uses miniflare's bucket.
+  "r2_buckets": [{ "binding": "EXPORTS", "bucket_name": "hivemind-exports-dev" }],
+  "vars": {
+    "NEXTJS_ENV": "development",
+    "HIVEMIND_ENV": "development",
+    // Cloudflare Access (D-033). Local dev bypasses via .dev.vars.
+    "ACCESS_TEAM_DOMAIN": "https://hivemindjrr.cloudflareaccess.com",
+    "ACCESS_AUD": "replace-with-access-application-aud",
+  },
   "env": {
     "production": {
       "name": "hivemind-web",
       "workers_dev": true,
-      // "routes": [{ "pattern": "hivemind.example.com", "custom_domain": true }],
+      // Custom domain (D-040); enable once DNS and Access are configured:
+      // "routes": [{ "pattern": "hivemindjrr.com", "custom_domain": true }],
       "compatibility_date": "2026-08-15",
       "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
       "observability": { "enabled": true },
@@ -48,7 +54,13 @@
           "migrations_dir": "migrations",
         },
       ],
-      "vars": { "NEXTJS_ENV": "production" },
+      "r2_buckets": [{ "binding": "EXPORTS", "bucket_name": "hivemind-exports" }],
+      "vars": {
+        "NEXTJS_ENV": "production",
+        "HIVEMIND_ENV": "production",
+        "ACCESS_TEAM_DOMAIN": "https://hivemindjrr.cloudflareaccess.com",
+        "ACCESS_AUD": "replace-with-access-application-aud",
+      },
     },
   },
 }

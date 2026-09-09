@@ -24,7 +24,6 @@ export {
   MAX_TERMINAL_CHUNK_BYTES,
   connectionIdSchema,
   createLabSessionRequestSchema,
-  guestIdSchema,
   labCapabilitySchema,
   labClientMessageSchema,
   labEventSchema,
@@ -36,7 +35,6 @@ export {
   terminalDataSchema,
   terminalSizeSchema,
   type CreateLabSessionRequest,
-  type GuestId,
   type LabCapability,
   type LabClientMessage,
   type LabEvent,
@@ -46,16 +44,3 @@ export {
   type SequencedLabEvent,
 } from "./lab-session";
 export { PROTOCOL_VERSION, protocolVersionSchema, type ProtocolVersion } from "./version";
-
-// Guest HMAC sessions: removed with the Access integration (Stage 01, task 8).
-export {
-  GUEST_SESSION_COOKIE,
-  GUEST_SESSION_TTL_MS,
-  MIN_SECRET_BYTES,
-  isUsableSecret,
-  issueGuestSession,
-  readCookie,
-  signGuestSession,
-  verifyGuestSession,
-  type GuestSession,
-} from "./guest-session";

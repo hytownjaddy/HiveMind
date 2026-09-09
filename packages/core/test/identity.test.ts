@@ -1,5 +1,5 @@
 import { env } from "cloudflare:test";
-import { generateKeyPair, SignJWT } from "jose";
+import { exportJWK, generateKeyPair, SignJWT } from "jose";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { LearnerRepository } from "../src/db/learners";
@@ -70,6 +70,28 @@ describe("Access JWT verification", () => {
       email: "jacob@example.com",
       subject: "sub-1",
     });
+  });
+
+  it("verifies against a pinned key set when one is configured", async () => {
+    const jwk = {
+      ...(await exportJWK(publicKey)),
+      kid: "test-key",
+      alg: "RS256",
+      use: "sig",
+    };
+    const verifier = createAccessVerifier({
+      teamDomain: TEAM,
+      audience: AUD,
+      jwks: { keys: [jwk] },
+    });
+    expect(await verifier.verify(await token({ email: "a@b.co" }))).toEqual({
+      kind: "learner",
+      email: "a@b.co",
+      subject: null,
+    });
+    expect(
+      await verifier.verify(await token({ email: "a@b.co" }, { key: wrongKey })),
+    ).toBe("invalid");
   });
 
   it("recognises service tokens by common_name", async () => {

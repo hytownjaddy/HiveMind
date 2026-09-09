@@ -1,6 +1,6 @@
 import type { LabStatus } from "@hivemind/schema";
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2; // 2: owner is a learner id (Access identity, D-033)
 
 /** Sessions with no traffic for this long are torn down (RFP §85 session expiration). */
 export const IDLE_TTL_MS = 2 * 60 * 60 * 1000;
@@ -16,7 +16,7 @@ export type DeadlineKind = "provision_step" | "idle_expiry" | "cleanup";
 
 export interface SessionRecord {
   readonly sessionId: string;
-  readonly guestId: string;
+  readonly learnerId: string;
   readonly capability: string;
   readonly problemRef: string | null;
   readonly status: LabStatus;
@@ -39,13 +39,13 @@ export interface StoredDeadline {
 
 export interface SocketAttachment {
   readonly sessionId: string;
-  readonly guestId: string;
+  readonly learnerId: string;
   readonly connectionId: string;
 }
 
 export interface InternalCreateRequest {
   readonly sessionId: string;
-  readonly guestId: string;
+  readonly learnerId: string;
   readonly capability: string;
   readonly problemRef: string | null;
 }

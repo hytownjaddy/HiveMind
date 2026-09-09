@@ -11,7 +11,21 @@
     // Which LabProvider backs sessions. "echo" is the in-object dev stub;
     // real providers (docker, containerlab, frr, k8s) live on lab hosts.
     "LAB_PROVIDER": "echo",
+    // Cloudflare Access (D-033). Local dev bypasses via .dev.vars.
+    "ACCESS_TEAM_DOMAIN": "https://hivemindjrr.cloudflareaccess.com",
+    "ACCESS_AUD": "replace-with-access-application-aud",
+    "HIVEMIND_ENV": "development",
   },
+  // Same D1 database as the web Worker: identity → learner_id mapping and the
+  // lab_sessions index (D-030).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hivemind-dev",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "../web/migrations",
+    },
+  ],
   "durable_objects": {
     "bindings": [{ "name": "LAB_SESSIONS", "class_name": "LabSession" }],
   },
@@ -26,7 +40,18 @@
       "vars": {
         "ALLOWED_ORIGINS": "https://hivemind-web.internal",
         "LAB_PROVIDER": "echo",
+        "ACCESS_TEAM_DOMAIN": "https://hivemindjrr.cloudflareaccess.com",
+        "ACCESS_AUD": "replace-with-access-application-aud",
+        "HIVEMIND_ENV": "production",
       },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "hivemind",
+          "database_id": "00000000-0000-0000-0000-000000000000",
+          "migrations_dir": "../web/migrations",
+        },
+      ],
       "durable_objects": {
         "bindings": [{ "name": "LAB_SESSIONS", "class_name": "LabSession" }],
       },

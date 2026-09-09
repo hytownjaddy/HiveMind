@@ -2,7 +2,7 @@ import {
   CLOSE_CODES,
   FINAL_STATUSES,
   TERMINAL_STATUSES,
-  guestIdSchema,
+  learnerIdSchema,
   labCapabilitySchema,
   labClientMessageSchema,
   labSessionIdSchema,
@@ -60,7 +60,7 @@ function parseCreateRequest(value: unknown): InternalCreateRequest | null {
     return null;
   }
   const sessionId = labSessionIdSchema.safeParse(value.sessionId);
-  const guestId = guestIdSchema.safeParse(value.guestId);
+  const learnerId = learnerIdSchema.safeParse(value.learnerId);
   const capability = labCapabilitySchema.safeParse(value.capability);
   const problemRef =
     value.problemRef === undefined || value.problemRef === null
@@ -68,7 +68,7 @@ function parseCreateRequest(value: unknown): InternalCreateRequest | null {
       : problemRefSchema.safeParse(value.problemRef);
   if (
     !sessionId.success ||
-    !guestId.success ||
+    !learnerId.success ||
     !capability.success ||
     !problemRef.success
   ) {
@@ -76,7 +76,7 @@ function parseCreateRequest(value: unknown): InternalCreateRequest | null {
   }
   return {
     sessionId: sessionId.data,
-    guestId: guestId.data,
+    learnerId: learnerId.data,
     capability: capability.data,
     problemRef: problemRef.data,
   };
@@ -155,9 +155,9 @@ export class LabSession extends DurableObject<Env> {
 
   /** Every learner-facing call must prove ownership; a session id alone grants nothing. */
   private authorize(url: URL): SessionRecord | Response {
-    const guestId = guestIdSchema.safeParse(url.searchParams.get("guestId"));
+    const learnerId = learnerIdSchema.safeParse(url.searchParams.get("learnerId"));
     const record = this.repo.load();
-    if (!guestId.success || record === null || record.guestId !== guestId.data) {
+    if (!learnerId.success || record === null || record.learnerId !== learnerId.data) {
       return json({ error: "not-found" }, 404);
     }
     return record;
@@ -206,7 +206,7 @@ export class LabSession extends DurableObject<Env> {
     const server = pair[1];
     const attachment: SocketAttachment = {
       sessionId: record.sessionId,
-      guestId: record.guestId,
+      learnerId: record.learnerId,
       connectionId,
     };
     server.serializeAttachment(attachment);
@@ -232,7 +232,7 @@ export class LabSession extends DurableObject<Env> {
       attachment === null ||
       record === null ||
       record.sessionId !== attachment.sessionId ||
-      record.guestId !== attachment.guestId
+      record.learnerId !== attachment.learnerId
     ) {
       socket.close(1008, "Invalid session connection");
       return;

@@ -2,7 +2,7 @@ export { LabSocket, type TerminalListener } from "./socket";
 export {
   createLabSession,
   destroyLabSession,
-  ensureGuestSession,
+  fetchLabSession,
   SessionError,
-} from "./session";
+} from "./transport";
 export { useLabStore, type ConnectionStatus } from "./store";

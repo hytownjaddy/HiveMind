@@ -13,20 +13,24 @@ fi
 usage() {
   cat <<'USAGE'
 Usage:
-  tools/deploy.sh [session|web|secret|migrate|all] [dev|production]
+  tools/deploy.sh [session|web|secrets|migrate|all] [dev|production]
 
 Commands:
-  session  Deploy the session Worker (gateway + LabSession Durable Object)
+  session   Deploy the session Worker (gateway + LabSession Durable Object)
   web       Build the OpenNext bundle and deploy the web Worker
-  secret    Set GUEST_SESSION_SECRET on both Workers
+  secrets   Set SERVICE_TOKEN_SCOPES on both Workers from HIVEMIND_SERVICE_TOKEN_SCOPES
   migrate   Apply D1 migrations to the remote database
-  all       session, secret, migrate, web (default)
+  all       migrate, session, web (default; run `secrets` once per environment)
 
 Environment (default: dev = top-level wrangler config; production = --env production)
 
+Identity (D-033) is configured as wrangler vars: ACCESS_TEAM_DOMAIN and ACCESS_AUD in
+apps/web/wrangler.jsonc and apps/session-worker/wrangler.jsonc. See docs/runbooks/access.md.
+
 Variables:
-  HIVEMIND_GUEST_SESSION_SECRET
-      Optional. If unset during secret/all, a new secret is generated and printed.
+  HIVEMIND_SERVICE_TOKEN_SCOPES
+      JSON map of Access service-token common names to scopes, e.g.
+      {"hivemind-cli":["content:publish","export:read"]}
 USAGE
 }
 
@@ -58,20 +62,16 @@ deploy_web() {
 }
 
 put_secrets() {
-  local secret="${HIVEMIND_GUEST_SESSION_SECRET:-}"
-  if [[ -z "$secret" ]]; then
-    secret="$(openssl rand -base64 48)"
-    echo "==> Generated GUEST_SESSION_SECRET (save it; re-run with HIVEMIND_GUEST_SESSION_SECRET=... to reuse)"
-    echo "$secret"
-    echo
-  else
-    echo "==> Using HIVEMIND_GUEST_SESSION_SECRET from environment"
+  local scopes="${HIVEMIND_SERVICE_TOKEN_SCOPES:-}"
+  if [[ -z "$scopes" ]]; then
+    echo "Set HIVEMIND_SERVICE_TOKEN_SCOPES to a JSON map of service-token common names to scopes." >&2
+    exit 1
   fi
-  echo "==> Setting secret on session Worker"
-  printf '%s' "$secret" | "$WRANGLER" secret put GUEST_SESSION_SECRET \
+  echo "==> Setting SERVICE_TOKEN_SCOPES on session Worker"
+  printf '%s' "$scopes" | "$WRANGLER" secret put SERVICE_TOKEN_SCOPES \
     -c apps/session-worker/wrangler.jsonc "${ENV_ARGS[@]}"
-  echo "==> Setting secret on web Worker"
-  printf '%s' "$secret" | "$WRANGLER" secret put GUEST_SESSION_SECRET \
+  echo "==> Setting SERVICE_TOKEN_SCOPES on web Worker"
+  printf '%s' "$scopes" | "$WRANGLER" secret put SERVICE_TOKEN_SCOPES \
     -c apps/web/wrangler.jsonc "${ENV_ARGS[@]}"
 }
 
@@ -84,16 +84,15 @@ case "$command" in
   -h | --help | help) usage ;;
   session) ensure_logged_in; deploy_session ;;
   web) ensure_logged_in; deploy_web ;;
-  secret) ensure_logged_in; put_secrets ;;
+  secrets) ensure_logged_in; put_secrets ;;
   migrate) ensure_logged_in; migrate ;;
   all)
     ensure_logged_in
-    deploy_session
-    put_secrets
     migrate
+    deploy_session
     deploy_web
     echo
-    echo "Deploy complete. Open the web Worker URL from the output above and launch a lab."
+    echo "Deploy complete. Sign in through Cloudflare Access at the web Worker URL."
     ;;
   *) usage >&2; exit 1 ;;
 esac

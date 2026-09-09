@@ -16,17 +16,17 @@ export function readAttachment(socket: WebSocket): SocketAttachment | null {
     value === null ||
     typeof value !== "object" ||
     !("sessionId" in value) ||
-    !("guestId" in value) ||
+    !("learnerId" in value) ||
     !("connectionId" in value) ||
     typeof value.sessionId !== "string" ||
-    typeof value.guestId !== "string" ||
+    typeof value.learnerId !== "string" ||
     typeof value.connectionId !== "string"
   ) {
     return null;
   }
   return {
     sessionId: value.sessionId,
-    guestId: value.guestId,
+    learnerId: value.learnerId,
     connectionId: value.connectionId,
   };
 }

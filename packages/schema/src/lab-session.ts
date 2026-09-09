@@ -18,15 +18,12 @@ export {
   labStatusSchema,
 } from "./common/enums";
 export type { LabStatus } from "./common/enums";
-export { labSessionIdSchema } from "./common/ids";
-export type { LabSessionId } from "./common/ids";
+export { labSessionIdSchema, learnerIdSchema } from "./common/ids";
+export type { LabSessionId, LearnerId } from "./common/ids";
 
 /*
  * Identifiers
  */
-export const guestIdSchema = z.uuid();
-export type GuestId = z.infer<typeof guestIdSchema>;
-
 export const connectionIdSchema = z.uuid();
 
 /** Capability id (D-035); alias of the canonical `capabilitySchema`. */

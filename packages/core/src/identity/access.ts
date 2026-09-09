@@ -1,6 +1,8 @@
 import {
+  createLocalJWKSet,
   createRemoteJWKSet,
   jwtVerify,
+  type JSONWebKeySet,
   type JWTPayload,
   type JWTVerifyGetKey,
 } from "jose";
@@ -21,6 +23,12 @@ export interface AccessConfig {
   readonly teamDomain: string;
   /** Application audience (AUD) tag from the Access application. */
   readonly audience: string;
+  /**
+   * Pinned key set. When set, tokens verify against these keys and nothing is
+   * fetched; leave unset in production so rotation is picked up from the team
+   * JWKS endpoint. Used by tests and air-gapped drills.
+   */
+  readonly jwks?: JSONWebKeySet | undefined;
 }
 
 export type AccessPrincipal =
@@ -35,6 +43,13 @@ export type AccessFailure = "missing" | "invalid" | "malformed_claims";
 
 export interface AccessVerifier {
   verify(token: string): Promise<AccessPrincipal | AccessFailure>;
+}
+
+export function parseJwks(raw: string | undefined): JSONWebKeySet | undefined {
+  if (raw === undefined || raw.trim().length === 0) {
+    return undefined;
+  }
+  return JSON.parse(raw) as JSONWebKeySet;
 }
 
 export function jwksUrl(teamDomain: string): URL {
@@ -85,7 +100,11 @@ export function createAccessVerifier(
   config: AccessConfig,
   getKey?: JWTVerifyGetKey,
 ): AccessVerifier {
-  const keys = getKey ?? createRemoteJWKSet(jwksUrl(config.teamDomain));
+  const keys =
+    getKey ??
+    (config.jwks !== undefined
+      ? createLocalJWKSet(config.jwks)
+      : createRemoteJWKSet(jwksUrl(config.teamDomain)));
   return {
     async verify(token) {
       if (token.length === 0) {

@@ -21,7 +21,8 @@
     "next": "^16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "zustand": "^5.0.15"
+    "zustand": "^5.0.15",
+    "@hivemind/core": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260908.1",
