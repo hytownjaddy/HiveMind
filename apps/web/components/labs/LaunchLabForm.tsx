@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { recordLabSessionAction } from "@/app/actions/labs";
-import { createLabSession, ensureGuestSession, RealtimeError } from "@/lib/realtime";
+import { createLabSession, ensureGuestSession, SessionError } from "@/lib/session";
 
 /**
  * Capabilities a course can request (RFP §106). Every one of these is served by
@@ -36,7 +36,7 @@ export function LaunchLabForm() {
       await recordLabSessionAction(summary);
       router.push(`/labs/${summary.sessionId}`);
     } catch (caught) {
-      setError(caught instanceof RealtimeError ? caught.code : "launch-failed");
+      setError(caught instanceof SessionError ? caught.code : "launch-failed");
       setPending(false);
     }
   }

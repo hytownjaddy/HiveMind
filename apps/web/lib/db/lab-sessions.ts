@@ -1,4 +1,4 @@
-import type { LabSessionSummary, LabStatus } from "@hivemind/protocol";
+import type { LabSessionSummary, LabStatus } from "@hivemind/schema";
 
 import { getDb } from "./client";
 

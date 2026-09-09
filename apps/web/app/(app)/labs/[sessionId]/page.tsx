@@ -1,4 +1,4 @@
-import { labSessionIdSchema } from "@hivemind/protocol";
+import { labSessionIdSchema } from "@hivemind/schema";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 

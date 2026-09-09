@@ -6,7 +6,7 @@ import {
   type LabServerMessage,
   type LabSessionSummary,
   type SequencedLabEvent,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 
 import type { SocketAttachment } from "./types";
 

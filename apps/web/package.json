@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:cloudflare": "opennextjs-cloudflare build",
-    "preview": "wrangler dev -c wrangler.jsonc -c ../realtime-worker/wrangler.jsonc",
+    "preview": "wrangler dev -c wrangler.jsonc -c ../session-worker/wrangler.jsonc",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.generated.d.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
@@ -15,7 +15,7 @@
     "db:migrate:production": "wrangler d1 migrations apply DB --remote --env production"
   },
   "dependencies": {
-    "@hivemind/protocol": "workspace:*",
+    "@hivemind/schema": "workspace:*",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/xterm": "^6.0.0",
     "next": "^16.3.4",

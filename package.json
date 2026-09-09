@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "bun run --filter './apps/*' dev",
     "dev:web": "bun --cwd apps/web dev",
-    "dev:realtime": "bun --cwd apps/realtime-worker dev",
+    "dev:session": "bun --cwd apps/session-worker dev",
     "preview": "bun run build:web && bun --cwd apps/web preview",
     "build": "bun run build:web",
     "build:web": "bun --cwd apps/web build:cloudflare",
@@ -21,7 +21,7 @@
     "typecheck": "bun run --filter '*' typecheck",
     "test": "bun run test:unit && bun run test:worker",
     "test:unit": "vitest run --config vitest.config.ts",
-    "test:worker": "bun --cwd apps/realtime-worker test",
+    "test:worker": "bun --cwd apps/session-worker test",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "db:migrate:local": "bun --cwd apps/web db:migrate:local",

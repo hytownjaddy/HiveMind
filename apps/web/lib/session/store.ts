@@ -3,7 +3,7 @@ import type {
   LabServerMessage,
   LabSessionSummary,
   SequencedLabEvent,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 import { create } from "zustand";
 
 export type ConnectionStatus =

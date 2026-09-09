@@ -2,11 +2,11 @@ import {
   labSessionSummarySchema,
   type CreateLabSessionRequest,
   type LabSessionSummary,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 
-import { realtimeHttpOrigin } from "./origin";
+import { sessionHttpOrigin } from "./origin";
 
-export class RealtimeError extends Error {
+export class SessionError extends Error {
   constructor(
     readonly code: string,
     readonly status: number,
@@ -15,20 +15,20 @@ export class RealtimeError extends Error {
   }
 }
 
-/** Ensure a guest session cookie exists before any realtime traffic. */
+/** Ensure a guest session cookie exists before any session traffic. */
 export async function ensureGuestSession(fetchImpl: typeof fetch = fetch): Promise<void> {
   const response = await fetchImpl("/api/session", { method: "POST" });
   if (!response.ok) {
-    throw new RealtimeError("session-unavailable", response.status);
+    throw new SessionError("session-unavailable", response.status);
   }
 }
 
-async function realtimeFetch(
+async function sessionFetch(
   path: string,
   init: RequestInit,
   fetchImpl: typeof fetch = fetch,
 ): Promise<Response> {
-  return fetchImpl(`${realtimeHttpOrigin()}${path}`, { ...init, credentials: "include" });
+  return fetchImpl(`${sessionHttpOrigin()}${path}`, { ...init, credentials: "include" });
 }
 
 async function parseSummary(response: Response): Promise<LabSessionSummary> {
@@ -42,7 +42,7 @@ async function parseSummary(response: Response): Promise<LabSessionSummary> {
     } catch {
       // Non-JSON error body.
     }
-    throw new RealtimeError(code, response.status);
+    throw new SessionError(code, response.status);
   }
   return labSessionSummarySchema.parse(await response.json());
 }
@@ -51,8 +51,8 @@ export async function createLabSession(
   request: CreateLabSessionRequest,
   fetchImpl: typeof fetch = fetch,
 ): Promise<LabSessionSummary> {
-  const response = await realtimeFetch(
-    "/realtime/labs",
+  const response = await sessionFetch(
+    "/session/labs",
     {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -67,8 +67,8 @@ export async function fetchLabSession(
   sessionId: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<LabSessionSummary> {
-  const response = await realtimeFetch(
-    `/realtime/labs/${encodeURIComponent(sessionId)}`,
+  const response = await sessionFetch(
+    `/session/labs/${encodeURIComponent(sessionId)}`,
     { method: "GET" },
     fetchImpl,
   );
@@ -79,8 +79,8 @@ export async function destroyLabSession(
   sessionId: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<LabSessionSummary> {
-  const response = await realtimeFetch(
-    `/realtime/labs/${encodeURIComponent(sessionId)}/destroy`,
+  const response = await sessionFetch(
+    `/session/labs/${encodeURIComponent(sessionId)}/destroy`,
     { method: "POST" },
     fetchImpl,
   );

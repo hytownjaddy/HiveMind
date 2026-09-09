@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const webPort = Number(process.env.PLAYWRIGHT_PORT ?? 3000);
-const realtimePort = Number(process.env.PLAYWRIGHT_REALTIME_PORT ?? 8787);
+const sessionPort = Number(process.env.PLAYWRIGHT_SESSION_PORT ?? 8787);
 const baseURL = `http://localhost:${webPort}`;
 
 export default defineConfig({
@@ -20,8 +20,8 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: [
     {
-      command: `bun --cwd apps/realtime-worker dev --port ${realtimePort}`,
-      url: `http://localhost:${realtimePort}/health`,
+      command: `bun --cwd apps/session-worker dev --port ${sessionPort}`,
+      url: `http://localhost:${sessionPort}/health`,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },

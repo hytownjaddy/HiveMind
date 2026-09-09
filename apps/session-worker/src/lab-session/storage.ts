@@ -4,7 +4,7 @@ import {
   type LabSessionSummary,
   type LabStatus,
   type SequencedLabEvent,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 
 import {
   IDLE_TTL_MS,

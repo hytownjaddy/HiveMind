@@ -8,7 +8,7 @@
 interface CloudflareEnv {
   ASSETS: Fetcher;
   WORKER_SELF_REFERENCE: Fetcher;
-  REALTIME: Fetcher;
+  SESSION: Fetcher;
   DB: D1Database;
   NEXTJS_ENV: string;
   GUEST_SESSION_SECRET: string;

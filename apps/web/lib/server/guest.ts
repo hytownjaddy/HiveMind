@@ -3,7 +3,7 @@ import {
   isUsableSecret,
   verifyGuestSession,
   type GuestSession,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { cookies } from "next/headers";
 

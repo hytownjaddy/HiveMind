@@ -7,13 +7,13 @@ import {
   labSessionSummarySchema,
   type LabServerMessage,
   type LabSessionSummary,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 import { SELF } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 
 const SECRET = "test-secret-that-is-at-least-32-bytes-long";
 const ORIGIN = "http://localhost:3000";
-const BASE = "https://realtime.test";
+const BASE = "https://session.test";
 
 async function guestHeaders(): Promise<Record<string, string>> {
   const { token } = await issueGuestSession(SECRET);
@@ -23,7 +23,7 @@ async function guestHeaders(): Promise<Record<string, string>> {
 async function createSession(
   headers: Record<string, string>,
 ): Promise<LabSessionSummary> {
-  const response = await SELF.fetch(`${BASE}/realtime/labs`, {
+  const response = await SELF.fetch(`${BASE}/session/labs`, {
     method: "POST",
     headers: { ...headers, "content-type": "application/json" },
     body: JSON.stringify({ capability: "terminal.linux", problemRef: "scaffold.echo#1" }),
@@ -36,7 +36,7 @@ async function readSummary(
   headers: Record<string, string>,
   sessionId: string,
 ): Promise<LabSessionSummary> {
-  const response = await SELF.fetch(`${BASE}/realtime/labs/${sessionId}`, { headers });
+  const response = await SELF.fetch(`${BASE}/session/labs/${sessionId}`, { headers });
   expect(response.status).toBe(200);
   return labSessionSummarySchema.parse(await response.json());
 }
@@ -68,7 +68,7 @@ async function openSocket(
   headers: Record<string, string>,
   sessionId: string,
 ): Promise<OpenSocket> {
-  const response = await SELF.fetch(`${BASE}/realtime/labs/${sessionId}/ws`, {
+  const response = await SELF.fetch(`${BASE}/session/labs/${sessionId}/ws`, {
     headers: { ...headers, upgrade: "websocket" },
   });
   expect(response.status).toBe(101);
@@ -94,14 +94,14 @@ function sendClient(socket: WebSocket, message: Record<string, unknown>): void {
 
 describe("gateway", () => {
   it("rejects requests from unknown origins", async () => {
-    const response = await SELF.fetch(`${BASE}/realtime/health`, {
+    const response = await SELF.fetch(`${BASE}/session/health`, {
       headers: { origin: "https://evil.example" },
     });
     expect(response.status).toBe(403);
   });
 
   it("answers CORS preflight for allowed origins", async () => {
-    const response = await SELF.fetch(`${BASE}/realtime/labs`, {
+    const response = await SELF.fetch(`${BASE}/session/labs`, {
       method: "OPTIONS",
       headers: { origin: ORIGIN },
     });
@@ -111,7 +111,7 @@ describe("gateway", () => {
   });
 
   it("requires a guest session", async () => {
-    const response = await SELF.fetch(`${BASE}/realtime/labs`, {
+    const response = await SELF.fetch(`${BASE}/session/labs`, {
       method: "POST",
       headers: { origin: ORIGIN, "content-type": "application/json" },
       body: JSON.stringify({ capability: "terminal.linux" }),
@@ -121,7 +121,7 @@ describe("gateway", () => {
 
   it("validates the create payload", async () => {
     const headers = await guestHeaders();
-    const response = await SELF.fetch(`${BASE}/realtime/labs`, {
+    const response = await SELF.fetch(`${BASE}/session/labs`, {
       method: "POST",
       headers: { ...headers, "content-type": "application/json" },
       body: JSON.stringify({ capability: "not-a-capability" }),
@@ -149,12 +149,12 @@ describe("LabSession", () => {
     const other = await guestHeaders();
     const created = await createSession(owner);
 
-    const summary = await SELF.fetch(`${BASE}/realtime/labs/${created.sessionId}`, {
+    const summary = await SELF.fetch(`${BASE}/session/labs/${created.sessionId}`, {
       headers: other,
     });
     expect(summary.status).toBe(404);
 
-    const socket = await SELF.fetch(`${BASE}/realtime/labs/${created.sessionId}/ws`, {
+    const socket = await SELF.fetch(`${BASE}/session/labs/${created.sessionId}/ws`, {
       headers: { ...other, upgrade: "websocket" },
     });
     expect(socket.status).toBe(404);
@@ -250,7 +250,7 @@ describe("LabSession", () => {
     await waitFor(() => inbox.find((message) => message.type === "snapshot"));
 
     const destroyed = await SELF.fetch(
-      `${BASE}/realtime/labs/${created.sessionId}/destroy`,
+      `${BASE}/session/labs/${created.sessionId}/destroy`,
       {
         method: "POST",
         headers,
@@ -263,7 +263,7 @@ describe("LabSession", () => {
 
     await waitFor(() => (closes.includes(CLOSE_CODES.finished) ? true : undefined));
 
-    const reopened = await SELF.fetch(`${BASE}/realtime/labs/${created.sessionId}/ws`, {
+    const reopened = await SELF.fetch(`${BASE}/session/labs/${created.sessionId}/ws`, {
       headers: { ...headers, upgrade: "websocket" },
     });
     expect(reopened.status).toBe(410);

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 import "@xterm/xterm/css/xterm.css";
 
-import type { LabSocket } from "@/lib/realtime";
+import type { LabSocket } from "@/lib/session";
 
 /**
  * xterm.js surface bound to one LabSocket (RFP §41). The terminal is created

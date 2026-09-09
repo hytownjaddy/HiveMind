@@ -10,7 +10,7 @@ import {
   type LabEvent,
   type LabStatus,
   type SequencedLabEvent,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 import { DurableObject } from "cloudflare:workers";
 
 import {

@@ -1,4 +1,4 @@
-import { createLabSessionRequestSchema, labSessionIdSchema } from "@hivemind/protocol";
+import { createLabSessionRequestSchema, labSessionIdSchema } from "@hivemind/schema";
 
 import {
   isAllowedOrigin,
@@ -17,13 +17,13 @@ export { LabSession } from "./lab-session";
  * session state itself.
  *
  * Public surface (same-origin via the web Worker in production):
- *   POST /realtime/labs                 create a session
- *   GET  /realtime/labs/:id             session summary (owner only)
- *   POST /realtime/labs/:id/destroy     tear the session down
- *   GET  /realtime/labs/:id/ws          WebSocket upgrade
- *   GET  /realtime/health
+ *   POST /session/labs                 create a session
+ *   GET  /session/labs/:id             session summary (owner only)
+ *   POST /session/labs/:id/destroy     tear the session down
+ *   GET  /session/labs/:id/ws          WebSocket upgrade
+ *   GET  /session/health
  */
-const PREFIX = "/realtime";
+const PREFIX = "/session";
 const MAX_HTTP_BODY_BYTES = 8 * 1024;
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 
@@ -108,9 +108,9 @@ async function route(request: Request, env: Env): Promise<Response> {
   }
 
   const isCreate = request.method === "POST" && url.pathname === `${PREFIX}/labs`;
-  const summaryMatch = /^\/realtime\/labs\/([^/]+)$/u.exec(url.pathname);
-  const destroyMatch = /^\/realtime\/labs\/([^/]+)\/destroy$/u.exec(url.pathname);
-  const socketMatch = /^\/realtime\/labs\/([^/]+)\/ws$/u.exec(url.pathname);
+  const summaryMatch = /^\/session\/labs\/([^/]+)$/u.exec(url.pathname);
+  const destroyMatch = /^\/session\/labs\/([^/]+)\/destroy$/u.exec(url.pathname);
+  const socketMatch = /^\/session\/labs\/([^/]+)\/ws$/u.exec(url.pathname);
   const isSummary = request.method === "GET" && summaryMatch !== null;
   const isDestroy = request.method === "POST" && destroyMatch !== null;
   const isSocket = request.method === "GET" && socketMatch !== null;

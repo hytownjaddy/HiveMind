@@ -1,4 +1,4 @@
-import type { LabStatus } from "@hivemind/protocol";
+import type { LabStatus } from "@hivemind/schema";
 
 const STYLES: Record<LabStatus, string> = {
   queued: "bg-zinc-800 text-zinc-300",

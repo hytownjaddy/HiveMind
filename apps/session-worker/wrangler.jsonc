@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
-  "name": "hivemind-realtime-dev",
+  "name": "hivemind-session-dev",
   "main": "src/index.ts",
   "compatibility_date": "2026-08-15",
   "observability": { "enabled": true },
@@ -21,7 +21,7 @@
   // "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "hivemind-artifacts" }],
   "env": {
     "production": {
-      "name": "hivemind-realtime",
+      "name": "hivemind-session",
       "observability": { "enabled": true },
       "vars": {
         "ALLOWED_ORIGINS": "https://hivemind-web.internal",

@@ -3,6 +3,6 @@ export {
   createLabSession,
   destroyLabSession,
   ensureGuestSession,
-  RealtimeError,
+  SessionError,
 } from "./session";
 export { useLabStore, type ConnectionStatus } from "./store";

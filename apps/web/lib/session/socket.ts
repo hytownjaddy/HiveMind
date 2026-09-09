@@ -5,11 +5,11 @@ import {
   PROTOCOL_VERSION,
   labServerMessageSchema,
   type LabClientMessage,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 
 import { reconnectDelayMs } from "./backoff";
-import { realtimeSocketUrl } from "./origin";
-import { ensureGuestSession, fetchLabSession, RealtimeError } from "./session";
+import { sessionSocketUrl } from "./origin";
+import { ensureGuestSession, fetchLabSession, SessionError } from "./session";
 import { useLabStore } from "./store";
 
 export type WebSocketFactory = (url: string) => WebSocket;
@@ -119,8 +119,8 @@ export class LabSocket {
 
   private openSocket(): void {
     this.clearReconnectTimer();
-    const url = realtimeSocketUrl(
-      `/realtime/labs/${encodeURIComponent(this.sessionId)}/ws`,
+    const url = sessionSocketUrl(
+      `/session/labs/${encodeURIComponent(this.sessionId)}/ws`,
     );
     const socket = this.createSocket(url);
     this.socket = socket;
@@ -252,9 +252,9 @@ export class LabSocket {
           this.openSocket();
         })
         .catch((error: unknown) => {
-          const code = error instanceof RealtimeError ? error.code : "session-failed";
+          const code = error instanceof SessionError ? error.code : "session-failed";
           store.setLastError(code);
-          if (error instanceof RealtimeError && error.status === 404) {
+          if (error instanceof SessionError && error.status === 404) {
             this.intentionalClose = true;
             store.setStatus("offline");
             return;

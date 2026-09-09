@@ -1,8 +1,8 @@
 /**
  * Custom Worker entry for the web app.
  *
- * Wraps the OpenNext-generated worker and same-origin proxies `/realtime/*`
- * (HTTP and WebSocket upgrades) to the realtime Worker over a service binding,
+ * Wraps the OpenNext-generated worker and same-origin proxies `/session/*`
+ * (HTTP and WebSocket upgrades) to the session Worker over a service binding,
  * so guest cookies stay first-party and no CORS is needed in production.
  */
 
@@ -11,7 +11,7 @@
 // @ts-ignore -- file exists after the OpenNext build
 import next from "./.open-next/worker.js";
 
-const REALTIME_PREFIX = "/realtime";
+const SESSION_PREFIX = "/session";
 const TRUSTED_PROXY_ORIGIN = "https://hivemind-web.internal";
 
 interface NextWorker {
@@ -42,15 +42,15 @@ export default {
   ): Promise<Response> {
     const url = new URL(request.url);
     if (
-      url.pathname === REALTIME_PREFIX ||
-      url.pathname.startsWith(`${REALTIME_PREFIX}/`)
+      url.pathname === SESSION_PREFIX ||
+      url.pathname.startsWith(`${SESSION_PREFIX}/`)
     ) {
       if (!isOwnOrigin(request.headers.get("origin"), url)) {
         return Response.json({ error: "invalid-origin" }, { status: 403 });
       }
       const headers = new Headers(request.headers);
       headers.set("origin", TRUSTED_PROXY_ORIGIN);
-      return env.REALTIME.fetch(new Request(request, { headers }));
+      return env.SESSION.fetch(new Request(request, { headers }));
     }
     return (next as NextWorker).fetch(request, env, ctx);
   },

@@ -1,4 +1,4 @@
-import type { LabStatus } from "@hivemind/protocol";
+import type { LabStatus } from "@hivemind/schema";
 
 export const SCHEMA_VERSION = 1;
 

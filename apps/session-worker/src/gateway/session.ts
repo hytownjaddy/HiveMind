@@ -4,7 +4,7 @@ import {
   readCookie,
   verifyGuestSession,
   type GuestSession,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 
 /** Resolve the guest identity from the signed cookie, or null when absent/invalid. */
 export async function authenticateGuest(

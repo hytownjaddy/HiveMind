@@ -4,13 +4,13 @@ import {
   isUsableSecret,
   issueGuestSession,
   verifyGuestSession,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * Issue (or refresh) the signed guest cookie. Real accounts will layer on top
- * of this identity later; the realtime Worker only ever sees the guest id.
+ * of this identity later; the session Worker only ever sees the guest id.
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const { env } = await getCloudflareContext({ async: true });

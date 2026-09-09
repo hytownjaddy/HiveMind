@@ -1,5 +1,5 @@
 {
-  "name": "@hivemind/realtime-worker",
+  "name": "@hivemind/session-worker",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@hivemind/protocol": "workspace:*"
+    "@hivemind/schema": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.22.0",

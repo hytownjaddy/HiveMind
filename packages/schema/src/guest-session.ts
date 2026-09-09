@@ -1,6 +1,6 @@
 /**
  * Opaque, signed, expiring guest identity shared by the web Worker (which
- * issues the cookie) and the realtime Worker (which verifies it). Web Crypto
+ * issues the cookie) and the session Worker (which verifies it). Web Crypto
  * only, so it runs identically in Node (next dev), workerd, and browsers.
  */
 

@@ -1,11 +1,11 @@
 "use client";
 
-import { FINAL_STATUSES, TERMINAL_STATUSES } from "@hivemind/protocol";
+import { FINAL_STATUSES, TERMINAL_STATUSES } from "@hivemind/schema";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { syncLabSessionStatusAction } from "@/app/actions/labs";
-import { destroyLabSession, LabSocket, useLabStore } from "@/lib/realtime";
+import { destroyLabSession, LabSocket, useLabStore } from "@/lib/session";
 
 import { LifecycleTimeline } from "./LifecycleTimeline";
 import { StatusPill } from "./StatusPill";

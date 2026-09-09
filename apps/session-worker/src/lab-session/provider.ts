@@ -1,4 +1,4 @@
-import type { LabStatus } from "@hivemind/protocol";
+import type { LabStatus } from "@hivemind/schema";
 
 /**
  * Lab providers satisfy capabilities (RFP §36, §106). The Durable Object owns

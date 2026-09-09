@@ -13,14 +13,14 @@ fi
 usage() {
   cat <<'USAGE'
 Usage:
-  tools/deploy.sh [realtime|web|secret|migrate|all] [dev|production]
+  tools/deploy.sh [session|web|secret|migrate|all] [dev|production]
 
 Commands:
-  realtime  Deploy the realtime Worker (gateway + LabSession Durable Object)
+  session  Deploy the session Worker (gateway + LabSession Durable Object)
   web       Build the OpenNext bundle and deploy the web Worker
   secret    Set GUEST_SESSION_SECRET on both Workers
   migrate   Apply D1 migrations to the remote database
-  all       realtime, secret, migrate, web (default)
+  all       session, secret, migrate, web (default)
 
 Environment (default: dev = top-level wrangler config; production = --env production)
 
@@ -45,9 +45,9 @@ ensure_logged_in() {
   fi
 }
 
-deploy_realtime() {
-  echo "==> Deploying realtime Worker ($target)"
-  "$WRANGLER" deploy -c apps/realtime-worker/wrangler.jsonc "${ENV_ARGS[@]}"
+deploy_session() {
+  echo "==> Deploying session Worker ($target)"
+  "$WRANGLER" deploy -c apps/session-worker/wrangler.jsonc "${ENV_ARGS[@]}"
 }
 
 deploy_web() {
@@ -67,9 +67,9 @@ put_secrets() {
   else
     echo "==> Using HIVEMIND_GUEST_SESSION_SECRET from environment"
   fi
-  echo "==> Setting secret on realtime Worker"
+  echo "==> Setting secret on session Worker"
   printf '%s' "$secret" | "$WRANGLER" secret put GUEST_SESSION_SECRET \
-    -c apps/realtime-worker/wrangler.jsonc "${ENV_ARGS[@]}"
+    -c apps/session-worker/wrangler.jsonc "${ENV_ARGS[@]}"
   echo "==> Setting secret on web Worker"
   printf '%s' "$secret" | "$WRANGLER" secret put GUEST_SESSION_SECRET \
     -c apps/web/wrangler.jsonc "${ENV_ARGS[@]}"
@@ -82,13 +82,13 @@ migrate() {
 
 case "$command" in
   -h | --help | help) usage ;;
-  realtime) ensure_logged_in; deploy_realtime ;;
+  session) ensure_logged_in; deploy_session ;;
   web) ensure_logged_in; deploy_web ;;
   secret) ensure_logged_in; put_secrets ;;
   migrate) ensure_logged_in; migrate ;;
   all)
     ensure_logged_in
-    deploy_realtime
+    deploy_session
     put_secrets
     migrate
     deploy_web

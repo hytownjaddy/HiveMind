@@ -25,7 +25,7 @@ export function Placeholder({
         ))}
       </ul>
       <p className="mt-6 text-sm text-zinc-500">
-        Scaffold placeholder. The Cloudflare foundation (OpenNext web Worker, D1, realtime
+        Scaffold placeholder. The Cloudflare foundation (OpenNext web Worker, D1, session
         Worker with Durable Objects) is wired; this area is next to build.
       </p>
     </section>

@@ -4,7 +4,7 @@ import {
   labSessionIdSchema,
   labSessionSummarySchema,
   labStatusSchema,
-} from "@hivemind/protocol";
+} from "@hivemind/schema";
 
 import { updateLabSessionStatus, upsertLabSession } from "@/lib/db/lab-sessions";
 import { getVerifiedGuest } from "@/lib/server/guest";

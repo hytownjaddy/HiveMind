@@ -1,4 +1,4 @@
-import { LAB_STATUSES, type LabStatus } from "@hivemind/protocol";
+import { LAB_STATUSES, type LabStatus } from "@hivemind/schema";
 
 const PATH: readonly LabStatus[] = [
   "queued",

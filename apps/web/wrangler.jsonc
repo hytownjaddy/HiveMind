@@ -1,8 +1,8 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "hivemind-web-dev",
-  // Custom entry that wraps the OpenNext worker and proxies /realtime/* to the
-  // realtime Worker over the REALTIME service binding.
+  // Custom entry that wraps the OpenNext worker and proxies /session/* to the
+  // session Worker over the SESSION service binding.
   "main": "cloudflare-worker.ts",
   "compatibility_date": "2026-08-15",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -10,7 +10,7 @@
   "assets": { "binding": "ASSETS", "directory": ".open-next/assets" },
   "services": [
     { "binding": "WORKER_SELF_REFERENCE", "service": "hivemind-web-dev" },
-    { "binding": "REALTIME", "service": "hivemind-realtime-dev" },
+    { "binding": "SESSION", "service": "hivemind-session-dev" },
   ],
   "d1_databases": [
     {
@@ -38,7 +38,7 @@
       "assets": { "binding": "ASSETS", "directory": ".open-next/assets" },
       "services": [
         { "binding": "WORKER_SELF_REFERENCE", "service": "hivemind-web" },
-        { "binding": "REALTIME", "service": "hivemind-realtime" },
+        { "binding": "SESSION", "service": "hivemind-session" },
       ],
       "d1_databases": [
         {

@@ -17,11 +17,11 @@
         "vitest": "^4.1.11",
       },
     },
-    "apps/realtime-worker": {
-      "name": "@hivemind/realtime-worker",
+    "apps/session-worker": {
+      "name": "@hivemind/session-worker",
       "version": "0.0.0",
       "dependencies": {
-        "@hivemind/protocol": "workspace:*",
+        "@hivemind/schema": "workspace:*",
       },
       "devDependencies": {
         "@cloudflare/vitest-pool-workers": "^0.22.0",
@@ -34,7 +34,7 @@
       "name": "@hivemind/web",
       "version": "0.0.0",
       "dependencies": {
-        "@hivemind/protocol": "workspace:*",
+        "@hivemind/schema": "workspace:*",
         "@xterm/addon-fit": "^0.11.0",
         "@xterm/xterm": "^6.0.0",
         "next": "^16.3.4",
@@ -53,8 +53,8 @@
         "wrangler": "^4.130.0",
       },
     },
-    "packages/protocol": {
-      "name": "@hivemind/protocol",
+    "packages/schema": {
+      "name": "@hivemind/schema",
       "version": "0.0.0",
       "dependencies": {
         "zod": "^4.5.4",
@@ -306,9 +306,9 @@
 
     "@eslint/plugin-kit": ["@eslint/plugin-kit@0.4.1", "", { "dependencies": { "@eslint/core": "^0.17.0", "levn": "^0.4.1" } }, "sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA=="],
 
-    "@hivemind/protocol": ["@hivemind/protocol@workspace:packages/protocol"],
+    "@hivemind/schema": ["@hivemind/schema@workspace:packages/schema"],
 
-    "@hivemind/realtime-worker": ["@hivemind/realtime-worker@workspace:apps/realtime-worker"],
+    "@hivemind/session-worker": ["@hivemind/session-worker@workspace:apps/session-worker"],
 
     "@hivemind/web": ["@hivemind/web@workspace:apps/web"],
 

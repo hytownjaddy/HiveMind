@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // Workspace packages export TypeScript source; let Next compile them.
-  transpilePackages: ["@hivemind/protocol"],
+  transpilePackages: ["@hivemind/schema"],
   // Serve images as-is so the Worker never depends on a runtime image optimizer.
   images: { unoptimized: true },
 };

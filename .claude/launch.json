@@ -8,9 +8,9 @@
       "port": 3000
     },
     {
-      "name": "realtime",
+      "name": "session",
       "runtimeExecutable": "bun",
-      "runtimeArgs": ["run", "dev:realtime"],
+      "runtimeArgs": ["run", "dev:session"],
       "port": 8787
     }
   ]
