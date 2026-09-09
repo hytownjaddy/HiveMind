@@ -216,8 +216,11 @@ context could otherwise guess:
   the D1 index; `/session/health` answers without the origin gate.
 - Pinned Access keys (`ACCESS_JWKS`) exist for tests and drills (D-045).
 
-Left for Jacob or later stages: creating the D1 database, R2 buckets, the Access
-application with Google, service tokens, and the GitHub secrets (`docs/runbooks/access.md`,
-`docs/runbooks/recovery.md`); enabling the nightly export; approving the gold lesson
-(`hivemind content approve HM-LESSON-linux-networking-01 --by jacob --publish`); the manual
-QA pass; Mermaid rendering and an image pipeline for lessons.
+Cloud side completed 2026-09-09: D1 (`hivemind`, `hivemind-dev`), R2 exports with a 400-day
+expiry rule, both Workers deployed with `hivemind.jryans.dev` as the custom domain behind the
+Access application (Google IdP; first sign-in bound the seeded learner), the `hivemind-cli`
+service token with Client-ID-keyed scopes, the nightly export secrets and variable set, the
+first R2 export restored into a fresh database and read back through the service layer.
+Left for Jacob or later stages: approving the gold lesson after the HM-WO-0005 re-check
+(`hivemind content approve HM-LESSON-linux-networking-01 --by jacob --publish`, then
+`content publish`); the manual QA pass; Mermaid rendering and an image pipeline for lessons.
