@@ -42,8 +42,9 @@ canonical; those screens keep their layouts and are re-skinned.
 - Top bar: command palette input (`Ctrl/⌘ K`), Active Target selector (D-002), Lab Host
   state, settings, identity. No search bar separate from the palette.
 - Sidebar groups and items (final):
-  - CORE: Control Center, Courses, Labs, Practice, Skills Graph, Career Target, Career
-    Matrix, Job Inspector, Training Queue, Interview, Work Orders, Review Queue
+  - CORE: Control Center, Courses, Labs (incidents live here), Practice, Skills Graph,
+    Career Target, Career Matrix, Job Inspector, Training Queue, Projects, Interview,
+    Work Orders, Review Queue
   - INTELLIGENCE: Companies, Jobs, Sources, Certifications, Maintenance
   - SYSTEM: Infrastructure, Runtimes, Settings
 - Persistent lab-host widget bottom-left (CPU, memory, envs) and Active Target/readiness

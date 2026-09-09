@@ -16,17 +16,18 @@ History with a replayable timeline.
 
 ## In scope
 
-- Wireframes for the lab workspace first (D-023), against Jacob's mockups.
-- Workspace UI: xterm.js tabs per node with reconnect, topology (React Flow or Cytoscape;
-  decide here), objectives panel, tiered hints with cap notice, timer, reset-to-baseline,
-  submit, results view, notes.
+- Workspace UI per `docs/mockups/02-lab-workspace.md`: xterm.js tabs per node with
+  reconnect, topology (React Flow or Cytoscape; decide here with a timeboxed spike),
+  objectives panel, tiered hints with cap notice, timer, reset-to-baseline, submit,
+  results view, notes, Timeline and Logs tabs.
 - Guided Lab mode (objectives + hints visible) and Challenge mode (domain known, fault
   unknown); mode is a property of the instance presentation, not of content.
 - Telemetry capture (RFP §50): commands, hints, resets, submissions, config changes →
   `attempt_events`; recording links; redaction applied.
 - Immutable `attempts` with grader version, seed, versions, `GradeResult`.
-- Labs page: launch from skill/lesson/archetype, list of sessions, resume.
-- History page v1: attempt list and replay (timeline + terminal recording playback).
+- Labs page: launch from skill/lesson/archetype, sessions list with lifecycle chips,
+  resume; completed sessions open the review (`08-lab-review.md`, deterministic sections)
+  with timeline and terminal recording playback.
 - Linux Networking module: lesson set around the gold lesson plus 4 guided labs and
   challenge access to all Linux archetypes; BGP module: lessons for sessions, attributes,
   best path, policy plus 4 guided labs and challenge access to all BGP archetypes.
@@ -53,14 +54,13 @@ Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui
 ## Architecture decisions already locked
 
 D-003, D-012, D-013, D-016, D-019, D-023, D-024 (remove the demo labs UI entirely),
-invariants 2, 3, 5, 9.
+D-030, D-031 (thin route handlers), D-035, D-037, D-038, D-041, invariants 2, 3, 5, 9.
 
 ## Files/modules owned by this stage
 
-`apps/web/app/(app)/labs/**`, `apps/web/app/(app)/history/**`, `apps/web/components/labs/**`,
+`apps/web/app/(app)/labs/**`, `apps/web/components/labs/**`,
 `apps/web/components/topology/**`, `packages/core/src/attempts/**`,
-`content/courses/linux/networking/**` (module), `content/courses/networking/bgp/**` (module),
-`docs/wireframes/lab-workspace/**`.
+`content/courses/linux/networking/**` (module), `content/courses/networking/bgp/**` (module).
 
 ## Interfaces/contracts consumed
 
@@ -69,7 +69,8 @@ API (01), generated TS types.
 
 ## Interfaces/contracts created
 
-- Attempt API: `POST /labs/sessions/{id}/submit`, `GET /attempts`, `GET /attempts/{id}/replay`.
+- Attempt API (thin handlers over `packages/core`): `POST /api/labs/sessions/{id}/submit`,
+  `GET /api/attempts`, `GET /api/attempts/{id}/replay`.
 - Telemetry event schema (`attempt_events`).
 - Workspace layout components reusable by Stages 07 and 09.
 
@@ -97,8 +98,8 @@ e2e (Chromium) on the launch → submit path; contract tests on generated types.
 ## Manual QA requirements
 
 Jacob completes each guided lab and at least two challenges per module, at desktop and
-laptop widths; reviews wireframes before implementation; judges whether the challenge
-mode hides enough.
+laptop widths; compares the workspace against `02-lab-workspace.md`; judges whether the
+challenge mode hides enough.
 
 ## Security constraints
 
@@ -107,7 +108,7 @@ on every route.
 
 ## Performance expectations
 
-Workspace interactive under 2 s after session `READY`; terminal latency under 150 ms;
+Workspace interactive under 2 s after session `ready`; terminal latency under 150 ms;
 results under 10 s after submit.
 
 ## Migration requirements

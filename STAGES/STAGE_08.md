@@ -25,8 +25,8 @@ coverage and readiness.
   coach summary), context assemblers (deterministic), result schemas and importers (paste or
   file), provenance of AI outputs.
 - Executors: `ExternalWorkOrderExecutor` (default), `AnthropicAPIExecutor` with model tiers,
-  caching, per-task and monthly ceilings, kill switch; settings UI to choose mode per
-  feature.
+  caching, per-task and monthly ceilings, kill switch; per-feature mode selection in
+  Settings (`22-settings.md`).
 - Methodology scoring storage and display (D-015 dimensions); interview readiness
   computation feeding Stage 06 readiness as its own dimension.
 - Interview mode v1: question families per role, conduct in external mode, replay, scores.
@@ -56,14 +56,14 @@ Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui
 
 ## Architecture decisions already locked
 
-D-009, D-015, invariants 3, 4, 10.
+D-009, D-015, D-030, D-036 (cost principle), D-041, invariants 3, 4, 10.
 
 ## Files/modules owned by this stage
 
-`packages/core/src/ai/**`, `packages/core/src/ai/**`,
-`.../interviews/**`, `.../certifications/**`, `apps/web/app/(app)/interview/**`,
-`apps/web/components/ai/**`, `content/interviews/**`, `content/certifications/**`,
-`docs/wireframes/interview-mode/**`.
+`packages/core/src/ai/**`, `packages/core/src/interviews/**`,
+`packages/core/src/certifications/**`, `packages/schema/src/ai/**`,
+`apps/web/app/(app)/{interview,certifications,settings}/**`, `apps/web/components/ai/**`,
+`content/interviews/**`, `content/certifications/**`, `docs/AI_MODES.md`.
 
 ## Interfaces/contracts consumed
 
@@ -105,8 +105,9 @@ judges usefulness; optionally trials the API executor for a day within the ceili
 
 ## Security constraints
 
-API keys in the host secret store only; outbound calls only from `packages/core` executors running in the Worker; imported
-results validated against schemas; AI text never executed.
+API keys only in Cloudflare Worker secrets (never in D1, content, or the client); outbound
+calls only from `packages/core` executors running in the Worker; imported results validated
+against schemas; AI text never executed.
 
 ## Performance expectations
 

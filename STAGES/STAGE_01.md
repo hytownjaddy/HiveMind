@@ -59,8 +59,8 @@ leaves the lesson and learner intact.
   objectives, Red Hat networking guide, relevant RFCs), original wording; `claims.yaml`
   provenance; meets RFP §110.
 - Documentation set: `ARCHITECTURE.md` updated to actual, `COURSE_AUTHORING.md` TBD(1)
-  filled, `CONTRIBUTING.md` verified, `docs/mockups/*.md` companions present for the five
-  first screens.
+  filled, `CONTRIBUTING.md` verified; companion specs already exist for every screen
+  (D-041) and are inputs, not deliverables.
 
 ## Explicitly out of scope
 

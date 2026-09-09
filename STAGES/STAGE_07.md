@@ -53,14 +53,14 @@ Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui
 
 ## Architecture decisions already locked
 
-D-013, D-017, D-018, D-035, invariants 1, 3, 4, 5, 8.
+D-013, D-017, D-018, D-030, D-032, D-035, D-041, invariants 1, 3, 4, 5, 8.
 
 ## Files/modules owned by this stage
 
 `packages/core/src/providers/sandbox/python/**` (or the worker equivalent if Stage 02 chose
 Class B for coding), `packages/core/src/problems/coding/**`, `content/problems/python/**`,
 `content/courses/python/modern/**`, `apps/web/app/(app)/code/**`,
-`apps/web/components/code/**`, `docs/mockups/05-coding-workspace.md` follow-ups.
+`apps/web/components/code/**`, `packages/schema/src/problems/coding/**`.
 
 ## Interfaces/contracts consumed
 

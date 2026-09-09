@@ -24,9 +24,9 @@ mode where a SEV ticket hides the failing domain across two or three systems.
 - Capabilities: `network.automation` (Python runtime attached to a topology's management
   network with Netmiko/NAPALM/Nornir available), `capture.pcap` (tcpdump in nodes, PCAP
   artifacts to R2, viewer link), `telemetry.simulated` (optics/fiber scenarios).
-- Incident Response mode: ticket, topology, terminals, metrics/log panes (from in-lab
-  telemetry), notes, timeline; domain hidden; multi-fault scenarios at difficulty 7–10;
-  wireframes first for the incident command center (D-023).
+- Incident Response mode per `docs/mockups/20-incident-command-center.md`: ticket,
+  topology, terminals, metrics/log panes (from in-lab telemetry), notes, phase timeline;
+  domain hidden; multi-fault scenarios at difficulty 7–10; route lives under Labs.
 - Content: modules for IS-IS, MPLS basics, DC networking, network automation, packet
   analysis, fiber/optics theory, incident response methodology; authored via work orders
   with the gold-standard bar.
@@ -49,13 +49,14 @@ Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui
 
 ## Architecture decisions already locked
 
-D-003, D-005 (worker capacity limits), D-012, invariants 1, 5, 8.
+D-003, D-005 (worker capacity limits), D-012, D-030, D-035 (Class B only for these
+capabilities), D-038 (`HM-INC-…`), D-041, invariants 1, 5, 8.
 
 ## Files/modules owned by this stage
 
 `content/topologies/**` (additions), `services/lab-worker/.../faults/{isis,mpls,dc,automation}/**`,
 `.../providers/{automation,capture,telemetry_sim}/**`, `content/courses/networking/{isis,mpls,datacenter,automation,packet-analysis,fiber,incident-response}/**`,
-`apps/web/app/(app)/incidents/**`, `docs/wireframes/incident-command-center/**`.
+`apps/web/app/(app)/labs/incidents/**`, `packages/core/src/incidents/**`.
 
 ## Interfaces/contracts consumed
 

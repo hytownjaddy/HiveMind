@@ -55,13 +55,13 @@ Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui
 
 ## Architecture decisions already locked
 
-D-001, D-006, D-009, D-020, D-025, invariants 10, 13, 15.
+D-001, D-006, D-009, D-020, D-025, D-030, D-034, D-036, D-041, invariants 10, 13, 15.
 
 ## Files/modules owned by this stage
 
 `workflows/**`, `packages/core/src/maintenance/**`, `.../projects/**`,
-`.../scheduling/**`, `apps/web/app/(app)/{maintenance,projects}/**`,
-`docs/wireframes/maintenance-console/**`, `docs/MAINTENANCE.md`.
+`.../scheduling/**`, `apps/web/app/(app)/{maintenance,projects,companies,jobs}/**`,
+`packages/cli/src/{refresh,audit,health}/**`, `docs/MAINTENANCE.md`.
 
 ## Interfaces/contracts consumed
 

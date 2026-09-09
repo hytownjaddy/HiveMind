@@ -26,9 +26,9 @@ gaps, confidence, and a "Train for this role" action that picks the next activit
   are not consumed by mastery.
 - Practice mode: adaptive / domain / skill / difficulty selection → validated instance;
   repetition avoidance.
-- Skills page (graph, drill-down), Dashboard (RFP §88), History enhancements (mastery
-  deltas), Career pages (RFP §150–152 subset: target, readiness, gaps, next best action,
-  history).
+- Skills Graph, Control Center readiness and gap panes (RFP §88), Lab Review mastery
+  deltas, Career Target and Career Matrix, Training Queue (RFP §150–152 subset: target,
+  readiness, gaps, next best action, history).
 - Role profiles: `meta.network_engineer.deployment_support` and generic `network_engineer`,
   `data_center_network_engineer`, `sre` as content files with competency → skill weights and
   required mastery.
@@ -59,13 +59,14 @@ Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui
 
 ## Architecture decisions already locked
 
-D-002, D-014, D-015, D-016, invariants 1, 9.
+D-002, D-014, D-015, D-016, D-030, D-031, D-037 (confidence everywhere), D-038, D-041,
+invariants 1, 9.
 
 ## Files/modules owned by this stage
 
 `packages/core/src/algorithms/**`, `packages/core/src/mastery/**`,
-`.../practice/**`, `.../careers/**`, `apps/web/app/(app)/{practice,skills,career}/**`,
-`apps/web/app/(app)/page.tsx` (dashboard), `content/careers/roles/**`.
+`.../practice/**`, `.../careers/**`, `apps/web/app/(app)/{practice,skills,career,queue}/**`,
+`apps/web/app/(app)/page.tsx` (Control Center panes), `content/careers/roles/**`.
 
 ## Interfaces/contracts consumed
 
@@ -75,8 +76,8 @@ D-002, D-014, D-015, D-016, invariants 1, 9.
 ## Interfaces/contracts created
 
 - `MasteryUpdate`, `SkillState`, `ReadinessSnapshot` records with algorithm versions.
-- Practice API: `POST /practice/next`.
-- Career API: targets, readiness, gaps, next action.
+- Practice API: `POST /api/practice/next`.
+- Career API under `/api/career/…`: targets, readiness, gaps, next action, plan.
 - Algorithm version registry and replay tool (`hivemind algorithms replay --version`).
 
 ## Data/schema changes
@@ -91,7 +92,7 @@ D1 migration `0007`: `skill_states`, `mastery_updates`, `difficulty_ratings`, `r
 2. Hint tiers cap gain per D-016 (unit tests with fixed fixtures); a revealed solution yields
    near-zero independent credit but records completion.
 3. Confidence and evidence counts shown wherever a percentage is shown (UI test).
-4. Readiness gates: the D-127 scenario (strong Python/Linux, weak BGP/IS-IS) yields a
+4. Readiness gates: the RFP §127 scenario (strong Python/Linux, weak BGP/IS-IS) yields a
    blocked readiness with listed gaps, not an inflated score.
 5. "New Problem" avoids repeating the last 5 instances for a skill and prefers decaying
    skills (deterministic given seeded RNG).

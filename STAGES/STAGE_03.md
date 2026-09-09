@@ -17,8 +17,10 @@ pass/warn/fail for every archetype.
 
 ## In scope
 
-- Instantiation: seed → variation choices → rendered topology → fault parameters →
-  narrative → objectives; `ProblemInstance` persisted with all versions and spec hash.
+- Instantiation in `packages/core` (TypeScript, so the session object and the CLI share
+  it): seed → variation choices → fault parameters → narrative → objectives;
+  `ProblemInstance` persisted with all versions and spec hash. Topology rendering and
+  fault/grader execution run on the worker in Python against generated Pydantic models.
 - Fault module API and library: Linux (`bad_permissions`, `disk_full`, `dns_failure`,
   `bad_route`, `systemd_failure`, `port_collision`, `resource_exhaustion`, `wrong_mtu`,
   `firewall_block`, `bad_interface_config`), BGP (`wrong_local_pref`, `invalid_next_hop`,
@@ -53,12 +55,13 @@ Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui
 ## Architecture decisions already locked
 
 D-003 (generic contracts), D-012, D-013, D-014 (versioned everything), D-016, D-021,
+D-030, D-032 (Zod canonical, Pydantic generated), D-034 (CLI split), D-035, D-038,
 invariants 3, 4, 5, 8.
 
 ## Files/modules owned by this stage
 
 `services/lab-worker/hivemind_worker/faults/**`, `.../graders/**`, `.../solutions/**`,
-`packages/core/src/problems/**`, `content/problems/linux/**`, `content/problems/bgp/**`,
+`packages/core/src/problems/**`, `packages/schema/src/problems/**`, `content/problems/linux/**`, `content/problems/bgp/**`,
 `content/topologies/**` (additions), `LAB_AUTHORING.md` TBD(3).
 
 ## Interfaces/contracts consumed
@@ -68,8 +71,9 @@ topology renderer, work orders, review items.
 
 ## Interfaces/contracts created
 
-- Fault module Python API (`declare`, `preconditions`, `inject`, `verify`).
-- Grader Python API (`grade(snapshot) -> GradeResult`) and manifest format.
+- `FaultSpec` and `Grader` manifest schemas in `packages/schema` (Zod, canonical) with
+  generated Pydantic; the fault module Python API (`declare`, `preconditions`, `inject`,
+  `verify`) and grader Python API (`grade(snapshot) -> GraderResult`) consume them.
 - `hivemind problem new|validate|grade|list` CLI.
 - Regression seed registry format.
 

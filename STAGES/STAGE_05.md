@@ -26,7 +26,9 @@ copies it for Claude Code, and later sees the resulting change land in his queue
   enforcement (D-011) with a blocklist of disallowed source classes; claims linkage.
 - Executable verification hooks: lessons can declare verifiable claims that run as
   problems/checks on the worker during `EXECUTION_TEST`.
-- Content diff viewer (git-aware) in the web UI.
+- Content diff viewer in the web UI: diffs between content versions in D1 and proposed
+  change sets imported from work-order results (git stays local to Claude Code; the Worker
+  never reads a repository).
 - Import of Claude Code change reports into work-order results.
 
 ## Explicitly out of scope
@@ -51,14 +53,14 @@ Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui
 
 ## Architecture decisions already locked
 
-D-004, D-009, D-010, D-011, D-022 invariants 6, 7, 10, 11.
+D-004, D-009, D-010, D-011, D-022 invariants 6, 7, 10, 11, D-030, D-032, D-034, D-041.
 
 ## Files/modules owned by this stage
 
 `packages/core/src/review/**`, `.../workorders/**` (templates, assembly),
 `.../sources/**`, `apps/web/app/(app)/review/**`, `apps/web/app/(app)/library/**`,
-`apps/web/components/workorders/**`, `.hivemind/templates/**`, `COURSE_AUTHORING.md`
-TBD(5).
+`apps/web/components/workorders/**`, `.hivemind/templates/**`, `packages/cli/src/work/**`,
+`packages/cli/src/content/**` (publish/deprecate), `COURSE_AUTHORING.md` TBD(5).
 
 ## Interfaces/contracts consumed
 
@@ -80,7 +82,7 @@ content state columns.
 
 1. Every template renders a work order that Claude Code executes from the file alone
    (spot-check five with Jacob).
-2. A lesson cannot reach `PUBLISHED` without passing every state; attempts to skip fail.
+2. A lesson cannot reach `published` without passing every state; attempts to skip fail.
 3. A source of a disallowed class is rejected at creation with the policy reason.
 4. Review of a problem shows validation results inline; rejecting reopens the work order.
 5. Publishing a new course version leaves prior attempts pointing at the old version.
@@ -107,8 +109,8 @@ Queue and diff views under 1 s for 100 items.
 
 ## Migration requirements
 
-D1 migration `0006` with downgrade; existing Stage 01–04 content migrated into QA states as
-`PUBLISHED`.
+D1 migration `0006` with down script; existing Stage 01–04 content migrated into QA states
+as `published`.
 
 ## Rollback requirements
 
