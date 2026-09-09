@@ -36,6 +36,10 @@ After Stage 1 stabilizes the contracts, Stages 2 and 5 may run in separate conte
 Stage 3, Stage 7 may run alongside Stage 4. Stages 6, 8, 9, 10 are sequential on their
 inputs.
 
+## UI specifications
+
+Each stage lists the screens it implements under "UI specifications". Screen contracts live in `docs/mockups/NN-name.md`, global rules in `docs/ui/UI-SYSTEM.md`; the PNGs are reference only.
+
 ## Status
 
 | Stage | Name                                                       | Status      | Milestone commit/tag |

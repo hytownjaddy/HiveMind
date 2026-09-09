@@ -413,3 +413,14 @@ playwright, vitest-pool-workers). Root verification runs both toolchains.
 
 `hivemindjrr.com` on Cloudflare: web app, Access application, Tunnel hostname for the lab
 worker, and any API hostnames hang off this zone.
+
+## D-041 · 2026-09-09 · Locked · Companion specifications are the UI contract; mockup images are reference only
+
+Each screen has `docs/mockups/NN-name.md` as its implementation contract and
+`docs/ui/UI-SYSTEM.md` carries the global rules (shell, navigation, typography, density,
+status colours, lifecycle names, confidence presentation, tables, command palette,
+shortcuts, AI execution modes, leakage rules, forbidden elements). Implementation
+authority order: `DECISIONS.md` → `UI-SYSTEM.md` → companion spec → stage spec → mockup
+image. Every companion carries `REFERENCE ONLY` and this order. The canonical shell is the
+one in mockups 12–18; screens 1–11 keep their layouts and are re-skinned. Stage files list
+the companions they implement.

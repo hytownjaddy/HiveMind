@@ -41,6 +41,12 @@ mode where a SEV ticket hides the failing domain across two or three systems.
 
 Stages 03, 04, 06; Stage 07 for the automation runtime; Stage 08 optional.
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/20-incident-command-center.md`
+
 ## Architecture decisions already locked
 
 D-003, D-005 (worker capacity limits), D-012, invariants 1, 5, 8.

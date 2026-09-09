@@ -40,6 +40,15 @@ copies it for Claude Code, and later sees the resulting change land in his queue
 Stage 01. Runs in parallel with 02–04 once contracts are stable (D-021). Problem review
 items require Stage 03 for validation results.
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/21-review-queue.md`
+- `docs/mockups/17-course-authoring.md`
+- `docs/mockups/14-work-orders.md` (full queue, validation, batches)
+- `docs/mockups/16-source-library.md`
+
 ## Architecture decisions already locked
 
 D-004, D-009, D-010, D-011, D-022 invariants 6, 7, 10, 11.

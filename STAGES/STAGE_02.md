@@ -55,6 +55,12 @@ inspect` on the host show nothing left. A written benchmark records the Class C 
 Stage 01: `LabProvider` interface, capability vocabulary, `LabSpec`, worker protocol
 contracts with generated Pydantic, `lab_sessions` index, Access service tokens, CLI.
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/18-infrastructure-console.md`
+
 ## Architecture decisions already locked
 
 D-001, D-005, D-006, D-012 (Linux then BGP within this stage), D-019, D-020, D-030, D-031,

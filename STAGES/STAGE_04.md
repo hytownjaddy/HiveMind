@@ -42,6 +42,14 @@ History with a replayable timeline.
 Stages 01, 02, 03. Stage 05 not required (content for these modules may be authored via
 work orders using the Stage 01 minimal templates).
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/02-lab-workspace.md`
+- `docs/mockups/08-lab-review.md` (deterministic sections)
+- `docs/mockups/04-course-workspace.md` (Lab tab)
+
 ## Architecture decisions already locked
 
 D-003, D-012, D-013, D-016, D-019, D-023, D-024 (remove the demo labs UI entirely),

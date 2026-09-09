@@ -79,6 +79,15 @@ leaves the lesson and learner intact.
 None. Inputs: `docs/mockups/` companions for Lab Workspace, Career Target, Course
 Workspace, Claude Work Orders, Coding Workspace. Must complete before parallel work (D-021).
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/01-control-center.md`
+- `docs/mockups/04-course-workspace.md` (Lesson, Sources tabs, tree)
+- `docs/mockups/14-work-orders.md` (panel)
+- `docs/mockups/22-settings.md` (identity, export)
+
 ## Architecture decisions already locked
 
 D-001, D-002, D-008, D-009, D-010, D-011, D-014, D-019, D-020, D-021, D-022, D-023,

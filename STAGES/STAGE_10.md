@@ -45,6 +45,14 @@ work and feed portfolio evidence.
 
 Stages 05, 06, 08, 09.
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/15-maintenance-console.md`
+- `docs/mockups/11-company-intelligence.md`
+- `docs/mockups/12-job-inspector.md`
+
 ## Architecture decisions already locked
 
 D-001, D-006, D-009, D-020, D-025, invariants 10, 13, 15.

@@ -44,6 +44,12 @@ pass/warn/fail for every archetype.
 
 Stage 01 (contracts, work orders), Stage 02 (worker, providers, topology archetypes).
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/07-problem-forge.md` (author view, CLI parity)
+
 ## Architecture decisions already locked
 
 D-003 (generic contracts), D-012, D-013, D-014 (versioned everything), D-016, D-021,

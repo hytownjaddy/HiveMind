@@ -45,6 +45,15 @@ coverage and readiness.
 
 Stages 04, 06 (attempts, mastery, readiness), 05 (work orders, review).
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/10-interview-workspace.md`
+- `docs/mockups/19-certifications.md`
+- `docs/mockups/22-settings.md` (AI execution modes, budget)
+- `docs/mockups/08-lab-review.md` (Methodology AI tab)
+
 ## Architecture decisions already locked
 
 D-009, D-015, invariants 3, 4, 10.

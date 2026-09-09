@@ -45,6 +45,18 @@ gaps, confidence, and a "Train for this role" action that picks the next activit
 Stages 01–04 (attempts exist), Stage 05 (content states). Stage 07 may run in parallel and
 feeds evidence later.
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/09-skills-graph.md`
+- `docs/mockups/05-career-target.md`
+- `docs/mockups/06-career-matrix.md`
+- `docs/mockups/13-training-plan.md`
+- `docs/mockups/07-problem-forge.md` (learner Practice view)
+- `docs/mockups/04-course-workspace.md` (Mastery tab)
+- `docs/mockups/08-lab-review.md` (mastery deltas)
+
 ## Architecture decisions already locked
 
 D-002, D-014, D-015, D-016, invariants 1, 9.

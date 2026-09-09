@@ -45,6 +45,12 @@ modern typing, asyncio, and testing with debugging and repository-task problems.
 Stages 01, 02 (Class A provider and benchmark), 03 (grader/validation contracts). Runs
 alongside 04–06.
 
+## UI specifications
+
+Implement these companion specifications (authority: `DECISIONS.md` → `docs/ui/UI-SYSTEM.md` → companion → this stage → mockup image):
+
+- `docs/mockups/03-coding-workspace.md`
+
 ## Architecture decisions already locked
 
 D-013, D-017, D-018, D-035, invariants 1, 3, 4, 5, 8.

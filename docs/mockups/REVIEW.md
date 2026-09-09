@@ -11,36 +11,36 @@ Screens 2–10 and 12–18 are the right product. Two of them (1, 11(1)) are the
 language and should be redone; one (11(2)) is not HiveMind at all. The set contains two
 different visual systems, and the later one (12–18) is the one to keep. Details below.
 
-## File → screen map and proposed rename (D-037 `NN-name.png` + `NN-name.md`)
+## File → screen map (updated 2026-09-09 after Jacob's second pass)
 
-| File      | What it is                                                                 | Proposed name                | Keep?                                    |
-| --------- | -------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------- |
-| 1.png     | Control Center, old SaaS style ("Welcome back, Jordan", KPI cards, quotes) | `01-control-center.png`      | Redo in the 12–18 language               |
-| 2.png     | Lab Workspace, BGP route reflection                                        | `02-lab-workspace.png`       | Yes, signature screen                    |
-| 3.png     | Coding Workspace, fix async worker                                         | `03-coding-workspace.png`    | Yes                                      |
-| 4.png     | Course Workspace, BGP Deep Dive lesson                                     | `04-course-workspace.png`    | Yes                                      |
-| 5.png     | Career Target, Meta Network Engineer                                       | `05-career-target.png`       | Yes                                      |
-| 6.png     | Career Matrix heat map                                                     | `06-career-matrix.png`       | Yes                                      |
-| 7(1).png  | Problem Forge, single-form variant                                         | `07a-problem-forge.png`      | Reference only                           |
-| 7(2).png  | Problem Forge, numbered build-job variant                                  | `07-problem-forge.png`       | Yes, preferred                           |
-| 8.png     | Post-Lab Review                                                            | `08-lab-review.png`          | Yes                                      |
-| 9.png     | Skills Graph                                                               | `09-skills-graph.png`        | Yes, best D-014 example                  |
-| 10.png    | Interview Workspace                                                        | `10-interview-workspace.png` | Yes, with AI-mode fix                    |
-| 11(1).png | Certifications (not in the 18-item list)                                   | `19-certifications.png`      | Redo: hero photo and quote violate D-037 |
-| 11(2).png | DNS manager for ryansdev.com                                               | —                            | Not HiveMind; remove                     |
-| 11(3).png | Lab Run page (objectives, event timeline, logs)                            | `02b-lab-run-alt.png`        | Merge its Timeline/Logs panes into 02    |
-| 12.png    | Job Inspector                                                              | `12-job-inspector.png`       | Yes, strongest of the set                |
-| 13.png    | Training Plan / roadmap                                                    | `13-training-plan.png`       | Yes                                      |
-| 14.png    | Claude Work Orders                                                         | `14-work-orders.png`         | Yes, with status/AI-mode fixes           |
-| 15.png    | Maintenance Console                                                        | `15-maintenance-console.png` | Yes                                      |
-| 16.png    | Source Library                                                             | `16-source-library.png`      | Yes                                      |
-| 17.png    | Course Authoring Workspace                                                 | `17-course-authoring.png`    | Yes                                      |
-| 18.png    | Lab Host Console                                                           | `18-lab-host-console.png`    | Yes, add Cloudflare side                 |
+| File                                                 | Screen                                         | Status                                             |
+| ---------------------------------------------------- | ---------------------------------------------- | -------------------------------------------------- |
+| `01-control-center.png`                              | Control Center (redone in the canonical shell) | Keep; small corrections in spec                    |
+| `02-lab-workspace.png`                               | Lab Workspace, BGP route reflection            | Keep, signature screen                             |
+| `03-coding-workspace.png`                            | Coding Workspace                               | Keep                                               |
+| `04-course-workspace.png`                            | Course Workspace                               | Keep                                               |
+| `05-career-target.png`                               | Career Target                                  | Keep                                               |
+| `06-career-matrix.png`                               | Career Matrix                                  | Keep                                               |
+| `07-problem-forge.png` / `07a-problem-forge-alt.png` | Problem Forge (preferred / alt)                | Keep / reference                                   |
+| `08-lab-review.png`                                  | Post-Lab Review                                | Keep                                               |
+| `09-skills-graph.png`                                | Skills Graph                                   | Keep, reference for numbers                        |
+| `10-interview-workspace.png`                         | Interview Workspace                            | Keep, AI-mode fix                                  |
+| `11-company-intelligence.png`                        | Company Intelligence (new)                     | Keep; corrections in spec                          |
+| `12-job-inspector.png`                               | Job Inspector                                  | Keep, strongest                                    |
+| `13-training-plan.png`                               | Training Plan                                  | Keep                                               |
+| `14-work-orders.png`                                 | Claude Work Orders                             | Keep, status/AI-mode fix                           |
+| `15-maintenance-console.png`                         | Maintenance Console                            | Keep                                               |
+| `16-source-library.png`                              | Source Library                                 | Keep                                               |
+| `17-course-authoring.png`                            | Course Authoring                               | Keep                                               |
+| `18-infrastructure-console.png`                      | Infrastructure (Lab Host) Console              | Keep, add Cloudflare side                          |
+| `19-certifications.png`                              | Certifications                                 | Rejected layout; spec 19 defines the table version |
 
-Missing from the list: **11 Company Intelligence** (no mockup). Also missing and needed by
-the stages: an **Incident Command Center** (RFP §92, Stage 9), a **Review Queue** (Stage 5,
-the 5-hours-a-week loop; 17 covers a single diff, not the queue), and a **Settings / AI
-execution mode** view (Stage 8).
+Removed by Jacob: the old SaaS Control Center, the DNS-manager stray, and the alternate
+lab-run page (its Timeline/Logs panes are folded into spec 02).
+
+Specs without an image: `20-incident-command-center.md`, `21-review-queue.md`,
+`22-settings.md` (derived from 02, 14/17, 14 respectively). Each companion `.md` is the
+implementation contract; the images are reference only (D-041).
 
 ## Cross-cutting findings
 
@@ -146,11 +146,8 @@ validation_failed | review_required → approved → done`; "Validate" runs
 | 09 Network depth, incidents    | Incident Command Center (missing)                                                             |
 | 10 Maintenance                 | 15 Maintenance Console, 11 Company Intelligence (missing), 12 Job Inspector                   |
 
-## Actions for Jacob
+## Status
 
-1. Remove `11(2).png` (DNS manager); confirm the rename map or provide your own names.
-2. Redo 01 and 11(1)/19 in the 12–18 language; produce 11 Company Intelligence, Incident
-   Command Center, Review Queue, Settings/AI mode when convenient (none block Stage 01
-   except 01 Control Center, and even that can start from the 12–18 shell).
-3. Add the `NN-name.md` companions (purpose, panes, visible state, interactions, lifecycle
-   state, data requirements, unresolved questions). I can draft them from this review.
+Companions drafted for all 22 screens (2026-09-09). Remaining optional images: a table-style
+Certifications page (19), Incident Command Center (20), Review Queue (21), Settings (22).
+None block any stage.

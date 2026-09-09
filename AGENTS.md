@@ -4,7 +4,7 @@ HiveMind is the adaptive technical-learning platform specified in `docs/RFP.md`.
 organized in stages (`STAGES/`), governed by locked decisions (`DECISIONS.md`) and the
 target architecture (`ARCHITECTURE.md`). Read those three before touching code. Process
 rules are in `CONTRIBUTING.md`; content and lab rules in `COURSE_AUTHORING.md` and
-`LAB_AUTHORING.md`; mockups and their companion notes in `docs/mockups/`.
+`LAB_AUTHORING.md`; UI rules in `docs/ui/UI-SYSTEM.md` and per-screen contracts in `docs/mockups/NN-name.md` (images are reference only; authority order in D-041).
 
 ## Global invariants (D-022, D-031, D-035)
 

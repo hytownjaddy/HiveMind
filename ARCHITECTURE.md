@@ -160,8 +160,8 @@ session Worker → web Worker → lab worker. The web app stays on OpenNext (D-0
 
 Engineering workstation, desktop-first. Global status bar (command palette, active target,
 workspace, environment, seed, runtime versions, last check), dense panes, trees, tabs, diffs,
-logs, terminals. Identifier formats and lifecycle vocabulary per D-038. Mockups in
-`docs/mockups/` are Stage 1 inputs.
+logs, terminals. Identifier formats and lifecycle vocabulary per D-038. Global UI rules live in
+`docs/ui/UI-SYSTEM.md`; per-screen contracts in `docs/mockups/NN-name.md` (D-041).
 
 ## Transition from the scaffold
 
