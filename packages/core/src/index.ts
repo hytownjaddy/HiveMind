@@ -5,6 +5,8 @@ export * from "./db/work-orders";
 export * from "./db/attempts";
 export * from "./db/lab-sessions";
 export * from "./db/problem-instances";
+export * from "./db/recording";
+export * from "./db/sql-split";
 export * from "./db/careers";
 export * from "./db/algorithms";
 export * from "./identity/index";

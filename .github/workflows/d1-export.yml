@@ -1,0 +1,36 @@
+name: Nightly D1 export
+
+# Durability (D-020, D-030): every night the production database is exported
+# with `wrangler d1 export`, stored in the private R2 bucket under
+# exports/d1/, and kept as a workflow artifact as a second copy. R2 retention
+# is a bucket lifecycle rule (docs/runbooks/recovery.md). Restore drills read
+# these files: tools/backup/restore-drill.sh.
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    if: ${{ vars.HIVEMIND_NIGHTLY_EXPORT == 'true' }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - run: bun install --frozen-lockfile
+      - name: Export and upload
+        id: export
+        run: |
+          file="$(tools/backup/nightly-export.sh production | tail -1)"
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: d1-export-${{ github.run_id }}
+          path: ${{ steps.export.outputs.file }}
+          retention-days: 90

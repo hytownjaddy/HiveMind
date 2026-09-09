@@ -9,6 +9,11 @@
       "database_name": "hivemind-core-test",
       "database_id": "00000000-0000-0000-0000-000000000001",
     },
+    {
+      "binding": "RESTORE_DB",
+      "database_name": "hivemind-restore-test",
+      "database_id": "00000000-0000-0000-0000-000000000002",
+    },
   ],
   "r2_buckets": [{ "binding": "EXPORTS", "bucket_name": "hivemind-exports-test" }],
 }

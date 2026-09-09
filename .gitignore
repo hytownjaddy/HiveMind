@@ -50,3 +50,4 @@ __pycache__/
 
 # hivemind CLI build output
 .hivemind/build/
+.hivemind/exports/

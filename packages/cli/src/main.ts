@@ -24,7 +24,7 @@ const USAGE = `hivemind <group> <command> [options]
 
   content compile [dir] [--out file]
   content diff [dir]
-  content publish [dir] [--note text]
+  content publish [dir] [--note text] [--sql-out file]
   content approve <lesson-id> --by <name> [--publish]
   work new <template> --lesson <id> | --module <course> --module <module> | --course <id> | --skill <id> | --problem <id> | --area <a>
            [--instructions text] [--title text] [--priority p] [--label l]…

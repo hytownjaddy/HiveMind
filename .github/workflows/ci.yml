@@ -30,3 +30,25 @@ jobs:
           enable-cache: true
       - run: uv sync --frozen
       - run: uv run task verify
+
+  restore-drill:
+    name: Restore drill (export → fresh D1 → content readable)
+    runs-on: ubuntu-latest
+    needs: typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - run: bun install --frozen-lockfile
+      - name: Seed a source database (migrations + offline publish of content/)
+        run: |
+          bun run hivemind -- content publish content/ --sql-out .hivemind/build/publish.sql
+          apps/web/node_modules/.bin/wrangler d1 migrations apply DB --local -c apps/web/wrangler.jsonc
+          apps/web/node_modules/.bin/wrangler d1 execute DB --local -c apps/web/wrangler.jsonc --file .hivemind/build/publish.sql
+      - name: Export (stands in for the nightly R2 export)
+        run: apps/web/node_modules/.bin/wrangler d1 export DB --local -c apps/web/wrangler.jsonc --output .hivemind/build/export.sql
+      - name: Restore into a fresh database and check
+        run: tools/backup/restore-drill.sh .hivemind/build/export.sql
+      - name: Read the restored content through the service layer
+        run: HIVEMIND_RESTORE_EXPORT=$PWD/.hivemind/build/export.sql bun --cwd packages/core test -- test/restore-drill.test.ts

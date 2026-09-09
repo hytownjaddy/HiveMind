@@ -291,6 +291,28 @@ describe("hivemind CLI", () => {
     expect(out.errors.at(-1)).toContain("expected a work-order id");
   });
 
+  it("publishes offline as SQL", async () => {
+    const out = capture();
+    const fixtureConfig = { ...config, root: COMPILER_FIXTURE };
+    const deps = {
+      config: fixtureConfig,
+      api: new HiveMindApi(fixtureConfig, fakeApi().fetch),
+      out,
+      now: () => "2026-09-09T12:00:00Z",
+    };
+    const sqlPath = join(root, "publish.sql");
+    expect(await run(["content", "publish", "content", "--sql-out", sqlPath], deps)).toBe(
+      0,
+    );
+    const sql = readFileSync(sqlPath, "utf8");
+    expect(sql).toContain("INSERT INTO content_versions");
+    expect(sql).toContain("'HM-CV-0001'");
+    expect(sql).toContain("INSERT INTO lessons");
+    expect(sql).toContain("HM-LESSON-demo-course-01");
+    // Literal question marks inside content are fine; bare placeholders are not.
+    expect(sql).not.toMatch(/[(,] \?[,)]/u);
+  });
+
   it("records approval in metadata.yaml", async () => {
     const { cpSync } = await import("node:fs");
     cpSync(COMPILER_FIXTURE, join(root, "tree"), { recursive: true });

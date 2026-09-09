@@ -8,6 +8,7 @@ import {
   summarizeBundle,
   type CompileResult,
 } from "@hivemind/core/compiler";
+import { ContentRepository, RecordingDatabase } from "@hivemind/core";
 import { parseDocument } from "yaml";
 
 import type { HiveMindApi } from "../api";
@@ -19,6 +20,7 @@ import { CliError, type Output } from "../output";
  * hivemind content compile [dir] [--out file]    validate content/ and write the bundle
  * hivemind content diff [dir]                    compare with the latest published version
  * hivemind content publish [dir] [--note text]    compile, refuse unbumped changes, POST the bundle
+ * hivemind content publish [dir] --sql-out file   offline: write the publish as SQL for wrangler d1 execute
  * hivemind content approve <lesson-id> --by name [--publish]
  *                                                 record Jacob's approval in metadata.yaml (invariant 10)
  */
@@ -89,6 +91,39 @@ export async function contentPublish(
   const result = await compile(args, deps);
   if (result.bundle === null) {
     throw new CliError("content publish: fix the compile errors first");
+  }
+  const unapprovedEarly = result.bundle.lessons.filter(
+    (lesson) =>
+      lesson.qa_state === "published" &&
+      (lesson.review.approved_by === undefined ||
+        lesson.review.approved_at === undefined),
+  );
+  if (unapprovedEarly.length > 0) {
+    throw new CliError(
+      `content publish: published lessons without approval: ${unapprovedEarly.map((lesson) => lesson.id).join(", ")} (invariant 10)`,
+    );
+  }
+  const sqlOut = optionString(args, "sql-out");
+  if (sqlOut !== undefined) {
+    // Offline publish: the real repository runs against a recording shim and the
+    // resulting SQL seeds any database with `wrangler d1 execute --file`.
+    const recorder = new RecordingDatabase();
+    const version = await new ContentRepository(recorder.asDatabase(), {
+      now: deps.now,
+    }).publish({
+      bundle: result.bundle,
+      published_by: deps.config.actor,
+      note: optionString(args, "note"),
+    });
+    mkdirSync(join(sqlOut, ".."), { recursive: true });
+    writeFileSync(
+      sqlOut,
+      `-- hivemind content publish (offline) ${version.id} ${result.bundle.content_hash}\n${recorder.toScript()}`,
+    );
+    deps.out.log(
+      `wrote ${recorder.statements.length} statement(s) for ${version.id} → ${sqlOut}`,
+    );
+    return 0;
   }
   const previous = await deps.api.contentSummary();
   const diff = diffBundles(

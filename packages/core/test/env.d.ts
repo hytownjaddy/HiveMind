@@ -6,9 +6,11 @@ import type { D1Migration } from "@cloudflare/vitest-pool-workers";
  */
 interface TestBindings {
   DB: D1Database;
+  RESTORE_DB: D1Database;
   EXPORTS: R2Bucket;
   TEST_MIGRATIONS: D1Migration[];
   TEST_DOWN_0002: string;
+  TEST_RESTORE_EXPORT?: string;
 }
 
 declare global {
