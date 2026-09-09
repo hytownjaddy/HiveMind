@@ -51,7 +51,7 @@ D-009, D-015, invariants 3, 4, 10.
 
 ## Files/modules owned by this stage
 
-`packages/hivemind-core/hivemind_core/ai/**`, `services/api/hivemind_api/ai/**`,
+`packages/core/src/ai/**`, `packages/core/src/ai/**`,
 `.../interviews/**`, `.../certifications/**`, `apps/web/app/(app)/interview/**`,
 `apps/web/components/ai/**`, `content/interviews/**`, `content/certifications/**`,
 `docs/wireframes/interview-mode/**`.
@@ -68,7 +68,7 @@ Attempts, telemetry, recordings, mastery/readiness (06), role profiles, work ord
 
 ## Data/schema changes
 
-Alembic `0008`: `ai_tasks`, `ai_results`, `ai_budget_ledger`, `methodology_scores`,
+D1 migration `0009`: `ai_tasks`, `ai_results`, `ai_budget_ledger`, `methodology_scores`,
 `interviews`, `interview_questions`, `interview_attempts`, `certifications`,
 `certification_objectives`.
 
@@ -96,7 +96,7 @@ judges usefulness; optionally trials the API executor for a day within the ceili
 
 ## Security constraints
 
-API keys in the host secret store only; outbound calls only from `services/api`; imported
+API keys in the host secret store only; outbound calls only from `packages/core` executors running in the Worker; imported
 results validated against schemas; AI text never executed.
 
 ## Performance expectations
@@ -105,7 +105,7 @@ Prompt assembly under 1 s; API executor responses streamed.
 
 ## Migration requirements
 
-Alembic `0008` with downgrade.
+D1 migration `0009` with downgrade.
 
 ## Rollback requirements
 

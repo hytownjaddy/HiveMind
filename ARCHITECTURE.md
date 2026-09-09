@@ -1,143 +1,179 @@
 # HiveMind Architecture
 
-Status: target architecture as of 2026-09-08, reflecting `DECISIONS.md` D-001 to D-029.
-The repository is mid-transition from a Cloudflare-only scaffold to this design (see
-"Transition from the scaffold"). Read `DECISIONS.md` first; this document explains how the
-decisions fit together, not why they were made.
+Status: target architecture as of 2026-09-08, per `DECISIONS.md` D-030 to D-040 (which
+supersede the earlier FastAPI/PostgreSQL/Redis direction). Cloudflare owns the
+durable/control-plane side; a disposable Ubuntu lab worker exists only for workloads
+Cloudflare cannot faithfully execute. Read `DECISIONS.md` first; this document explains how
+the pieces fit, not why they were chosen.
 
 ## Topology
 
-```mermaid
-flowchart LR
-    Browser[Browser]
-    Access[Cloudflare Access + DNS]
-    Web[apps/web<br/>Next.js on Workers via OpenNext]
-    Tunnel[Cloudflare Tunnel]
-    API[services/api<br/>FastAPI]
-    PG[(PostgreSQL)]
-    Redis[(Redis)]
-    R2[(R2: recordings, artifacts, backups)]
-    Worker[services/lab-worker<br/>Python agent on Ubuntu x86-64]
-    Docker[Docker / containerlab / FRR]
-    CC[Claude Code / Claude Max<br/>external agent]
-    WO[.hivemind/work-orders + content/ in git]
+```text
+                        CLOUDFLARE
 
-    Browser --> Access --> Web
-    Browser -->|HTTPS + WebSocket| Access --> Tunnel --> API
-    Web -->|server-side calls| API
-    API --> PG
-    API --> Redis
-    API --> R2
-    API <-->|jobs, events, PTY relay| Worker
-    Worker --> Docker
-    Web -.->|copy/export work order| CC
-    CC -->|git commits| WO
-    WO -->|hivemind content compile| API
+                    hivemindjrr.com
+                           │
+                    Cloudflare Access (Google IdP)
+                           │
+                    Next.js / Workers  (apps/web)
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+         D1         Durable Objects         R2
+          │       (apps/session-worker)     │
+   durable records    live authority    artifacts/
+                                         backups
+                           │
+                    Lab Provider API
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+      Cloudflare Sandbox          Cloudflare Tunnel
+              │                         │
+      coding / simple Linux             ▼
+      (Class A / C)               Ubuntu Lab Worker (Class B / C)
+                                         │
+                                  Python Lab Agent
+                                         │
+                         ┌───────────────┼──────────────┐
+                         │               │              │
+                       Docker       containerlab       FRR
+                         │               │              │
+                         └────── real network labs ─────┘
 ```
+
+Claude Code (Jacob's Claude Max subscription) is the external agent: it reads work orders
+from `.hivemind/work-orders/` and commits content and code; the `hivemind` CLI validates and
+publishes. No AI API call is required for normal operation (D-009, D-036).
+
+## Layering (D-031)
+
+```text
+UI  →  Route Handler (thin adapter)  →  Application Service  →  Domain Logic  →  D1 / DO / R2
+```
+
+Route handlers in `apps/web` and the fetch handlers in `apps/session-worker` only parse,
+authenticate, call a service in `packages/core`, and serialize. Domain logic (lifecycle
+rules, mastery formulas, readiness, work-order state machines) has no knowledge of HTTP.
 
 ## Components and ownership
 
-| Component                | Language         | Owns                                                                                                                                              | Never does                                                              |
-| ------------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `apps/web`               | TypeScript       | Rendering, navigation, xterm/Monaco/topology views, work-order copy/export UI                                                                     | Business rules, grading, mastery math                                   |
-| `services/api`           | Python (FastAPI) | Contracts, Postgres schema, lifecycle state machines, mastery/readiness algorithms, content compiler, work orders, review queues, WebSocket relay | Executing learner code, calling AI unless an API executor is configured |
-| `services/lab-worker`    | Python           | Providers (`container.linux`, `network.containerlab`, `runtime.python`), PTY sessions, fault injection, grader execution, snapshots, cleanup      | Holding durable state; deciding mastery                                 |
-| `packages/hivemind-core` | Python           | Pydantic contracts, versioning helpers, seed/variation utilities, redaction                                                                       | Framework code                                                          |
-| `content/`               | YAML/MDX         | Skills registry, courses, sources, role profiles, problem archetypes, faults, graders' declarative parts                                          | Runtime code that bypasses contracts                                    |
-| Cloudflare               | —                | DNS, Access (identity), Tunnel (ingress), Workers (frontend), R2 (blobs, backups)                                                                 | Control plane state, lab execution                                      |
+| Component             | Language         | Owns                                                                                                                                              | Never does                                                             |
+| --------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `apps/web`            | TypeScript       | Rendering, navigation, workspace panes (xterm, Monaco, topology), thin route handlers, work-order copy/export UI                                  | Business rules inline; calling AI unless an API executor is configured |
+| `apps/session-worker` | TypeScript       | `LabSession` Durable Object: session lifecycle, leases, deadlines/alarm queue, WebSocket termination, PTY relay, provider selection by capability | Durable cross-session records (those go to D1 via `packages/core`)     |
+| `packages/core`       | TypeScript       | Application services and domain logic; D1 repositories; R2 clients; algorithms (versioned); work orders; review queues; content compiler          | Framework specifics                                                    |
+| `packages/schema`     | TypeScript (Zod) | Canonical contracts; JSON Schema export; Pydantic generation                                                                                      | Runtime logic                                                          |
+| `packages/cli`        | TypeScript (Bun) | `hivemind` CLI: content, sources, work orders, careers, certs, validate, export, orchestration commands                                           | Lab execution                                                          |
+| `services/lab-worker` | Python 3.13      | Lab agent; providers for Class B/C; fault modules; graders; reference solutions; validation runner; worker CLI                                    | Holding authoritative state; deciding mastery                          |
+| `content/`            | YAML/MDX         | Skills registry, courses, sources, careers, problem archetypes, topology archetypes, declarative parts of faults/graders                          | Code that bypasses contracts                                           |
+| Cloudflare            | —                | DNS, Access, Tunnel, Workers, D1, Durable Objects, R2, Sandbox (Class A), Queues/KV as needed                                                     | Privileged networking                                                  |
 
-Data ownership: PostgreSQL is the single durable source for learner, content index,
-attempts, mastery, readiness, work orders, review items. Redis holds queues, presence, and
-short-lived session coordination only. R2 holds terminal recordings (90-day TTL unless
-pinned), lab artifacts, exports, and database backups. Git holds content and work orders;
-the compiler loads them into Postgres.
+Data ownership (D-030): D1 = learner, courses, skills, mastery, attempts, career targets,
+certifications, role profiles, work orders, metadata. R2 = recordings, exports/backups,
+PCAPs, generated artifacts, large attempt artifacts, course assets. Durable Objects =
+active lab session state, lifecycle, leases, timers, connections, workspace coordination.
+Git = content and work orders (compiled into D1 by the CLI/API). The lab worker holds
+nothing that cannot be rebuilt.
+
+## Execution classes and provider selection (D-035)
+
+A lab declares required capabilities; the session Worker selects a provider that satisfies
+all of them.
+
+| Capabilities (examples)                                                                           | Class | Provider                                              |
+| ------------------------------------------------------------------------------------------------- | ----- | ----------------------------------------------------- |
+| `shell.linux`, `python`, `node`, `compiler.cpp`                                                   | A     | Cloudflare Sandbox                                    |
+| `network.namespace`, `network.veth`, `network.containerlab`, `routing.frr`, `privilege.net_admin` | B     | Ubuntu lab worker (Python agent)                      |
+| single-node Linux exercises                                                                       | C     | whichever Stage 2 benchmarks as simplest and faithful |
+
+Sandbox Docker-in-Docker is rootless with no privileged containers or iptables, so Class B
+is never moved to Class A.
 
 ## Core flows
 
-**Launch a lab.** Browser → API `POST /labs/sessions {problem_ref, seed?}` → API creates
-`lab_sessions` row (`queued`), enqueues a provision job → worker claims it, instantiates the
-ProblemSpec with the seed, provisions via the provider, runs baseline check, injects fault,
-verifies fault, reports `ready` with node list → API streams status events over the
-session WebSocket → browser opens terminal tabs; PTY frames are relayed API ↔ worker ↔
-container. Lifecycle states are RFP §86 verbatim.
+**Launch a lab.** Browser → `POST /api/labs/sessions` (route handler) → `LabSessionService`
+in `packages/core` creates the D1 index row and asks the session Worker for a new
+`LabSession` object (`idFromName(HM-LAB-…)`) → the object instantiates the `ProblemInstance`
+from seed and versions, selects a provider by capabilities, and drives RFP §86 states with
+its alarm-fed deadline queue → Class A: Sandbox SDK; Class B: job to the Python agent over
+Tunnel → the object streams status events over the session WebSocket; PTY frames relay
+browser ↔ object ↔ provider.
 
-**Submit.** Browser → API `POST /labs/sessions/{id}/submit` → worker runs the versioned
-grader against final state → `GradeResult` (deterministic) persisted on an immutable
-`attempts` row → mastery update computed by the versioned algorithm → optional AI
-methodology review produced as an External Work Order prompt (default) or via an API
-executor → session destroyed, recording finalized to R2 with redaction applied.
+**Submit.** `POST /api/labs/sessions/{id}/submit` → object requests `grade` from the
+provider (Python grader on the worker, or the Sandbox test runner) → `GradeResult`
+persisted on an immutable `attempts` row in D1 → versioned mastery update → optional AI
+methodology review as an External Work Order prompt (default) or via an API executor →
+destroy; recording finalized to R2 with redaction, 90-day TTL unless pinned.
 
-**Author content.** Jacob opens a work order in the web UI (or `hivemind work new`) →
-structured YAML + human prompt written to `.hivemind/work-orders/` → Claude Code executes it
-in the repo, producing content files, tests, and a change report → `hivemind work validate`
-runs schema checks and, for problems, the RFP §46 pipeline on the worker → review item
-appears in Jacob's queue → approve → `hivemind content compile` publishes a new content
-version. Published content is immutable per version.
+**Author content.** Work order created from page context (deterministic assembly) →
+`.hivemind/work-orders/HM-WO-nnnn.md` → Claude Code executes in the repo → `hivemind work
+validate` runs schema checks and, for problems, the RFP §46 pipeline through the worker →
+review item in Jacob's queue → approve → `hivemind content publish` creates an immutable
+content version in D1.
 
-**Maintenance.** Same mechanism in batches: the API computes what is due (stale role
-profiles, source health, lab regressions) and emits a batch work order; Claude Code runs
-it; results and change reports are imported.
+**Maintenance.** Same loop in batches: `packages/core` computes what is due and emits a
+batch work order; Claude Code runs it; results and change reports are imported.
 
-## Contracts (source of truth: `packages/hivemind-core`)
+## Contracts (canonical in `packages/schema`, D-032)
 
-- Skill registry: `SkillDefinition` (id, version, prerequisites, objectives, mastery
-  criteria, misconceptions). Global, referenced by courses, roles, certifications.
-- Course package: `CourseManifest`, `Module`, `Lesson` (MDX plus metadata, QA state,
-  provenance claims), semantic version.
-- Capabilities: dotted ids (`container.linux`, `network.containerlab`, `runtime.python`).
-  Courses request; providers satisfy.
-- `LabProvider` interface: provision, baseline_check, inject_fault, verify_fault,
-  open_pty, snapshot, run_grader, destroy. Implemented by the worker.
-- `ProblemSpec` and `ProblemInstance`: archetype + faults + objectives + difficulty; an
-  instance is seed + generator/course/topology/fault/grader versions + spec hash.
-- `Grader` contract: versioned, final-state checks, returns `GradeResult` with per-objective
-  outcomes and evidence.
-- `Attempt`, `Evidence`, `MasteryUpdate`: immutable rows; algorithm version recorded.
-- `RoleProfile`, `Competency`, `Readiness`: D-002 hierarchy with hard-requirement gates and
-  confidence.
-- `WorkOrder`, `ReviewItem`: D-009 and D-004.
+SkillDefinition/SkillGraph, CourseManifest/Module/Lesson/Claim/SourceRecord, Capability,
+LabSpec and `LabProvider` interface, ProblemSpec/ProblemInstance (seed + generator, course,
+topology, fault, grader versions + spec hash), FaultSpec, Grader manifest/GraderResult,
+Attempt/AttemptResult/Evidence/MasteryUpdate (algorithm version recorded), RoleProfile/
+Competency/Readiness (gates, confidence), WorkOrder/ReviewItem, worker protocol messages.
+Pydantic models for `services/lab-worker` are generated in CI and drift fails the build.
 
-TypeScript types are generated from these (D-027). Wire formats are versioned; breaking
-changes bump the contract version and ship migrations.
+## Identity (D-033)
 
-## Security model (single learner, D-001)
+Google → Cloudflare Access → Worker reads and validates the Access JWT → `learner_id`
+(seeded single record). Server-to-server calls (CLI publish, worker callbacks) use Access
+service tokens. No in-app auth.
 
-- Identity: Cloudflare Access in front of both the web app and the API hostname. The API
-  validates the Access JWT and maps to the seeded `learner_id`.
-- Worker reachability: only via Tunnel or a private network; no public ports.
-- Labs protect the host from accidents: per-lab cgroup limits (CPU, memory, pids, disk),
-  no host Docker socket inside labs, dedicated Docker networks per session, default-deny
-  egress with an explicit allowlist, orphan sweeper on the worker, hard TTL per session.
-- Recordings: redaction filter for tokens, passwords, private keys before storage; 90-day
-  TTL; pinning is explicit.
-- Secrets: Cloudflare and host secret stores only; never in content or work orders.
+## Security model (D-001)
 
-## Durability (D-020)
+- Access on the web app and every API hostname; the lab worker is reachable only through
+  Tunnel with a service token; no public ports.
+- Labs protect the host from accidents: per-session Docker networks, cgroup limits, no
+  host Docker socket, default-deny egress with allowlist, orphan sweeper, hard TTL.
+- Recordings redacted (tokens, passwords, private keys) before R2; 90-day TTL; pinning is
+  explicit (D-019).
+- Secrets only in Cloudflare secrets and the host secret store; never in content or work
+  orders.
 
-Nightly logical backups of PostgreSQL to R2 with retention; `hivemind export` produces a
-portable archive of learner history and approved content; a scripted restore drill
-(destroy database → restore → smoke test) is part of Stage 1 acceptance and rerun each
-stage milestone. Lab workers hold nothing that cannot be rebuilt from git plus Postgres.
+## Durability (D-020, D-030)
+
+D1 Time Travel (30 days) plus a scheduled export of D1 to R2 (GitHub Actions nightly
+`wrangler d1 export`, retained long-term) plus `hivemind export` for a portable archive of
+learner history and approved content. A scripted restore drill (fresh D1 from export →
+smoke test) is part of Stage 1 acceptance and rerun at each milestone. The lab worker is
+rebuilt from `tools/host/provision.sh` and holds no history.
 
 ## Environments and deployment
 
-`dev` (local Next dev against a dev API; worker may be the rented host), `production`
-(Workers + Tunnel + host). Deploy order: API migrations → API → worker → web. Cloudflare
-Workers deploy via the existing OpenNext tooling; API and worker deploy as containers on
-the host via a small compose or systemd setup defined in Stage 1/2.
+Top-level wrangler config is `dev`; `--env production` selects `hivemind-web` and
+`hivemind-session`. Bindings are repeated per environment. Deploy order: D1 migrations →
+session Worker → web Worker → lab worker. The web app stays on OpenNext (D-031). Domain:
+`hivemindjrr.com` (D-040).
+
+## UI direction (D-037)
+
+Engineering workstation, desktop-first. Global status bar (command palette, active target,
+workspace, environment, seed, runtime versions, last check), dense panes, trees, tabs, diffs,
+logs, terminals. Identifier formats and lifecycle vocabulary per D-038. Mockups in
+`docs/mockups/` are Stage 1 inputs.
 
 ## Transition from the scaffold
 
-Kept: `apps/web` (Next 16 on OpenNext, app shell, tooling), Cloudflare plumbing, deploy
-script shape, lint/format/test setup. Removed in Stage 1 (D-026): `apps/realtime-worker`
-and its Durable Object, the D1 binding and `migrations/`, `packages/protocol` (replaced by
-generated types), the placeholder pages and the demo labs UI (replaced by Stage 1 Learn and
-Stage 4 workspace). The lifecycle/deadline-queue design from the Durable Object is carried
-into the Python state machine.
+Kept: `apps/web` (OpenNext, shell, tooling), `apps/realtime-worker` → renamed
+`apps/session-worker` and refactored to the capability/provider model in Stage 2,
+`packages/protocol` → `packages/schema` (Zod canonical), D1 binding and migrations, deploy
+script, CI, tests. Removed in Stage 1: guest HMAC sessions (replaced by Access identity →
+`learner_id`), placeholder pages, demo labs UI, the echo provider once a Class A/C provider
+exists (Stage 2).
 
 ## Open points
 
-- D-029 PostgreSQL placement.
-- Whether `apps/web` stays on Workers or moves next to the API behind the Tunnel (keep on
-  Workers unless server-side calls to the API become the bottleneck).
-- Topology renderer choice (React Flow vs Cytoscape) — decide in Stage 4 with wireframes.
+- Sandbox SDK fit for Class C (Stage 2 benchmark).
+- Topology renderer (React Flow vs Cytoscape), decided with the Lab Workspace mockup.
+- Whether to add Queues for provisioning jobs or keep DO → worker calls direct (Stage 2).

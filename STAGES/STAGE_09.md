@@ -62,7 +62,7 @@ All lab and problem contracts; workspace components (04); coding provider pieces
 
 ## Data/schema changes
 
-Alembic `0009`: `incident_scenarios`, artifact refs for PCAPs, telemetry series tables (or R2
+D1 migration `0010`: `incident_scenarios`, artifact refs for PCAPs, telemetry series tables (or R2
 refs).
 
 ## Acceptance criteria
@@ -97,7 +97,7 @@ As acceptance 5; PCAP download under 5 s for 50 MB.
 
 ## Migration requirements
 
-Alembic `0009`.
+D1 migration `0010`.
 
 ## Rollback requirements
 

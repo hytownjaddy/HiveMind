@@ -51,7 +51,7 @@ D-001, D-006, D-009, D-020, D-025, invariants 10, 13, 15.
 
 ## Files/modules owned by this stage
 
-`workflows/**`, `services/api/hivemind_api/maintenance/**`, `.../projects/**`,
+`workflows/**`, `packages/core/src/maintenance/**`, `.../projects/**`,
 `.../scheduling/**`, `apps/web/app/(app)/{maintenance,projects}/**`,
 `docs/wireframes/maintenance-console/**`, `docs/MAINTENANCE.md`.
 
@@ -66,7 +66,7 @@ Work orders, review, content versions, role profiles, validation runs, worker re
 
 ## Data/schema changes
 
-Alembic `0010`: `workflows`, `workflow_runs`, `maintenance_items`, `drift_events`,
+D1 migration `0011`: `workflows`, `workflow_runs`, `maintenance_items`, `drift_events`,
 `projects`, `project_milestones`, `worker_capacity`.
 
 ## Acceptance criteria
@@ -103,7 +103,7 @@ Maintenance page under 1 s; batch generation under 5 s.
 
 ## Migration requirements
 
-Alembic `0010`.
+D1 migration `0011`.
 
 ## Rollback requirements
 

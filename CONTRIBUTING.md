@@ -13,11 +13,15 @@ that a fresh context can contribute without re-deriving decisions.
 
 ## Working rules
 
-- Contracts first (D-021). Changes to schemas, the database model, the course format, the
+- Contracts first (D-021). Changes to schemas, the D1 model, the course format, the
   lab-provider interface, ProblemSpec, or the grader contract are made in
-  `packages/hivemind-core` with a version bump and a migration, never ad hoc elsewhere.
-- Python for orchestration, graders, faults, agents, compiler, workflows; TypeScript for
-  the frontend (D-007).
+  `packages/schema` (Zod) with a version bump, regenerated JSON Schema and Pydantic, and a
+  D1 migration where needed, never ad hoc elsewhere.
+- TypeScript for the control plane, application services, content compiler, and CLI;
+  Python only on the lab worker for providers, faults, graders, reference solutions, and
+  validation runners (D-030, D-034). Contracts are Zod; Pydantic is generated (D-032).
+- No business logic in route handlers or Durable Object fetch handlers: thin adapters over
+  `packages/core` services (D-031).
 - Every acceptance criterion in a stage is a test or a scripted check. Do not weaken one to
   pass (invariant 13).
 - Content is data: no course-specific branches in application code (invariants 1–2).
@@ -32,7 +36,7 @@ Run the full verification before any commit that claims a task is done:
 
 ```bash
 bun run verify          # TypeScript: format, lint, boundaries, typecheck, tests, build
-make verify             # once Stage 1 lands: Python lint, types, tests + the above
+uv run --project services/lab-worker task verify   # once Stage 1 lands: ruff, pyright, pytest
 ```
 
 Worker/provider tests that need Docker run on a Linux host (CI runner or the lab host), not

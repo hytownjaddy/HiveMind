@@ -54,6 +54,8 @@ orchestration or cold starts in the practice loop for V1.
 
 ## D-007 · 2026-09-08 · Locked · Hybrid architecture; do not force everything into Cloudflare
 
+> **Partially SUPERSEDED by D-030 and D-034 (2026-09-08): the FastAPI/PostgreSQL/Redis core is dropped; Cloudflare edge usage and Python on the lab worker stand.**
+
 Cloudflare for DNS, Access, Tunnel, frontend hosting where appropriate, caching/storage
 where useful. Core: Next.js (TypeScript) → FastAPI/Python → PostgreSQL, Redis → Python lab
 worker/agent → Docker, containerlab, FRRouting. Python is preferred for orchestration, AI
@@ -223,6 +225,8 @@ useful. Never commit knowingly broken intermediate states.
 
 ## D-026 · 2026-09-08 · Derived from D-007 · Retire the Durable Object / D1 control plane
 
+> **SUPERSEDED by D-030 and D-031 (2026-09-08): Durable Objects and D1 are retained as the control plane.**
+
 The scaffold's `apps/realtime-worker` (LabSession Durable Object) and the D1 binding were
 built for a Cloudflare-only control plane. Under D-007 lab-session authority, lifecycle,
 telemetry, and the terminal WebSocket move to FastAPI + PostgreSQL + Redis + the Python lab
@@ -233,12 +237,16 @@ Tunnel, R2, deploy tooling, lint/format/test tooling, and the app shell are kept
 
 ## D-027 · 2026-09-08 · Derived from D-007, D-021 · Schema source of truth is Pydantic
 
+> **SUPERSEDED by D-032 (2026-09-08): TypeScript/Zod is canonical; Pydantic is generated.**
+
 Shared contracts live as Pydantic models in a Python package (`packages/hivemind-core`),
 exported as JSON Schema and OpenAPI. TypeScript types for the frontend are generated from
 those exports in CI. No hand-maintained duplicate Zod/TS schema for backend contracts;
 frontend-only view models may be TypeScript.
 
 ## D-028 · 2026-09-08 · Derived from D-007 · Repository layout and toolchains
+
+> **SUPERSEDED by D-039 (2026-09-08).**
 
 Monorepo. `apps/web` (Next.js, bun), `services/api` (FastAPI), `services/lab-worker`
 (Python agent), `packages/hivemind-core` (Pydantic contracts, shared Python), `content/`
@@ -249,9 +257,159 @@ prettier, vitest, playwright). Root `make verify` (or equivalent) runs both tool
 
 ## D-029 · 2026-09-08 · Open · Where PostgreSQL lives
 
+> **SUPERSEDED by D-030 (2026-09-08): there is no PostgreSQL; durability is D1 Time Travel plus exports to R2.**
+
 Options: (a) managed Postgres (Neon/Supabase-class, small tier) with nightly logical
 backups to R2; (b) self-hosted on a separate small control host with pgBackRest/WAL to R2;
 (c) Postgres on the lab host with backups to R2, accepting that a host loss means restore
 from the last backup. D-020 rules out (c) as the end state. Recommendation: (a) for Stage 1,
 because it satisfies D-020 with the least operations work; revisit if cost or latency bites.
 Owner: Stage 1; must be resolved before Stage 1 acceptance.
+
+---
+
+## Cloudflare-native revision (2026-09-08, confirmed by Jacob)
+
+## D-030 · 2026-09-08 · Locked · Cloudflare owns the durable/control-plane side; the Linux box exists only for workloads Cloudflare cannot faithfully execute
+
+Supersedes the FastAPI/PostgreSQL/Redis core of D-007, and D-026, D-029. Reason: economic
+and operational simplicity; managed Cloudflare primitives already satisfy the single-user
+control-plane requirements.
+
+Use: Cloudflare Workers, Durable Objects, D1, R2 (plus Access, Tunnel, DNS, Queues/KV where
+useful). Drop from the primary architecture: FastAPI control plane, PostgreSQL, Redis.
+
+Ownership:
+
+- **D1** owns durable cross-session application data: learner, courses, skills, mastery,
+  attempts, career targets, certifications, role profiles, work orders, metadata.
+- **R2** owns blob-like data: recordings, exports/backups, PCAPs, generated artifacts,
+  large attempt artifacts, course assets.
+- **Durable Objects** own authoritative live/session-oriented state where serialization
+  matters: active lab session state, lifecycle, leases, timers, connections, interactive
+  workspace coordination.
+- **Python** remains on the external Linux lab runtime for: lab agent, containerlab
+  providers, FRR orchestration, fault modules, deterministic graders, reference solutions,
+  validation runners, network-specific tooling.
+
+Durability: D1 Time Travel (30-day point-in-time recovery on Workers Paid) plus scheduled
+long-term exports to R2 satisfy D-020. The Ubuntu host is disposable compute holding no
+authoritative learner/course/mastery data: `rm -rf lab-worker`, replace the machine,
+reconnect a worker, lose no meaningful history.
+
+## D-031 · 2026-09-08 · Locked · No business logic in route handlers; keep OpenNext until migration has a real benefit
+
+Layering: UI → Route Handler (thin transport adapter) → Application Service → Domain Logic
+→ D1 / DO / R2. Never a giant `route.ts` containing the application. Reusable TypeScript
+application/domain services live in a package shared by the web app and the session
+Worker.
+
+Deployment adapter: as of September 2026 Cloudflare recommends `vinext` for new
+Next.js-on-Workers apps while OpenNext remains supported. The scaffold is healthy on
+OpenNext; preserve it until migration provides an actual benefit.
+
+## D-032 · 2026-09-08 · Locked · Schema source of truth is TypeScript/Zod; Python consumes generated Pydantic
+
+Supersedes D-027. `packages/schema/` holds Zod schemas and generated JSON Schema; Pydantic
+models are generated from the JSON Schema for the Python lab worker. Applies particularly to
+ProblemSpec, LabSpec, FaultSpec, GraderResult, AttemptResult, WorkOrder, CourseManifest,
+SkillDefinition, CareerProfile. CI fails if generated Python schemas are out of sync with
+the TypeScript source. No manually maintained parallel TS/Python definitions.
+
+## D-033 · 2026-09-08 · Locked · Authentication is Cloudflare Access with Google
+
+Google → Cloudflare Access → HiveMind Worker → Access identity → `learner_id`. HiveMind
+trusts the validated Access identity and maps it to the internal learner record; the
+internal `learner_id` keeps authorization decoupled from an email or from Cloudflare. No
+Auth.js/in-app authentication, signup, password management, recovery, or organizations now.
+If HiveMind becomes multi-user/public, the authentication layer is replaced or augmented
+without redesigning learner/course/mastery data.
+
+## D-034 · 2026-09-08 · Locked · CLI split: TypeScript `hivemind` via Bun; Python worker CLI
+
+Supersedes the D-007 preference for a Python compiler/toolchain. The main
+content/work-order CLI is TypeScript run through Bun: `hivemind course|source|work|career|
+cert|validate|export …`, plus orchestration commands that invoke the worker protocol. Python
+owns a separate worker/runtime CLI beside the lab implementation: `lab provision|destroy`,
+`fault inject|validate`, `problem validate`, `grader execute`, `reference-solution execute`,
+`topology validate`.
+
+## D-035 · 2026-09-08 · Locked · Three execution classes; Stage 2 must evaluate them; capability-based provider selection
+
+- **Class A, Cloudflare-native sandbox** (Sandbox SDK on Containers): candidate for Python,
+  JavaScript/TypeScript, eventually C++ coding problems, unit tests, repository/debugging
+  exercises, shell exercises, isolated single-node Linux exercises.
+- **Class B, external Linux network worker**: required for containerlab, FRRouting
+  topologies, Linux network namespaces, veth pairs, bridges, realistic L2, multi-router BGP,
+  IS-IS, MPLS, topology-level faults. Non-negotiable: Sandbox Docker-in-Docker is rootless
+  and cannot use privileged containers or manipulate iptables.
+- **Class C, either**: single-node Linux exercises; benchmark startup latency, fidelity,
+  cost, isolation, filesystem behaviour, network capabilities, terminal streaming,
+  snapshot/reset, operational complexity; choose the simplest provider that faithfully
+  implements the exercise.
+
+Invariant: a lab declares required capabilities (e.g. `shell.linux`, `python` vs
+`network.namespace`, `network.veth`, `network.containerlab`, `routing.frr`,
+`privilege.net_admin`); HiveMind selects a provider capable of satisfying them. Do not
+pursue uniformity for its own sake.
+
+## D-036 · 2026-09-08 · Locked · Cost principle
+
+Minimize recurring infrastructure and API expenditure: prefer managed/serverless
+control-plane infrastructure, Jacob's existing Claude Max/Claude Code subscription for
+AI-heavy authoring and maintenance, and disposable compute only where real execution
+requires it. The likely recurring expense is the Linux network-lab worker. Do not introduce
+a continuously hosted application/database/cache tier unless a demonstrated limitation
+requires one. AI API usage remains optional, never fundamental.
+
+## D-037 · 2026-09-08 · Locked · UI direction: engineering workstation, desktop-first
+
+HiveMind is an engineering workstation / developer tool: Cursor/VS Code + Grafana + GitHub +
+Datadog + a network operations console. It is not a game and must not resemble a consumer
+learning SaaS. Avoid streak flames, XP, badges, confetti, giant donut charts, motivational
+quotes, cartoon illustrations, "Welcome back!" heroes, giant gradient cards, excessive
+rounded tiles, big KPI cards. Use dense panes, trees, tabs, a command palette (Ctrl+K),
+terminals, diffs, status bars, logs, structured tables, sparklines, keyboard shortcuts,
+breadcrumb paths, monospace identifiers, resizable panels, persistent context. Desktop-first;
+do not optimize initial workstation pages for mobile. Every percentage shows confidence and
+evidence count (D-014).
+
+Mockups in `docs/mockups/` are Stage 1 product-direction inputs (direction, not pixel
+spec, per D-023). Each mockup ships as `NN-name.png` plus `NN-name.md` recording purpose,
+panes, visible state, interactions, lifecycle state, data requirements, unresolved
+questions. Order: Lab Workspace (BGP) → Career Target → Course Workspace → Claude Work Orders
+→ Coding Workspace, then the Control Center, then the rest.
+
+## D-038 · 2026-09-08 · Locked · Identifier formats and canonical lifecycle vocabulary
+
+`HM-WO-0184` work orders, `HM-LAB-829143` lab sessions, `HM-INC-20260908-001` incidents,
+`HM-INT-00412` interviews. Lifecycle names are RFP §86 verbatim in lowercase snake case
+(`queued`, `provisioning`, `baseline_check`, `fault_injection`, `fault_check`, `ready`,
+`active`, `grading`, `completed`, `destroying`, `destroyed`, `failed`) everywhere: UI, API,
+CLI, logs, D1.
+
+## D-039 · 2026-09-08 · Locked · Repository layout and toolchains (revised)
+
+Supersedes D-028.
+
+```text
+apps/web/               Next.js 16 on Workers via OpenNext; UI + thin route handlers
+apps/session-worker/    Worker with the LabSession Durable Object, gateway, lab provider API
+packages/schema/        Zod schemas (canonical) → schemas/*.json → generated Pydantic
+packages/core/          TypeScript application services + domain logic (D1/DO/R2 access)
+packages/cli/           `hivemind` CLI (Bun)
+services/lab-worker/    Python 3.13 lab agent + worker CLI (uv, ruff, pyright, pytest)
+content/                skills, courses, sources, careers, problems, topologies (versioned)
+docs/mockups/           product-direction mockups with companion .md
+.hivemind/work-orders/  work orders for Claude Code
+STAGES/                 stage contracts
+```
+
+The scaffold's `apps/realtime-worker` becomes `apps/session-worker`; `packages/protocol`
+becomes `packages/schema`. TypeScript tooling unchanged (bun, eslint, prettier, vitest,
+playwright, vitest-pool-workers). Root verification runs both toolchains.
+
+## D-040 · 2026-09-08 · Locked · Domain
+
+`hivemindjrr.com` on Cloudflare: web app, Access application, Tunnel hostname for the lab
+worker, and any API hostnames hang off this zone.

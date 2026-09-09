@@ -2,171 +2,191 @@
 
 ## Purpose
 
-Establish the shared source of truth every later stage builds on: Pydantic contracts,
-PostgreSQL model, course package format, skill registry, lab-provider interface,
-ProblemSpec, grader contract, role-profile schema, and the work-order format. Stand up the
-FastAPI control plane, identity through Cloudflare Access, data durability, the content
-compiler, and the persistent documentation set. Retire the parts of the scaffold that
-conflict with D-007. Author the gold-standard lesson with Jacob.
+Establish the shared source of truth every later stage builds on: canonical Zod contracts
+with generated JSON Schema and Pydantic, the D1 data model, course package format, global
+skill registry, `LabProvider` interface and capability model, ProblemSpec, grader contract,
+role-profile schema, work-order format, and the `hivemind` CLI. Reshape the scaffold into
+the D-039 layout with the D-031 layering, identity through Cloudflare Access + Google,
+durability through D1 Time Travel plus R2 exports, the persistent documentation set, and
+the gold-standard lesson authored with Jacob against the `docs/mockups/` direction.
 
 ## User-visible outcome
 
-Jacob signs in through Cloudflare Access, opens Learn, and reads the gold-standard Linux
-networking lesson rendered from versioned files in `content/`. A dashboard shows the seeded
-learner and platform health. `hivemind` CLI compiles content, creates and validates work
-orders, and exports/restores learner data. Destroying the database and restoring from the
-R2 backup leaves the lesson and learner intact.
+Jacob signs in with Google through Cloudflare Access at `hivemindjrr.com`, opens the Course
+Workspace, and reads the gold-standard Linux networking lesson rendered from versioned files
+in `content/`. The Control Center shell shows the seeded learner, environment status, and
+an empty work-order queue. `hivemind` compiles and publishes content, creates and validates
+work orders, and exports learner data. Restoring D1 from an R2 export onto a fresh database
+leaves the lesson and learner intact.
 
 ## In scope
 
-- Repository re-layout to D-028; Python toolchain (`uv`, `ruff`, `pyright`, `pytest`);
-  root `make verify` running Python and TypeScript checks; CI updated.
-- `packages/hivemind-core` v1 contracts: `Learner`, `SkillDefinition`, `SkillGraph`,
+- Repository re-layout to D-039: `apps/web`, `apps/session-worker` (renamed from
+  `apps/realtime-worker`, untouched functionally beyond the rename and Access integration),
+  `packages/schema` (from `packages/protocol`), `packages/core`, `packages/cli`,
+  `services/lab-worker` (skeleton only: pyproject, generated models, worker CLI stub),
+  `content/`, `schemas/`, `.hivemind/work-orders/`, `docs/mockups/`.
+- Python toolchain for the worker skeleton (Python 3.13, `uv`, `ruff`, `pyright`, `pytest`);
+  root verification runs both toolchains; CI updated.
+- `packages/schema` v1 (Zod, canonical): `Learner`, `SkillDefinition`, `SkillGraph`,
   `CourseManifest`, `Module`, `Lesson`, `Question`, `Claim`/`SourceRecord`, `Capability`,
-  `LabProvider` (abstract interface only), `ProblemSpec`, `ProblemInstance`, `Grader`
-  manifest and `GradeResult`, `Attempt`/`Evidence` (types only), `RoleProfile`,
-  `Competency`, `WorkOrder`, `ReviewItem`; versioning helpers; JSON Schema export.
-- Generated TypeScript types from the exported schemas (D-027) wired into `apps/web`.
-- `services/api`: FastAPI skeleton, settings, health, Access JWT validation → `learner_id`,
-  PostgreSQL via SQLAlchemy + Alembic, Redis client, structured logging, OpenAPI.
-- PostgreSQL schema v1 (see Data/schema changes).
-- Content compiler `hivemind content compile` (validate → load into Postgres as an
-  immutable content version) and `hivemind content diff`.
-- Work orders v1: YAML+Markdown format under `.hivemind/work-orders/`, `hivemind work
-new|pull|validate|complete`, status machine, minimal template set (`lesson.add`,
-  `lesson.update`, `problem.create` placeholder, `platform.feature`).
-- Durability (D-020, D-029): nightly logical backup to R2, `hivemind export`, scripted
-  restore drill, documented recovery runbook.
-- `apps/web`: keep shell and tooling; add Learn (course → module → lesson) reading from
-  the API; remove placeholder pages and demo labs UI; add a Work Order copy/export panel
-  fed by the API (no AI).
-- Remove `apps/realtime-worker`, `packages/protocol`, D1 config and migrations (D-026),
-  carrying the lifecycle/deadline-queue design into `services/api` design notes.
-- Gold-standard lesson: topic chosen with Jacob (recommend: Linux routing table and
-  `ip route`, as the first Linux Networking module's anchor), authored collaboratively,
-  meeting RFP §110, with `claims.yaml` provenance.
-- Documentation set completed: `ARCHITECTURE.md` updated to actual, `COURSE_AUTHORING.md`
-  TBD(1) sections filled, `CONTRIBUTING.md` verified against reality.
+  `LabSpec`, `LabProvider` interface types, `ProblemSpec`, `ProblemInstance`, `FaultSpec`,
+  `Grader` manifest and `GraderResult`, `Attempt`/`AttemptResult`/`Evidence` (types only),
+  `RoleProfile`/`CareerProfile`, `Competency`, `WorkOrder`, `ReviewItem`, worker protocol
+  envelope; versioning helpers; JSON Schema export to `schemas/`; Pydantic generation into
+  `services/lab-worker`; CI drift check (D-032).
+- `packages/core`: application services and domain modules with D1 repositories, R2 client,
+  Access identity → `learner_id` mapping, content compiler, work-order state machine,
+  structured logging. Thin route handlers in `apps/web` (D-031).
+- D1 schema v1 via wrangler migrations (see Data/schema changes); seeded learner.
+- Content compiler and publisher: `hivemind content compile|diff|publish` (validate files →
+  content bundle → immutable content version in D1 through the API with a service token).
+- Work orders v1: file format under `.hivemind/work-orders/` (YAML header + prompt),
+  `hivemind work new|pull|validate|complete`, status machine, minimal templates
+  (`lesson.add`, `lesson.update`, `problem.create` placeholder, `platform.feature`),
+  identifiers per D-038.
+- Identity: Cloudflare Access application with Google IdP for `hivemindjrr.com`; JWT
+  validation in the Worker; service tokens for CLI/worker; remove guest HMAC sessions.
+- Durability (D-020, D-030): nightly GitHub Actions `wrangler d1 export` to R2 with
+  retention; `hivemind export`; scripted restore drill; recovery runbook.
+- `apps/web`: shell aligned to the Control Center and Course Workspace mockups (status bar,
+  left tree, command palette scaffold, tabs `Lesson | Lab | Notes | Sources | Mastery` with
+  only Lesson and Sources live); remove placeholder pages and demo labs UI; Work Order
+  copy/export panel (deterministic assembly).
+- Gold-standard lesson: topic agreed with Jacob (proposed: the Linux routing table and
+  `ip route`, anchor of the first Linux Networking module); coverage and sequencing
+  grounded in named authoritative sources (iproute2 documentation, `ip-route(8)`, RHCSA
+  objectives, Red Hat networking guide, relevant RFCs), original wording; `claims.yaml`
+  provenance; meets RFP §110.
+- Documentation set: `ARCHITECTURE.md` updated to actual, `COURSE_AUTHORING.md` TBD(1)
+  filled, `CONTRIBUTING.md` verified, `docs/mockups/*.md` companions present for the five
+  first screens.
 
 ## Explicitly out of scope
 
-- Any lab execution or worker code (Stage 02). The `LabProvider` interface is defined, not
-  implemented.
+- Lab execution: no provider implementations, no Sandbox or worker integration beyond the
+  interface and the worker skeleton (Stage 02). The `LabSession` object keeps its current
+  behaviour under the new name.
 - Problem instantiation, faults, graders as code (Stage 03).
-- Mastery/readiness computation (Stage 06); only the tables and types.
-- Review queue UI and authoring templates beyond the minimal set (Stage 05).
+- Mastery/readiness computation (Stage 06); only tables and types.
+- Review queue UI and full template catalogue (Stage 05).
 - Any API-based AI executor (Stage 08).
-- Multi-user identity (D-008).
+- Multi-user identity (D-033).
+- Migrating OpenNext to `vinext` (D-031).
 
 ## Prerequisites / dependency stages
 
-None. This stage must complete before parallel work begins (D-021).
+None. Inputs: `docs/mockups/` companions for Lab Workspace, Career Target, Course
+Workspace, Claude Work Orders, Coding Workspace. Must complete before parallel work (D-021).
 
 ## Architecture decisions already locked
 
-D-001, D-002 (schemas early), D-007, D-008, D-009 (work-order format), D-010 (gold
-lesson), D-011, D-014 (algorithm version fields exist), D-019 (retention fields), D-020,
-D-021, D-022, D-024, D-025, D-026, D-027, D-028. D-029 must be resolved in this stage.
+D-001, D-002, D-008, D-009, D-010, D-011, D-014, D-019, D-020, D-021, D-022, D-023,
+D-024, D-025, D-030, D-031, D-032, D-033, D-034, D-036, D-037, D-038, D-039, D-040.
 
 ## Files/modules owned by this stage
 
-`packages/hivemind-core/**`, `services/api/**` (skeleton), `schemas/**`, `content/skills/**`
-(initial registry entries), `content/courses/linux/networking/**` (gold lesson),
-`content/careers/**` (schema fixtures only), `.hivemind/work-orders/**` (format + examples),
-`apps/web/app/(app)/learn/**`, `apps/web/lib/api/**` (generated client), `Makefile`,
-`tools/backup/**`, `.github/workflows/ci.yml`, all root docs.
+`packages/schema/**`, `packages/core/**`, `packages/cli/**`, `schemas/**`,
+`services/lab-worker/` (skeleton: `pyproject.toml`, `hivemind_worker/contracts/` generated,
+`hivemind_worker/cli.py` stub), `content/skills/**` (initial entries),
+`content/courses/linux/networking/**` (gold lesson), `content/careers/**` (schema
+fixtures), `.hivemind/work-orders/**`, `apps/web/**` (shell, learn, work-order panel),
+`apps/session-worker/**` (rename + Access), `migrations/**` (D1), `.github/workflows/**`,
+`tools/backup/**`, all root docs.
 
 ## Interfaces/contracts consumed
 
-None from other stages. External: Cloudflare Access (JWT/JWKS), PostgreSQL, Redis, R2 (S3
-API).
+External only: Cloudflare Access (JWKS), D1, R2, GitHub Actions.
 
 ## Interfaces/contracts created
 
-- Pydantic contracts v1 and `schemas/*.json`; generated `apps/web/lib/api/types.ts`.
-- API v1: `GET /health`, `GET /me`, `GET /courses`, `GET /courses/{id}/versions/{v}`,
-  `GET /lessons/{id}`, `GET/POST /work-orders`, `POST /work-orders/{id}/export`,
-  `GET /content/versions`.
-- `hivemind` CLI: `content compile|diff`, `work new|pull|validate|complete`, `export`,
-  `restore`, `db migrate`.
-- Work-order file format and status machine.
-- `LabProvider` abstract interface (Python Protocol) for Stage 02 to implement.
+- Zod contracts v1, `schemas/*.json`, generated Pydantic package.
+- API v1 (thin handlers over `packages/core`): `GET /api/health`, `GET /api/me`,
+  `GET /api/courses`, `GET /api/courses/{id}/versions/{v}`, `GET /api/lessons/{id}`,
+  `GET|POST /api/work-orders`, `POST /api/work-orders/{id}/export`,
+  `POST /api/content/versions` (service token).
+- `hivemind` CLI: `content compile|diff|publish`, `work new|pull|validate|complete`,
+  `export`, `db migrate`.
+- Work-order file format and status machine; identifier formats.
+- `LabProvider` interface and capability vocabulary for Stage 02.
 
 ## Data/schema changes
 
-PostgreSQL v1 (Alembic `0001`): `learners`, `content_versions`, `courses`,
-`course_versions`, `modules`, `lessons`, `lesson_questions`, `skills`, `skill_versions`,
-`skill_relationships`, `sources`, `content_claims`, `role_profiles`, `competencies`,
-`role_competencies`, `work_orders`, `review_items`, `attempts` (created empty with
-immutability trigger), `lab_sessions` (empty), `problem_instances` (empty),
-`algorithm_versions`. Every learner-scoped table carries `learner_id`.
+D1 migration `0002` (replacing the scaffold's `0001`): `learners`, `content_versions`,
+`courses`, `course_versions`, `modules`, `lessons`, `lesson_questions`, `skills`,
+`skill_versions`, `skill_relationships`, `sources`, `content_claims`, `role_profiles`,
+`competencies`, `role_competencies`, `work_orders`, `review_items`, `attempts` (empty;
+append-only enforced in `packages/core`), `lab_sessions` (index only; live state stays in
+the object), `problem_instances` (empty), `algorithm_versions`. Every learner-scoped table
+carries `learner_id`.
 
 ## Acceptance criteria
 
-1. `make verify` passes on a clean checkout (Python + TypeScript).
-2. `hivemind content compile content/` loads the gold lesson; `GET /lessons/{id}` returns it;
-   Learn renders it behind Access.
-3. Changing any Pydantic contract without bumping its version fails CI; `schemas/` and the
-   generated TS types are checked for drift in CI.
-4. `hivemind work new lesson.update --lesson <id>` produces a valid work order that Claude
-   Code can execute from the file alone; `hivemind work validate` rejects an invalid one.
-5. Restore drill: run backup → drop database → `hivemind restore <snapshot>` → acceptance 2
-   passes again. Scripted and documented.
-6. Unauthenticated requests to the API and web hostnames are rejected by Access; the API
-   rejects requests without a valid Access JWT.
-7. `apps/realtime-worker`, `packages/protocol`, D1 config, placeholder pages, and demo labs
-   UI are gone; `bun run verify` still passes.
-8. Gold lesson approved by Jacob and marked `PUBLISHED` in its content version.
+1. `bun run verify` and the Python checks pass on a clean checkout; CI green.
+2. `hivemind content compile content/ && hivemind content publish` loads the gold lesson;
+   `GET /api/lessons/{id}` returns it; the Course Workspace renders it behind Access.
+3. Changing a Zod contract without a version bump fails CI; `schemas/` and the generated
+   Pydantic package are drift-checked in CI.
+4. `hivemind work new lesson.update --lesson <id>` produces a valid `HM-WO-nnnn` work order
+   executable by Claude Code from the file alone; `hivemind work validate` rejects an
+   invalid one.
+5. Restore drill: nightly export exists in R2 → import into a fresh D1 → acceptance 2
+   passes. Scripted and documented.
+6. Unauthenticated requests are rejected by Access; the Worker rejects requests with an
+   invalid Access JWT; `/api/me` returns the seeded `learner_id`.
+7. No business logic in route handlers: a lint rule or review checklist item enforces
+   that handlers only call `packages/core` services (documented in `CONTRIBUTING.md`).
+8. Guest HMAC sessions, placeholder pages, and the demo labs UI are gone; the session
+   Worker still passes its workerd tests under the new name.
+9. Gold lesson approved by Jacob and `PUBLISHED`.
 
 ## Automated test requirements
 
-Unit tests for every contract (round-trip, version bump detection); compiler tests with
-fixture courses including invalid ones; API tests with a test database; CLI tests; a CI job
-that runs the restore drill against a disposable Postgres.
+Contract round-trip and version tests; compiler tests with valid/invalid fixture courses;
+`packages/core` service tests against a local D1 (miniflare); CLI tests; workerd tests for
+the session Worker; a CI job for the restore drill against a disposable D1.
 
 ## Manual QA requirements
 
-Jacob: sign in, read the lesson on desktop and phone width, create a work order from the
-UI, paste it into Claude Code, confirm it is executable without extra context.
+Jacob: sign in with Google, read the lesson, create a work order from the UI, paste it
+into Claude Code, confirm it is executable without extra context; compare the shell to
+the Control Center and Course Workspace mockups.
 
 ## Security constraints
 
-Access JWT validated with key rotation; no secrets in `content/` or work orders; backups
-encrypted at rest in R2 with restricted credentials; database credentials only in the host
-secret store.
+Access JWT validated with key rotation; service tokens scoped per caller; no secrets in
+`content/` or work orders; R2 exports in a private bucket with restricted credentials.
 
 ## Performance expectations
 
-Lesson page under 500 ms server time from the API; compile of the initial content under
-10 s. Nothing else is performance-sensitive yet.
+Lesson page under 300 ms at the edge; compile of initial content under 10 s.
 
 ## Migration requirements
 
-Alembic from empty. Scaffold's D1 data is discarded (nothing real). Document how content
-versions are re-compiled after a schema migration.
+D1 migrations from the scaffold's `0001` (dropped, nothing real) to `0002`. Document how
+content versions are re-published after a schema migration.
 
 ## Rollback requirements
 
-Every Alembic migration has a tested downgrade. Content versions are immutable; rollback of
-content is publishing a previous version, not deleting rows. Removal of scaffold code is a
-single reviewable commit that can be reverted.
+Every D1 migration has a tested down script. Content versions are immutable; rollback of
+content is publishing a previous version. Scaffold removals are single reviewable commits.
 
 ## Known risks
 
-- Over-designing contracts without real content: mitigate with the gold lesson plus a
-  drafted BGP `ProblemSpec` fixture used only to validate schemas.
+- Over-designing contracts without content: mitigate with the gold lesson plus a drafted
+  BGP `ProblemSpec` fixture used only to validate schemas.
 - Access misconfiguration locking Jacob out: document a break-glass path.
-- D-029 left open blocks acceptance 5.
+- Pydantic generation fidelity for discriminated unions: choose the generator early and
+  test with the worker protocol envelope.
 
 ## Forbidden shortcuts
 
-Hand-written TypeScript copies of backend schemas; storing content only in Postgres without
-files; `learner_id` defaults that assume one user; skipping the restore drill; keeping the
-Durable Object "because it works".
+Hand-written Pydantic copies of contracts; business logic in `route.ts`; storing content
+only in D1 without files; `learner_id` defaults that assume one user; skipping the restore
+drill; introducing a hosted database "temporarily".
 
 ## Definition of done
 
-- [ ] All acceptance criteria pass; `make verify` green in CI.
-- [ ] D-029 resolved and recorded in `DECISIONS.md`.
+- [ ] All acceptance criteria pass; CI green.
 - [ ] `ARCHITECTURE.md`, `COURSE_AUTHORING.md`, `AGENTS.md` reflect the real tree.
 - [ ] `STAGES/README.md` status updated; milestone commit `chore(stage-01): foundation and contracts` and tag `stage-01`.

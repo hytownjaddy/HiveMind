@@ -51,7 +51,7 @@ D-002, D-014, D-015, D-016, invariants 1, 9.
 
 ## Files/modules owned by this stage
 
-`packages/hivemind-core/hivemind_core/algorithms/**`, `services/api/hivemind_api/mastery/**`,
+`packages/core/src/algorithms/**`, `packages/core/src/mastery/**`,
 `.../practice/**`, `.../careers/**`, `apps/web/app/(app)/{practice,skills,career}/**`,
 `apps/web/app/(app)/page.tsx` (dashboard), `content/careers/roles/**`.
 
@@ -69,7 +69,7 @@ D-002, D-014, D-015, D-016, invariants 1, 9.
 
 ## Data/schema changes
 
-Alembic `0006`: `skill_states`, `mastery_updates`, `difficulty_ratings`, `retention_schedule`,
+D1 migration `0007`: `skill_states`, `mastery_updates`, `difficulty_ratings`, `retention_schedule`,
 `learner_targets`, `readiness_snapshots`, `algorithm_versions` filled.
 
 ## Acceptance criteria
@@ -106,7 +106,7 @@ Mastery update under 200 ms per attempt; readiness recompute under 2 s for 300 s
 
 ## Migration requirements
 
-Alembic `0006`; backfill by replaying attempts through `v1`.
+D1 migration `0007`; backfill by replaying attempts through `v1`.
 
 ## Rollback requirements
 

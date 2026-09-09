@@ -50,7 +50,7 @@ invariants 2, 3, 5, 9.
 ## Files/modules owned by this stage
 
 `apps/web/app/(app)/labs/**`, `apps/web/app/(app)/history/**`, `apps/web/components/labs/**`,
-`apps/web/components/topology/**`, `services/api/hivemind_api/attempts/**`,
+`apps/web/components/topology/**`, `packages/core/src/attempts/**`,
 `content/courses/linux/networking/**` (module), `content/courses/networking/bgp/**` (module),
 `docs/wireframes/lab-workspace/**`.
 
@@ -67,7 +67,7 @@ API (01), generated TS types.
 
 ## Data/schema changes
 
-Alembic `0004`: `attempts` filled with immutability trigger, `attempt_events`,
+D1 migration `0005`: `attempts` filled with immutability trigger, `attempt_events`,
 `hint_usage`, session ↔ attempt links.
 
 ## Acceptance criteria
@@ -104,7 +104,7 @@ results under 10 s after submit.
 
 ## Migration requirements
 
-Alembic `0004` with downgrade.
+D1 migration `0005` with downgrade.
 
 ## Rollback requirements
 

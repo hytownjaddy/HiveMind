@@ -26,7 +26,7 @@ content/
   careers/                              role profiles, companies, certifications
 ```
 
-Schemas: `packages/hivemind-core` (Pydantic) → `schemas/*.json`. **TBD(1)**: exact field
+Schemas: `packages/schema` (Zod, canonical) → `schemas/*.json` → generated Pydantic for the worker. **TBD(1)**: exact field
 lists.
 
 ## Lesson quality bar (RFP §110)

@@ -11,18 +11,24 @@ AI generates intent; code determines reality; deterministic validators decide co
 archetype** (topology + objectives + variation dimensions) combined with **fault modules**
 and a **grader**, instantiated by a **seed**.
 
-## Runtime classes and capabilities (RFP §36, §106)
+## Execution classes and capabilities (D-035, RFP §36, §106)
 
-| Capability                     | Provider (worker)                        | First used |
-| ------------------------------ | ---------------------------------------- | ---------- |
-| `container.linux`              | Docker container(s), Ubuntu-based images | Stage 2    |
-| `network.containerlab`         | containerlab + FRRouting nodes           | Stage 2    |
-| `runtime.python`               | Python container with tests/lint         | Stage 7    |
-| `runtime.node`, `compiler.cpp` | Phase 2 (D-018)                          | later      |
-| `telemetry.simulated`          | Simulated optics/telemetry (fiber)       | Stage 9    |
-| `orchestration.kubernetes`     | k3s/kind clusters                        | Phase 3    |
+A lab declares the capabilities it needs; the `LabSession` Durable Object selects a
+provider that satisfies all of them. Never pick a provider by habit.
 
-Courses request capabilities; the worker advertises the providers it can satisfy.
+| Capability                                                   | Class | Provider                                     | First used               |
+| ------------------------------------------------------------ | ----- | -------------------------------------------- | ------------------------ |
+| `shell.linux`, `python`, `node`                              | A     | Cloudflare Sandbox                           | Stage 2 (spike), Stage 7 |
+| `compiler.cpp`                                               | A     | Cloudflare Sandbox                           | Phase 2 (D-018)          |
+| single-node Linux exercises                                  | C     | Sandbox or worker, per the Stage 2 benchmark | Stage 2                  |
+| `network.namespace`, `network.veth`, `network.bridge`        | B     | Ubuntu lab worker                            | Stage 2                  |
+| `network.containerlab`, `routing.frr`, `privilege.net_admin` | B     | Ubuntu lab worker                            | Stage 2                  |
+| `network.automation` (Python attached to a topology)         | B     | Ubuntu lab worker                            | Stage 9                  |
+| `capture.pcap`, `telemetry.simulated`                        | B / A | worker / Worker-side simulation              | Stage 9                  |
+| `orchestration.kubernetes`                                   | B     | worker (k3s/kind)                            | Phase 3                  |
+
+Sandbox Docker-in-Docker is rootless with no privileged containers or iptables, so Class B
+capabilities never run on Sandbox.
 
 ## Lifecycle (RFP §86)
 
@@ -31,9 +37,9 @@ QUEUED → PROVISIONING → BASELINE_CHECK → FAULT_INJECTION → FAULT_CHECK �
       → GRADING → COMPLETED → DESTROYING → DESTROYED   (FAILED from any state)
 ```
 
-The API owns the state machine and persists every transition; the worker executes steps
-and reports. Alarm-like deadlines (idle expiry, hard TTL) are queued in Postgres/Redis and
-processed idempotently.
+The `LabSession` Durable Object owns the state machine and persists every transition; the worker executes steps
+and reports. Deadlines (idle expiry, hard TTL) are queued in the object's SQLite and processed
+idempotently by its single alarm.
 
 ## ProblemSpec (RFP §43, §47)
 
@@ -73,7 +79,8 @@ unrelated systems remain healthy.
 
 ## Fault modules (RFP §44)
 
-Owned by HiveMind under `services/lab-worker/.../faults/<domain>/`. Each module declares
+Owned by HiveMind under `services/lab-worker/hivemind_worker/faults/<domain>/` (Python,
+consuming generated Pydantic contracts). Each module declares
 parameters, preconditions, the intended observable failure, and its verification check.
 Initial libraries: Linux (10) and BGP (10) in Stage 3.
 

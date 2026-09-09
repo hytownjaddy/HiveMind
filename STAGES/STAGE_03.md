@@ -52,7 +52,7 @@ invariants 3, 4, 5, 8.
 ## Files/modules owned by this stage
 
 `services/lab-worker/hivemind_worker/faults/**`, `.../graders/**`, `.../solutions/**`,
-`services/api/hivemind_api/problems/**`, `content/problems/linux/**`, `content/problems/bgp/**`,
+`packages/core/src/problems/**`, `content/problems/linux/**`, `content/problems/bgp/**`,
 `content/topologies/**` (additions), `LAB_AUTHORING.md` TBD(3).
 
 ## Interfaces/contracts consumed
@@ -69,7 +69,7 @@ topology renderer, work orders, review items.
 
 ## Data/schema changes
 
-Alembic `0003`: `problem_archetypes`, `fault_modules`, `graders`, `problem_instances`
+D1 migration `0004`: `problem_archetypes`, `fault_modules`, `graders`, `problem_instances`
 (filled), `validation_runs`, `hint_tiers`.
 
 ## Acceptance criteria
@@ -107,7 +107,7 @@ Instantiation under 1 s; validation of one seed under 3 min for BGP; grading und
 
 ## Migration requirements
 
-Alembic `0003` with downgrade; archetype/fault/grader versions are additive.
+D1 migration `0004` with downgrade; archetype/fault/grader versions are additive.
 
 ## Rollback requirements
 

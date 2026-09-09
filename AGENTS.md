@@ -4,9 +4,9 @@ HiveMind is the adaptive technical-learning platform specified in `docs/RFP.md`.
 organized in stages (`STAGES/`), governed by locked decisions (`DECISIONS.md`) and the
 target architecture (`ARCHITECTURE.md`). Read those three before touching code. Process
 rules are in `CONTRIBUTING.md`; content and lab rules in `COURSE_AUTHORING.md` and
-`LAB_AUTHORING.md`.
+`LAB_AUTHORING.md`; mockups and their companion notes in `docs/mockups/`.
 
-## Global invariants (D-022)
+## Global invariants (D-022, D-031, D-035)
 
 1. No hard-coded assumption that HiveMind only teaches networking.
 2. No hard-coded assumption that every course uses labs.
@@ -23,40 +23,57 @@ rules are in `CONTRIBUTING.md`; content and lab rules in `COURSE_AUTHORING.md` a
 13. Do not silently weaken an acceptance criterion to make a test pass.
 14. Do not preserve bad architecture merely because it already exists in the scaffold.
 15. Every major change should be explainable and reversible.
+16. No business logic in route handlers or Durable Object fetch handlers; thin adapters
+    over `packages/core` services.
+17. A lab declares capabilities; HiveMind selects a provider that satisfies them.
 
-## Repository state
+## Architecture in one paragraph
 
-The tree is transitioning from a Cloudflare-only scaffold to the D-007 hybrid. Until
-Stage 1 completes, `apps/realtime-worker`, `packages/protocol`, the D1 binding, and the
-demo labs UI are **scheduled for removal** (D-026); do not extend them. Target layout
-(D-028):
+Cloudflare owns the durable/control-plane side: Next.js on Workers (OpenNext) for UI and
+thin route handlers, a Worker with the `LabSession` Durable Object for live session
+authority, D1 for durable records, R2 for blobs and backups, Access with Google for
+identity, Sandbox for coding and simple Linux exercises. A disposable Ubuntu x86-64 host
+running a Python lab agent exists only for privileged networking (containerlab, FRR).
+Claude Code executes work orders from `.hivemind/work-orders/`; no AI API is required for
+normal operation. Domain: `hivemindjrr.com`.
+
+## Repository state and target layout (D-039)
+
+The tree is the Cloudflare scaffold being reshaped in Stage 01. `apps/realtime-worker`
+becomes `apps/session-worker`; `packages/protocol` becomes `packages/schema`. The guest
+HMAC session, placeholder pages, and demo labs UI are removed in Stage 01; do not extend
+them.
 
 ```text
-apps/web/               Next.js 16 (TypeScript) on Cloudflare via OpenNext
-services/api/           FastAPI control plane (Python)
-services/lab-worker/    Python lab agent on the Ubuntu lab host
-packages/hivemind-core/ Pydantic contracts, shared Python
-content/                skills, courses, sources, careers (versioned files)
-schemas/                exported JSON Schema; TS types generated from these
+apps/web/               Next.js 16 (TypeScript) on Workers via OpenNext; UI + thin route handlers
+apps/session-worker/    LabSession Durable Object, gateway, lab provider API
+packages/schema/        Zod contracts (canonical) → schemas/*.json → generated Pydantic
+packages/core/          application services + domain logic (D1/DO/R2 access, algorithms)
+packages/cli/           `hivemind` CLI (Bun)
+services/lab-worker/    Python 3.13 lab agent + worker CLI (uv, ruff, pyright, pytest)
+content/                skills, courses, sources, careers, problems, topologies
+docs/mockups/           NN-name.png + NN-name.md product-direction inputs
 .hivemind/work-orders/  work orders consumed by Claude Code
-STAGES/                 stage plans (one self-contained file per stage)
-docs/                   RFP, RFP review
+STAGES/                 stage contracts; docs/ holds the RFP and its review
 ```
 
 ## Commands
 
 ```text
 bun install                      TypeScript deps (bun 1.3.14, see .bun-version)
-bun run dev                      web dev server (+ legacy realtime worker until Stage 1 removes it)
+bun run dev                      web dev server + session worker side by side
 bun run verify                   TS format, lint, boundaries, typecheck, tests, OpenNext build
-make verify                      (from Stage 1) Python + TypeScript verification
-hivemind …                       (from Stage 1) content compile, work orders, problem validation
+uv run --project services/lab-worker task verify   (from Stage 01) ruff, pyright, pytest
+hivemind …                       (from Stage 01) content, work orders, careers, export, lab orchestration
 ```
 
 ## Conventions
 
-- Python for orchestration, graders, faults, agents, compiler, workflows; TypeScript for
-  the frontend (D-007). Contracts are Pydantic; TS types are generated (D-027).
+- TypeScript for the control plane, services, compiler, CLI; Python only on the lab worker
+  (D-030, D-034). Zod is canonical; Pydantic is generated; CI fails on drift (D-032).
+- Identifiers: `HM-WO-0184`, `HM-LAB-829143`, `HM-INC-20260908-001`, `HM-INT-00412`.
+  Lifecycle names are RFP §86 verbatim in snake case (D-038).
+- UI is an engineering workstation, desktop-first (D-037). No gamification.
 - One coherent commit per task, conventional messages, never a broken commit (D-025).
 - Work outside your stage is a proposal in `DECISIONS.md`, not code.
 - Never log secrets, cookies, or learner terminal contents outside redacted telemetry storage.
@@ -65,4 +82,5 @@ hivemind …                       (from Stage 1) content compile, work orders, 
 
 `apps/web` runs Next.js 16 App Router: `proxy.ts` replaced middleware; `params` and
 `searchParams` are Promises. Read `node_modules/next/dist/docs/` from `apps/web` before
-writing Next code. `next dev` re-adds a notice block below this line.
+writing Next code. Keep OpenNext until migration to `vinext` has a real benefit (D-031).
+`next dev` re-adds a notice block below this line.

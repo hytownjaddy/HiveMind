@@ -17,7 +17,7 @@ are resolved with Jacob.
 
 ```mermaid
 flowchart LR
-    S1[01 Foundation & contracts] --> S2[02 Lab worker runtime]
+    S1[01 Foundation & contracts] --> S2[02 Lab runtime: execution classes and providers]
     S1 --> S5[05 Authoring pipeline & review queues]
     S2 --> S3[03 Problem engine, faults, graders]
     S3 --> S4[04 Lab workspace: Linux + BGP playable]

@@ -46,7 +46,7 @@ D-004, D-009, D-010, D-011, D-022 invariants 6, 7, 10, 11.
 
 ## Files/modules owned by this stage
 
-`services/api/hivemind_api/review/**`, `.../workorders/**` (templates, assembly),
+`packages/core/src/review/**`, `.../workorders/**` (templates, assembly),
 `.../sources/**`, `apps/web/app/(app)/review/**`, `apps/web/app/(app)/library/**`,
 `apps/web/components/workorders/**`, `.hivemind/templates/**`, `COURSE_AUTHORING.md`
 TBD(5).
@@ -64,7 +64,7 @@ TBD(5).
 
 ## Data/schema changes
 
-Alembic `0005`: `review_comments`, `review_checklists`, `source_health`, `work_order_events`,
+D1 migration `0006`: `review_comments`, `review_checklists`, `source_health`, `work_order_events`,
 content state columns.
 
 ## Acceptance criteria
@@ -98,7 +98,7 @@ Queue and diff views under 1 s for 100 items.
 
 ## Migration requirements
 
-Alembic `0005` with downgrade; existing Stage 01–04 content migrated into QA states as
+D1 migration `0006` with downgrade; existing Stage 01–04 content migrated into QA states as
 `PUBLISHED`.
 
 ## Rollback requirements
