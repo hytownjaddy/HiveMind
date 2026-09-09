@@ -40,3 +40,10 @@ blob-report/
 *.log
 .eslintcache
 .turbo/
+
+# Python (services/lab-worker)
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc

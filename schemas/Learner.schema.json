@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract Learner v1.0.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract Learner v1.0.1; generated from packages/schema, do not edit",
   "$id": "Learner.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -23,8 +23,8 @@
       "additionalProperties": false,
       "properties": {
         "email": {
-          "format": "email",
-          "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+          "maxLength": 254,
+          "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
           "type": "string"
         },
         "provider": {

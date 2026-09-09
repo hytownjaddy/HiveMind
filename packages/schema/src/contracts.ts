@@ -56,7 +56,23 @@ import { skillDefinitionSchema, skillGraphSchema } from "./skills";
 import { claimSchema, sourceRecordSchema } from "./sources";
 import { reviewItemSchema, workOrderSchema } from "./work-order";
 import {
+  destroyJobResultSchema,
+  destroyJobSchema,
+  errorEventSchema,
+  execJobResultSchema,
+  execJobSchema,
+  faultInjectJobSchema,
+  faultJobResultSchema,
+  faultVerifyJobSchema,
+  gradeJobResultSchema,
+  gradeJobSchema,
+  heartbeatSchema,
   jobResultSchema,
+  logEventSchema,
+  provisionJobResultSchema,
+  provisionJobSchema,
+  resultEventSchema,
+  statusEventSchema,
   workerEnvelopeSchema,
   workerMessageSchema,
 } from "./worker-protocol";
@@ -106,11 +122,11 @@ export const CONTRACTS: readonly ContractEntry[] = [
   entry("LessonElement", "1.0.0", "RFP §110 lesson element", lessonElementSchema),
   entry("Capability", "1.0.0", "Lab capability id", capabilitySchema),
   // Learner and skills
-  entry("Learner", "1.0.0", "Learner record", learnerSchema),
+  entry("Learner", "1.0.1", "Learner record", learnerSchema),
   entry("SkillDefinition", "1.0.0", "Versioned skill", skillDefinitionSchema),
   entry("SkillGraph", "1.0.0", "Skill graph", skillGraphSchema),
   // Content
-  entry("SourceRecord", "1.0.0", "Source with provenance and trust", sourceRecordSchema),
+  entry("SourceRecord", "1.0.1", "Source with provenance and trust", sourceRecordSchema),
   entry("Claim", "1.0.0", "Factual claim with provenance", claimSchema),
   entry("InlineNode", "1.0.0", "Lesson inline render node", inlineNodeSchema),
   entry("BlockNode", "1.0.0", "Lesson block render node", blockNodeSchema),
@@ -141,7 +157,7 @@ export const CONTRACTS: readonly ContractEntry[] = [
   entry("LabSpec", "1.0.0", "Lab specification", labSpecSchema),
   entry(
     "LabProviderDescriptor",
-    "1.0.0",
+    "1.0.1",
     "Provider descriptor",
     labProviderDescriptorSchema,
   ),
@@ -178,9 +194,25 @@ export const CONTRACTS: readonly ContractEntry[] = [
   entry("WorkOrder", "1.0.0", "Claude work order", workOrderSchema),
   entry("ReviewItem", "1.0.0", "Review queue item", reviewItemSchema),
   // Worker protocol
-  entry("JobResult", "1.0.0", "Worker job result", jobResultSchema),
-  entry("WorkerMessage", "1.0.0", "Worker protocol message", workerMessageSchema),
-  entry("WorkerEnvelope", "1.0.0", "Worker protocol envelope", workerEnvelopeSchema),
+  entry("ProvisionJob", "1.0.0", "Provision a lab", provisionJobSchema),
+  entry("ExecJob", "1.0.0", "Run a command on a node", execJobSchema),
+  entry("FaultInjectJob", "1.0.0", "Inject a fault", faultInjectJobSchema),
+  entry("FaultVerifyJob", "1.0.0", "Verify a fault took effect", faultVerifyJobSchema),
+  entry("GradeJob", "1.0.0", "Run a grader", gradeJobSchema),
+  entry("DestroyJob", "1.0.0", "Destroy a lab", destroyJobSchema),
+  entry("StatusEvent", "1.0.0", "Lifecycle status event", statusEventSchema),
+  entry("LogEvent", "1.0.0", "Log line event", logEventSchema),
+  entry("ResultEvent", "1.0.0", "Job result event", resultEventSchema),
+  entry("ErrorEvent", "1.0.0", "Error event", errorEventSchema),
+  entry("Heartbeat", "1.0.0", "Worker heartbeat", heartbeatSchema),
+  entry("ProvisionJobResult", "1.0.0", "Provision job result", provisionJobResultSchema),
+  entry("ExecJobResult", "1.0.0", "Exec job result", execJobResultSchema),
+  entry("FaultJobResult", "1.0.0", "Fault job result", faultJobResultSchema),
+  entry("GradeJobResult", "1.0.0", "Grade job result", gradeJobResultSchema),
+  entry("DestroyJobResult", "1.0.0", "Destroy job result", destroyJobResultSchema),
+  entry("JobResult", "1.0.1", "Worker job result", jobResultSchema),
+  entry("WorkerMessage", "1.0.1", "Worker protocol message", workerMessageSchema),
+  entry("WorkerEnvelope", "1.0.1", "Worker protocol envelope", workerEnvelopeSchema),
 ];
 
 export function contractById(id: string): ContractEntry {

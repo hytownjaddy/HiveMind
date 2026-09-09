@@ -1,0 +1,74 @@
+{
+  "$comment": "HiveMind contract Heartbeat v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Heartbeat.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Worker heartbeat",
+  "properties": {
+    "active_sessions": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "capabilities": {
+      "items": {
+        "$ref": "Capability.schema.json"
+      },
+      "type": "array"
+    },
+    "load": {
+      "additionalProperties": false,
+      "properties": {
+        "cpu_percent": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "memory_percent": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "cpu_percent",
+        "memory_percent"
+      ],
+      "type": "object"
+    },
+    "runtime_versions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "propertyNames": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "type": {
+      "const": "heartbeat",
+      "type": "string"
+    },
+    "worker_id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "worker_id",
+    "capabilities",
+    "active_sessions",
+    "load",
+    "runtime_versions",
+    "at"
+  ],
+  "title": "Heartbeat",
+  "type": "object"
+}

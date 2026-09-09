@@ -1,0 +1,22 @@
+{
+  "$comment": "HiveMind contract ExecJobResult v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ExecJobResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Exec job result",
+  "properties": {
+    "kind": {
+      "const": "exec",
+      "type": "string"
+    },
+    "result": {
+      "$ref": "ExecResult.schema.json"
+    }
+  },
+  "required": [
+    "kind",
+    "result"
+  ],
+  "title": "ExecJobResult",
+  "type": "object"
+}

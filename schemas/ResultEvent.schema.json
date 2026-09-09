@@ -1,0 +1,36 @@
+{
+  "$comment": "HiveMind contract ResultEvent v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ResultEvent.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Job result event",
+  "properties": {
+    "job_id": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "result": {
+      "$ref": "JobResult.schema.json"
+    },
+    "type": {
+      "const": "event.result",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "job_id",
+    "lab_session_id",
+    "ok",
+    "result"
+  ],
+  "title": "ResultEvent",
+  "type": "object"
+}

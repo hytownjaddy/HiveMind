@@ -82,19 +82,37 @@ export const destroyJobSchema = z.strictObject({
   reason: z.enum(["completed", "expired", "requested", "failed", "orphaned"]),
 });
 
-export const jobResultSchema = z.discriminatedUnion("kind", [
-  z.strictObject({ kind: z.literal("provision"), result: provisionResultSchema }),
-  z.strictObject({ kind: z.literal("exec"), result: execResultSchema }),
-  z.strictObject({
-    kind: z.literal("fault"),
-    result: z.strictObject({
-      applied: z.boolean(),
-      verified: z.boolean(),
-      detail: z.string().max(1000).optional(),
-    }),
+export const provisionJobResultSchema = z.strictObject({
+  kind: z.literal("provision"),
+  result: provisionResultSchema,
+});
+export const execJobResultSchema = z.strictObject({
+  kind: z.literal("exec"),
+  result: execResultSchema,
+});
+export const faultJobResultSchema = z.strictObject({
+  kind: z.literal("fault"),
+  result: z.strictObject({
+    applied: z.boolean(),
+    verified: z.boolean(),
+    detail: z.string().max(1000).optional(),
   }),
-  z.strictObject({ kind: z.literal("grade"), result: graderResultSchema }),
-  z.strictObject({ kind: z.literal("destroy"), result: destroyResultSchema }),
+});
+export const gradeJobResultSchema = z.strictObject({
+  kind: z.literal("grade"),
+  result: graderResultSchema,
+});
+export const destroyJobResultSchema = z.strictObject({
+  kind: z.literal("destroy"),
+  result: destroyResultSchema,
+});
+
+export const jobResultSchema = z.discriminatedUnion("kind", [
+  provisionJobResultSchema,
+  execJobResultSchema,
+  faultJobResultSchema,
+  gradeJobResultSchema,
+  destroyJobResultSchema,
 ]);
 export type JobResult = z.infer<typeof jobResultSchema>;
 

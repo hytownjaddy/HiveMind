@@ -1,0 +1,37 @@
+{
+  "$comment": "HiveMind contract StatusEvent v1.0.0; generated from packages/schema, do not edit",
+  "$id": "StatusEvent.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Lifecycle status event",
+  "properties": {
+    "at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "detail": {
+      "maxLength": 500,
+      "type": "string"
+    },
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "LabStatus.schema.json"
+    },
+    "type": {
+      "const": "event.status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "lab_session_id",
+    "status",
+    "at"
+  ],
+  "title": "StatusEvent",
+  "type": "object"
+}

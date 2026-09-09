@@ -1,0 +1,22 @@
+{
+  "$comment": "HiveMind contract GradeJobResult v1.0.0; generated from packages/schema, do not edit",
+  "$id": "GradeJobResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Grade job result",
+  "properties": {
+    "kind": {
+      "const": "grade",
+      "type": "string"
+    },
+    "result": {
+      "$ref": "GraderResult.schema.json"
+    }
+  },
+  "required": [
+    "kind",
+    "result"
+  ],
+  "title": "GradeJobResult",
+  "type": "object"
+}

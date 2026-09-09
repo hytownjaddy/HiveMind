@@ -30,7 +30,11 @@ export type LearnerSettings = z.infer<typeof learnerSettingsSchema>;
 /** Validated identity as delivered by Cloudflare Access (D-033). */
 export const accessIdentitySchema = z.strictObject({
   provider: z.literal("cloudflare_access"),
-  email: z.email(),
+  /** Pattern-checked (not `format: email`) so generated Pydantic stays a plain `str`, D-043. */
+  email: z
+    .string()
+    .max(254)
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/u, "invalid-email"),
   /** Access `sub` claim when present; email remains the stable mapping key. */
   subject: z.string().min(1).optional(),
 });

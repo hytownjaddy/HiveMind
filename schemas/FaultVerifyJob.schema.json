@@ -1,0 +1,41 @@
+{
+  "$comment": "HiveMind contract FaultVerifyJob v1.0.0; generated from packages/schema, do not edit",
+  "$id": "FaultVerifyJob.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Verify a fault took effect",
+  "properties": {
+    "fault_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "fault_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "job_id": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    },
+    "type": {
+      "const": "job.fault.verify",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "job_id",
+    "lab_session_id",
+    "fault_id",
+    "fault_version"
+  ],
+  "title": "FaultVerifyJob",
+  "type": "object"
+}

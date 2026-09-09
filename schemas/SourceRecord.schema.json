@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract SourceRecord v1.0.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract SourceRecord v1.0.1; generated from packages/schema, do not edit",
   "$id": "SourceRecord.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -58,7 +58,8 @@
       "$ref": "TrustTier.schema.json"
     },
     "url": {
-      "format": "uri",
+      "maxLength": 2048,
+      "pattern": "^https?:\\/\\/[^\\s/$.?#][^\\s]*$",
       "type": "string"
     }
   },

@@ -1,0 +1,22 @@
+{
+  "$comment": "HiveMind contract ProvisionJobResult v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ProvisionJobResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Provision job result",
+  "properties": {
+    "kind": {
+      "const": "provision",
+      "type": "string"
+    },
+    "result": {
+      "$ref": "ProvisionResult.schema.json"
+    }
+  },
+  "required": [
+    "kind",
+    "result"
+  ],
+  "title": "ProvisionJobResult",
+  "type": "object"
+}

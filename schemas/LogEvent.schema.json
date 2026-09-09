@@ -1,0 +1,44 @@
+{
+  "$comment": "HiveMind contract LogEvent v1.0.0; generated from packages/schema, do not edit",
+  "$id": "LogEvent.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Log line event",
+  "properties": {
+    "at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    },
+    "level": {
+      "enum": [
+        "debug",
+        "info",
+        "warn",
+        "error"
+      ],
+      "type": "string"
+    },
+    "message": {
+      "maxLength": 4000,
+      "type": "string"
+    },
+    "type": {
+      "const": "event.log",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "lab_session_id",
+    "level",
+    "message",
+    "at"
+  ],
+  "title": "LogEvent",
+  "type": "object"
+}

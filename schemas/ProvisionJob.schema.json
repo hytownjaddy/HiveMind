@@ -1,0 +1,41 @@
+{
+  "$comment": "HiveMind contract ProvisionJob v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ProvisionJob.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Provision a lab",
+  "properties": {
+    "job_id": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    },
+    "lab_spec": {
+      "$ref": "LabSpec.schema.json"
+    },
+    "problem_instance": {
+      "$ref": "ProblemInstance.schema.json"
+    },
+    "seed": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "type": {
+      "const": "job.provision",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "job_id",
+    "lab_session_id",
+    "lab_spec",
+    "seed"
+  ],
+  "title": "ProvisionJob",
+  "type": "object"
+}

@@ -13,3 +13,7 @@ test-results
 docs/RFP.md
 docs/STAGE_*.md
 schemas/
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache

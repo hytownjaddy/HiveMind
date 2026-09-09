@@ -45,11 +45,24 @@ export const markdownSchema = z
   .string()
   .describe("Markdown text, rendered by the web app");
 
-export const urlSchema = z.url();
+/** http(s) URL as a pattern-checked string; `format: uri` would become Pydantic `AnyUrl` and normalize it (D-043). */
+export const urlSchema = z
+  .string()
+  .max(2048)
+  .regex(/^https?:\/\/[^\s/$.?#][^\s]*$/u, "invalid-url");
 
 export const sha256Schema = z.string().regex(/^[a-f0-9]{64}$/u, "invalid-sha256");
 
-export const uuidSchema = z.uuid();
+/**
+ * UUID as a plain pattern-checked string (not `format: uuid`): generated Pydantic
+ * keeps it a `str`, so job and message ids round-trip byte for byte (D-043).
+ */
+export const uuidSchema = z
+  .string()
+  .regex(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u,
+    "invalid-uuid",
+  );
 
 /** Learner-facing difficulty on a five-step scale. */
 export const difficultySchema = z.int().min(1).max(5);

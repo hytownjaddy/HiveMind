@@ -6,7 +6,8 @@ on:
   pull_request:
 
 jobs:
-  verify:
+  typescript:
+    name: TypeScript verify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,3 +16,17 @@ jobs:
           bun-version-file: .bun-version
       - run: bun install --frozen-lockfile
       - run: bun run verify
+
+  python:
+    name: Lab worker verify (ruff, pyright, contract drift, pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/lab-worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run task verify

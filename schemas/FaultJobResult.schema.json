@@ -1,0 +1,39 @@
+{
+  "$comment": "HiveMind contract FaultJobResult v1.0.0; generated from packages/schema, do not edit",
+  "$id": "FaultJobResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Fault job result",
+  "properties": {
+    "kind": {
+      "const": "fault",
+      "type": "string"
+    },
+    "result": {
+      "additionalProperties": false,
+      "properties": {
+        "applied": {
+          "type": "boolean"
+        },
+        "detail": {
+          "maxLength": 1000,
+          "type": "string"
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "applied",
+        "verified"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "kind",
+    "result"
+  ],
+  "title": "FaultJobResult",
+  "type": "object"
+}
