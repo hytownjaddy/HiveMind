@@ -1,64 +1,121 @@
 - id: lpm
   statement: >-
-    When several routes match a destination, the kernel forwards according to the
-    route with the longest (most specific) prefix; only among routes of equal prefix
-    length does the metric decide.
-  source_ids: [src.rfc1812, src.iproute2.ip-route]
-  verification: unverified
+    When several routes match a destination, the kernel forwards according to the route
+    with the longest (most specific) prefix; only among routes of equal prefix length does
+    the metric decide.
+  sources:
+    - id: src.rfc1812
+      locator: "5.2.4.3 Next Hop Address (longest match)"
+    - id: src.iproute2.ip-route
+      locator: "ip route get"
+  verification:
+    status: unverified
+    method: executable
+    test_id: routing.lookup.longest_prefix
 - id: connected
   statement: >-
-    Assigning an address with a prefix length to an interface makes the kernel add a
-    connected (scope link, proto kernel) route for that prefix automatically.
-  source_ids: [src.iproute2.ip-address, src.iproute2.ip-route]
-  verification: unverified
+    Normally, assigning an address with a prefix length to an interface makes the kernel
+    add a connected (scope link, proto kernel) route for that prefix; the noprefixroute
+    flag suppresses it.
+  sources:
+    - id: src.iproute2.ip-address
+      locator: "noprefixroute"
+    - id: src.iproute2.ip-route
+      locator: "scope link"
+  verification:
+    status: unverified
+    method: executable
+    test_id: routing.connected.prefix_route
 - id: default-prefix
   statement: >-
     The keyword default in ip route is shorthand for the prefix 0.0.0.0/0, the least
     specific route possible.
-  source_ids: [src.iproute2.ip-route]
-  verification: unverified
+  sources:
+    - id: src.iproute2.ip-route
+      locator: "default"
+  verification:
+    status: unverified
+    method: executable
+    test_id: routing.lookup.default_is_zero
 - id: get
   statement: >-
     ip route get performs the same lookup the kernel would perform for a packet to that
     destination and prints the selected route, including the output interface and the
     source address that would be used.
-  source_ids: [src.iproute2.ip-route]
-  verification: unverified
+  sources:
+    - id: src.iproute2.ip-route
+      locator: "ip route get"
+  verification:
+    status: unverified
+    method: executable
+    test_id: routing.inspect.route_get
 - id: gateway-onlink
   statement: >-
-    A gateway given with via must itself be reachable through a directly connected
-    route on the chosen interface; otherwise the kernel rejects the route with
-    "Nexthop has invalid gateway".
-  source_ids: [src.iproute2.ip-route, src.rfc1812]
-  verification: unverified
+    By default, Linux requires a via gateway to resolve as directly reachable on the
+    selected link; this is normally established by a connected prefix, but an explicit
+    link-scope route or the onlink option can establish or override that reachability.
+    Otherwise the kernel rejects the route with "Nexthop has invalid gateway".
+  sources:
+    - id: src.iproute2.ip-route
+      locator: "via ADDRESS; onlink"
+  verification:
+    status: unverified
+    method: executable
+    test_id: routing.gateway.invalid_nexthop
 - id: route-types
   statement: >-
     Besides unicast routes, ip route can install blackhole, unreachable, and prohibit
     routes that discard matching packets, silently or with an ICMP error.
-  source_ids: [src.iproute2.ip-route]
-  verification: unverified
+  sources:
+    - id: src.iproute2.ip-route
+      locator: "TYPE := unicast | blackhole | unreachable | prohibit"
+  verification:
+    status: unverified
+    method: executable
+    test_id: routing.static.discard_types
 - id: metric
   statement: >-
     The metric (also shown as priority) orders routes of the same prefix; lower values
     are preferred.
-  source_ids: [src.iproute2.ip-route]
-  verification: unverified
+  sources:
+    - id: src.iproute2.ip-route
+      locator: "metric NUMBER / preference"
+  verification:
+    status: unverified
+    method: executable
+    test_id: routing.lookup.metric_preference
+- id: replace
+  statement: >-
+    ip route replace changes an existing route or adds it if absent; the manual page
+    promises nothing more than "change or add new one".
+  sources:
+    - id: src.iproute2.ip-route
+      locator: "ip route replace"
+  verification:
+    status: unverified
+    method: documentation
 - id: not-persistent
   statement: >-
-    Routes added with ip route live only in the running kernel; they disappear at
-    reboot unless a network configuration system re-creates them.
-  source_ids: [src.rhcsa.networking-objectives, src.iproute2.ip-route]
-  verification: unverified
+    Routes added with ip route live only in the running kernel; on Red Hat systems
+    persistent static routes are configured in the NetworkManager connection profile,
+    which assumes the gateway is reachable on that connection.
+  sources:
+    - id: src.redhat.rhel-static-routes
+      locator: "Configuring a static route"
+    - id: src.rhcsa.networking-objectives
+      locator: "configure networking and hostname resolution statically"
+  verification:
+    status: unverified
+    method: documentation
 - id: rp-filter
   statement: >-
-    With reverse-path filtering enabled (rp_filter set to strict mode), the kernel drops
-    incoming packets whose source address would not be routed back out through the
-    interface they arrived on.
-  source_ids: [src.kernel.ip-sysctl]
-  verification: unverified
-- id: forwarding
-  statement: >-
-    A host only forwards packets addressed to other hosts when IP forwarding is enabled
-    (ip_forward); the routing table alone does not turn a host into a router.
-  source_ids: [src.kernel.ip-sysctl, src.rfc1812]
-  verification: unverified
+    With reverse-path filtering in strict mode (rp_filter = 1), the kernel drops incoming
+    packets whose source address would not be routed back out through the interface they
+    arrived on.
+  sources:
+    - id: src.kernel.ip-sysctl
+      locator: "rp_filter"
+  verification:
+    status: unverified
+    method: executable
+    test_id: routing.return_path.rp_filter_strict

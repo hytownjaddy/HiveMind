@@ -51,22 +51,45 @@ export const sourceRecordSchema = z.strictObject({
 });
 export type SourceRecord = z.infer<typeof sourceRecordSchema>;
 
-export const claimVerificationSchema = z.enum([
+export const claimVerificationStatusSchema = z.enum([
   "unverified",
   "verified",
   "conflict",
   "rejected",
 ]);
 
+/** How a claim was (or will be) checked; executable checks are strongest (D-015 spirit). */
+export const claimVerificationMethodSchema = z.enum([
+  "documentation",
+  "executable",
+  "expert",
+]);
+
+export const claimVerificationSchema = z.strictObject({
+  status: claimVerificationStatusSchema,
+  method: claimVerificationMethodSchema.optional(),
+  verified_at: timestampSchema.optional(),
+  /** `human` or a named reviewer; never an AI executor (invariant 3). */
+  reviewer: z.string().max(120).optional(),
+  /** Id of the executable test that proves the claim, once it exists (Stage 03). */
+  test_id: slugSchema.optional(),
+  notes: markdownSchema.optional(),
+});
+export type ClaimVerification = z.infer<typeof claimVerificationSchema>;
+
+/** A source reference with the section, anchor, or page that supports the claim. */
+export const claimSourceSchema = z.strictObject({
+  id: sourceIdSchema,
+  locator: z.string().min(1).max(200).optional(),
+});
+export type ClaimSource = z.infer<typeof claimSourceSchema>;
+
 export const claimSchema = z.strictObject({
-  /** Lesson-local id referenced from the body as `[^c:<id>]`. */
+  /** Lesson-local id referenced from the body as `:claim[id]`. */
   id: slugSchema,
   lesson_id: lessonIdSchema,
   statement: z.string().min(1).max(1000),
-  source_ids: z.array(sourceIdSchema).min(1),
+  sources: z.array(claimSourceSchema).min(1),
   verification: claimVerificationSchema,
-  verified_by: z.string().max(120).optional(),
-  verified_at: timestampSchema.optional(),
-  notes: markdownSchema.optional(),
 });
 export type Claim = z.infer<typeof claimSchema>;

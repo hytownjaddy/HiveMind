@@ -18,7 +18,7 @@ export function RightRail({
   const [active, setActive] = useState("lesson");
   const claimsBySource = new Map<string, number>();
   for (const claim of lesson.claims) {
-    for (const sourceId of claim.source_ids) {
+    for (const { id: sourceId } of claim.sources) {
       claimsBySource.set(sourceId, (claimsBySource.get(sourceId) ?? 0) + 1);
     }
   }
@@ -49,7 +49,14 @@ export function RightRail({
             <tbody className="hm-mono">
               <tr>
                 <td className="py-0.5 text-muted">estimated</td>
-                <td className="text-right">{lesson.estimated_minutes} min</td>
+                <td className="text-right">
+                  {lesson.estimated_minutes.total} min
+                  <span className="ml-1 text-dim">
+                    ({lesson.estimated_minutes.instruction}+
+                    {lesson.estimated_minutes.guided_lab}+
+                    {lesson.estimated_minutes.independent_practice})
+                  </span>
+                </td>
               </tr>
               <tr>
                 <td className="py-0.5 text-muted">difficulty</td>
@@ -135,10 +142,23 @@ export function RightRail({
               >
                 <div className="flex items-center gap-2">
                   <span className="text-accent">[{claim.id}]</span>
-                  <StatusChip value={claim.verification} />
+                  <StatusChip value={claim.verification.status} />
+                  {claim.verification.method !== undefined ? (
+                    <span className="text-[10px] text-dim">
+                      {claim.verification.method}
+                    </span>
+                  ) : null}
                 </div>
                 <div className="font-sans text-text">{claim.statement}</div>
-                <div className="text-[11px] text-dim">{claim.source_ids.join(", ")}</div>
+                <div className="text-[11px] text-dim">
+                  {claim.sources
+                    .map((source) =>
+                      source.locator === undefined
+                        ? source.id
+                        : `${source.id} · ${source.locator}`,
+                    )
+                    .join(", ")}
+                </div>
               </li>
             ))}
           </ol>

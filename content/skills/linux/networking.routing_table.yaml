@@ -3,10 +3,9 @@ version: 1.0.0
 name: Linux routing table and ip route
 domain: linux
 description: |
-  Explain how the kernel selects a route by longest-prefix match, read and query the
-  routing table with `ip route show` and `ip route get`, manage default routes, metrics,
-  and static routes, and diagnose the common failures: wrong gateway, missing route,
-  asymmetric return path.
+  Parent skill for the Linux routing table: route lookup, inspection, static routes,
+  gateway reachability, and return-path diagnosis. Evidence accrues on the child skills
+  and rolls up here through the skill graph.
 status: active
 prerequisites: [linux.networking.interfaces_addresses]
 related: [networking.ipv4.subnetting]

@@ -109,10 +109,13 @@ export const lpmClaim: Claim = {
   id: "lpm",
   lesson_id: LESSON_ID,
   statement: "The kernel selects the route with the longest matching prefix.",
-  source_ids: ["src.iproute2.ip-route"],
-  verification: "verified",
-  verified_by: "jacob",
-  verified_at: AT,
+  sources: [{ id: "src.iproute2.ip-route", locator: "ip route get" }],
+  verification: {
+    status: "verified",
+    method: "documentation",
+    verified_at: AT,
+    reviewer: "jacob",
+  },
 };
 
 export const predictionQuestion: Question = {
@@ -150,13 +153,18 @@ export const lessonFixture: Lesson = {
     {
       id: "read-table",
       text: "Read a routing table and predict the chosen route",
-      skill_id: "linux.networking.routing_table",
+      skill_ids: ["linux.networking.routing_table"],
     },
   ],
   skill_ids: ["linux.networking.routing_table"],
   prerequisite_lesson_ids: [],
   difficulty: 2,
-  estimated_minutes: 45,
+  estimated_minutes: {
+    instruction: 25,
+    guided_lab: 10,
+    independent_practice: 10,
+    total: 45,
+  },
   sections: [
     {
       element: "motivation",
@@ -232,6 +240,11 @@ export const lessonFixture: Lesson = {
       problem_id: "linux.routing.static_route",
       mode: "guided_lab",
       title: "Add and verify a static route",
+      grader_constraints: {
+        required: ["host_can_reach: 10.1.2.10"],
+        preserve: ["default_route"],
+        reject: ["overly_broad_route"],
+      },
     },
   ],
   source_ids: ["src.iproute2.ip-route"],

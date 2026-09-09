@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract SkillDefinition v1.0.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract SkillDefinition v1.1.0; generated from packages/schema, do not edit",
   "$id": "SkillDefinition.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -44,6 +44,13 @@
     "name": {
       "maxLength": 120,
       "minLength": 1,
+      "type": "string"
+    },
+    "parent": {
+      "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+      "maxLength": 96,
+      "minLength": 3,
+      "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
       "type": "string"
     },
     "prerequisites": {

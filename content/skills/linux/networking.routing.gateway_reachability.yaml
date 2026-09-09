@@ -1,0 +1,15 @@
+id: linux.networking.routing.gateway_reachability
+version: 1.0.0
+name: Gateway reachability
+domain: linux
+description: |
+  Explain why a `via` gateway must resolve as directly reachable on the selected link
+  (normally through a connected prefix, otherwise an explicit link-scope route or
+  `onlink`), and recognise the "Nexthop has invalid gateway" failure.
+status: active
+parent: linux.networking.routing_table
+prerequisites: [linux.networking.routing.static_routes]
+related: []
+tags: [routing, troubleshooting]
+evidence_modes: [learn, guided_lab, practice, challenge, blind_incident]
+blind_assessable: true

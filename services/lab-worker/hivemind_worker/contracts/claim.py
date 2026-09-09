@@ -6,7 +6,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Claim(BaseModel):
@@ -17,31 +17,48 @@ class Claim(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: Annotated[str, Field(max_length=128, min_length=1, pattern="^[a-z0-9][a-z0-9._-]*$")]
     lesson_id: Annotated[str, Field(pattern="^HM-LESSON-[a-z0-9-]+-\\d{2}$")]
+    sources: Annotated[list[Source], Field(min_length=1)]
+    statement: Annotated[str, Field(max_length=1000, min_length=1)]
+    verification: Verification
+
+
+class Method(StrEnum):
+    documentation = "documentation"
+    executable = "executable"
+    expert = "expert"
+
+
+class Source(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    id: Annotated[str, Field(max_length=128, min_length=1, pattern="^[a-z0-9][a-z0-9._-]*$")]
+    """
+    Source id, e.g. src.iproute2.ip-route
+    """
+    locator: Annotated[str | None, Field(max_length=200, min_length=1)] = None
+
+
+class Status(StrEnum):
+    unverified = "unverified"
+    verified = "verified"
+    conflict = "conflict"
+    rejected = "rejected"
+
+
+class Verification(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    method: Method | None = None
     notes: str | None = None
     """
     Markdown text, rendered by the web app
     """
-    source_ids: Annotated[list[SourceId], Field(min_length=1)]
-    statement: Annotated[str, Field(max_length=1000, min_length=1)]
-    verification: Verification
+    reviewer: Annotated[str | None, Field(max_length=120)] = None
+    status: Status
+    test_id: Annotated[
+        str | None, Field(max_length=128, min_length=1, pattern="^[a-z0-9][a-z0-9._-]*$")
+    ] = None
     verified_at: Annotated[
         str | None, Field(pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$")
     ] = None
     """
     UTC instant in ISO-8601 with a trailing Z
     """
-    verified_by: Annotated[str | None, Field(max_length=120)] = None
-
-
-class SourceId(RootModel[str]):
-    root: Annotated[str, Field(max_length=128, min_length=1, pattern="^[a-z0-9][a-z0-9._-]*$")]
-    """
-    Source id, e.g. src.iproute2.ip-route
-    """
-
-
-class Verification(StrEnum):
-    unverified = "unverified"
-    verified = "verified"
-    conflict = "conflict"
-    rejected = "rejected"

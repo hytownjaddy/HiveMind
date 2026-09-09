@@ -60,6 +60,12 @@ class SkillDefinition(BaseModel):
     Skill id: domain.area.skill, e.g. linux.networking.routing_table
     """
     name: Annotated[str, Field(max_length=120, min_length=1)]
+    parent: Annotated[
+        str | None, Field(max_length=96, min_length=3, pattern="^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$")
+    ] = None
+    """
+    Skill id: domain.area.skill, e.g. linux.networking.routing_table
+    """
     prerequisites: list[Prerequisite]
     related: list[RelatedItem]
     status: definition_status.DefinitionStatus

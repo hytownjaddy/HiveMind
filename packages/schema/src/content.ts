@@ -70,16 +70,39 @@ export type Question = z.infer<typeof questionSchema>;
 export const learningObjectiveSchema = z.strictObject({
   id: slugSchema,
   text: z.string().min(1).max(300),
-  skill_id: skillIdSchema.optional(),
+  /** Fine-grained skills this objective evidences; several when it spans skills. */
+  skill_ids: z.array(skillIdSchema).min(1),
 });
 export type LearningObjective = z.infer<typeof learningObjectiveSchema>;
+
+/**
+ * Declared grader invariants for a lab referenced from a lesson: what must hold,
+ * what must be preserved, what disqualifies a solution. Stage 03 graders must
+ * honour them; until then they are authored intent.
+ */
+export const graderConstraintsSchema = z.strictObject({
+  required: z.array(z.string().min(1).max(200)).min(1),
+  preserve: z.array(z.string().min(1).max(200)),
+  reject: z.array(z.string().min(1).max(200)),
+});
+export type GraderConstraints = z.infer<typeof graderConstraintsSchema>;
 
 /** Pointer from a lesson to a problem archetype; faults are never named here. */
 export const lessonLabRefSchema = z.strictObject({
   problem_id: slugSchema,
   mode: productModeSchema,
   title: z.string().min(1).max(200),
+  grader_constraints: graderConstraintsSchema.optional(),
 });
+
+/** Time estimate split by activity; `total` must equal the sum (compiler-checked). */
+export const estimatedMinutesSchema = z.strictObject({
+  instruction: nonNegativeIntSchema,
+  guided_lab: nonNegativeIntSchema,
+  independent_practice: nonNegativeIntSchema,
+  total: positiveIntSchema,
+});
+export type EstimatedMinutes = z.infer<typeof estimatedMinutesSchema>;
 
 export const lessonReviewSchema = z.strictObject({
   technical_reviewed_by: z.string().max(120).optional(),
@@ -108,7 +131,7 @@ export const lessonSchema = z.strictObject({
   skill_ids: z.array(skillIdSchema).min(1),
   prerequisite_lesson_ids: z.array(lessonIdSchema),
   difficulty: difficultySchema,
-  estimated_minutes: positiveIntSchema,
+  estimated_minutes: estimatedMinutesSchema,
   /** Body compiled from lesson.md; each section is one RFP §110 element. */
   sections: z.array(lessonSectionSchema),
   questions: z.array(questionSchema),

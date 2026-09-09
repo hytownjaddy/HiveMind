@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract Lesson v1.1.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract Lesson v2.0.0; generated from packages/schema, do not edit",
   "$id": "Lesson.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -26,9 +26,36 @@
       "type": "integer"
     },
     "estimated_minutes": {
-      "maximum": 9007199254740991,
-      "minimum": 1,
-      "type": "integer"
+      "additionalProperties": false,
+      "properties": {
+        "guided_lab": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "independent_practice": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "instruction": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "total": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "instruction",
+        "guided_lab",
+        "independent_practice",
+        "total"
+      ],
+      "type": "object"
     },
     "id": {
       "pattern": "^HM-LESSON-[a-z0-9-]+-\\d{2}$",
@@ -38,6 +65,42 @@
       "items": {
         "additionalProperties": false,
         "properties": {
+          "grader_constraints": {
+            "additionalProperties": false,
+            "properties": {
+              "preserve": {
+                "items": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "reject": {
+                "items": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "required": {
+                "items": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "required",
+              "preserve",
+              "reject"
+            ],
+            "type": "object"
+          },
           "mode": {
             "$ref": "ProductMode.schema.json"
           },
@@ -77,12 +140,16 @@
             "pattern": "^[a-z0-9][a-z0-9._-]*$",
             "type": "string"
           },
-          "skill_id": {
-            "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
-            "maxLength": 96,
-            "minLength": 3,
-            "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
-            "type": "string"
+          "skill_ids": {
+            "items": {
+              "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+              "maxLength": 96,
+              "minLength": 3,
+              "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
           },
           "text": {
             "maxLength": 300,
@@ -92,7 +159,8 @@
         },
         "required": [
           "id",
-          "text"
+          "text",
+          "skill_ids"
         ],
         "type": "object"
       },

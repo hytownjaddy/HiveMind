@@ -1,0 +1,15 @@
+id: linux.networking.routing.return_path
+version: 1.0.0
+name: Return-path diagnosis
+domain: linux
+description: |
+  Diagnose missing return routes with observe → localize → hypothesize (does the request
+  arrive, does a reply leave, where does it disappear), and understand when asymmetric
+  paths interact with strict reverse-path filtering or stateful middleboxes.
+status: active
+parent: linux.networking.routing_table
+prerequisites: [linux.networking.routing.lookup]
+related: []
+tags: [routing, troubleshooting, tcpdump]
+evidence_modes: [learn, practice, challenge, blind_incident, interview]
+blind_assessable: true

@@ -4,21 +4,43 @@
     {
       "id": "lpm",
       "lesson_id": "HM-LESSON-linux-networking-01",
-      "source_ids": [
-        "src.iproute2.ip-route"
+      "sources": [
+        {
+          "id": "src.iproute2.ip-route",
+          "locator": "ip route get"
+        }
       ],
       "statement": "The kernel selects the route with the longest matching prefix.",
-      "verification": "verified",
-      "verified_at": "2026-09-09T12:00:00Z",
-      "verified_by": "jacob"
+      "verification": {
+        "method": "documentation",
+        "reviewer": "jacob",
+        "status": "verified",
+        "verified_at": "2026-09-09T12:00:00Z"
+      }
     }
   ],
   "course_id": "linux-networking",
   "difficulty": 2,
-  "estimated_minutes": 45,
+  "estimated_minutes": {
+    "guided_lab": 10,
+    "independent_practice": 10,
+    "instruction": 25,
+    "total": 45
+  },
   "id": "HM-LESSON-linux-networking-01",
   "labs": [
     {
+      "grader_constraints": {
+        "preserve": [
+          "default_route"
+        ],
+        "reject": [
+          "overly_broad_route"
+        ],
+        "required": [
+          "host_can_reach: 10.1.2.10"
+        ]
+      },
       "mode": "guided_lab",
       "problem_id": "linux.routing.static_route",
       "title": "Add and verify a static route"
@@ -28,7 +50,9 @@
   "objectives": [
     {
       "id": "read-table",
-      "skill_id": "linux.networking.routing_table",
+      "skill_ids": [
+        "linux.networking.routing_table"
+      ],
       "text": "Read a routing table and predict the chosen route"
     }
   ],

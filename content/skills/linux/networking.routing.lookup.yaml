@@ -1,0 +1,14 @@
+id: linux.networking.routing.lookup
+version: 1.0.0
+name: Route lookup and longest-prefix match
+domain: linux
+description: |
+  Predict which route the kernel selects for a destination: all matching prefixes, the
+  longest wins, metric breaks equal-prefix ties; `default` is 0.0.0.0/0.
+status: active
+parent: linux.networking.routing_table
+prerequisites: [linux.networking.interfaces_addresses]
+related: [networking.ipv4.subnetting]
+tags: [routing, lpm]
+evidence_modes: [learn, practice, challenge]
+blind_assessable: true

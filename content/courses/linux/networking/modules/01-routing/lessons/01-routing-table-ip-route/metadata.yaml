@@ -1,36 +1,72 @@
 id: HM-LESSON-linux-networking-01
-version: 0.1.0
+version: 0.2.0
 slug: routing-table-ip-route
 title: The Linux routing table and ip route
 summary: |
   How the kernel selects a route by longest-prefix match, how to read and query the
   table with ip route show and ip route get, how default routes, metrics, and static
-  routes work, and how wrong gateways, missing routes, and asymmetric return paths fail.
+  routes work, how a gateway must be reachable, and how to diagnose missing return routes
+  and recognise when asymmetric paths interact with strict reverse-path filtering.
 qa_state: technical_review
 review:
+  technical_reviewed_by: jacob
+  technical_reviewed_at: 2026-09-09T20:00:00Z
   notes: |
-    Gold-standard lesson (D-010, D-042). Drafted by Claude Code against the sources in
-    claims.yaml; awaiting Jacob's technical and instructional review before approval.
+    Gold-standard lesson (D-010, D-042). v0.1.0 drafted by Claude Code; Jacob's review
+    2026-09-09 (8.5/10, HM-WO-0005): structure, writing, relevance, assessment, and lab
+    philosophy PASS; technical precision REVIEW; skill granularity and operational safety
+    CHANGE REQUIRED; claim verification PENDING; scope MINOR REVISION. v0.2.0 applies the
+    ten changes; awaiting Jacob's re-check before approval.
 objectives:
   - id: predict-route
     text: Predict which route the kernel selects for a destination and why
-    skill_id: linux.networking.routing_table
+    skill_ids: [linux.networking.routing.lookup]
   - id: read-and-query
     text: Read ip route show output and confirm a decision with ip route get
-    skill_id: linux.networking.routing_table
+    skill_ids: [linux.networking.routing.inspect]
   - id: change-routes
-    text: Add, replace, and delete static and default routes safely
-    skill_id: linux.networking.routing_table
+    text: Add, replace, and delete static and default routes with the blast radius in mind
+    skill_ids: [linux.networking.routing.static_routes]
   - id: diagnose-failures
-    text: Diagnose a wrong gateway, a missing route, and an asymmetric return path
-    skill_id: linux.networking.routing_table
-skill_ids: [linux.networking.routing_table]
+    text: Diagnose a wrong gateway and a missing return route, and know when asymmetry matters
+    skill_ids:
+      - linux.networking.routing.gateway_reachability
+      - linux.networking.routing.return_path
+skill_ids:
+  - linux.networking.routing.lookup
+  - linux.networking.routing.inspect
+  - linux.networking.routing.static_routes
+  - linux.networking.routing.gateway_reachability
+  - linux.networking.routing.return_path
 difficulty: 2
-estimated_minutes: 50
+estimated_minutes:
+  instruction: 35
+  guided_lab: 20
+  independent_practice: 20
+  total: 75
 labs:
   - problem_id: linux.routing.static_route
     mode: guided_lab
     title: Add and verify a static route
+    grader_constraints:
+      required:
+        - "route_lookup_matches_expected_path: 10.1.2.3 via 10.0.0.3"
+        - "route_lookup_matches_expected_path: 10.1.7.7 via 10.0.0.2"
+      preserve:
+        - default_route
+        - interface_addresses
+      reject:
+        - deletion_of_connected_route
   - problem_id: linux.routing.unreachable_subnet
     mode: practice
     title: A subnet the host cannot reach
+    grader_constraints:
+      required:
+        - "host_can_reach: 10.1.2.10"
+        - "route_lookup_matches_expected_path: 10.1.2.10 via 10.0.0.3"
+      preserve:
+        - default_route
+        - interface_addresses
+      reject:
+        - overly_broad_route
+        - deletion_of_existing_required_routes

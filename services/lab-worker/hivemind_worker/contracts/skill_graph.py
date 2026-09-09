@@ -29,6 +29,7 @@ class Kind(StrEnum):
     prerequisite = "prerequisite"
     related = "related"
     supersedes = "supersedes"
+    part_of = "part_of"
 
 
 class Skill(BaseModel):

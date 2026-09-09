@@ -187,7 +187,13 @@ export class ContentRepository {
             .prepare(
               "INSERT INTO content_claims (content_version_id, lesson_id, id, verification, claim_json) VALUES (?, ?, ?, ?, ?)",
             )
-            .bind(id, lesson.id, claim.id, claim.verification, JSON.stringify(claim)),
+            .bind(
+              id,
+              lesson.id,
+              claim.id,
+              claim.verification.status,
+              JSON.stringify(claim),
+            ),
         );
       }
     }

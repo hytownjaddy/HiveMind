@@ -7,7 +7,12 @@ qa_state: draft
 objectives:
   - id: o1
     text: Something
+    skill_ids: [linux.networking.routing_table]
 skill_ids: [linux.networking.routing_table]
 prerequisite_lesson_ids: [HM-LESSON-demo-course-01]
 difficulty: 1
-estimated_minutes: 10
+estimated_minutes:
+  instruction: 10
+  guided_lab: 0
+  independent_practice: 0
+  total: 12

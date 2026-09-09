@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract Claim v1.0.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract Claim v2.0.0; generated from packages/schema, do not edit",
   "$id": "Claim.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -15,17 +15,27 @@
       "pattern": "^HM-LESSON-[a-z0-9-]+-\\d{2}$",
       "type": "string"
     },
-    "notes": {
-      "description": "Markdown text, rendered by the web app",
-      "type": "string"
-    },
-    "source_ids": {
+    "sources": {
       "items": {
-        "description": "Source id, e.g. src.iproute2.ip-route",
-        "maxLength": 128,
-        "minLength": 1,
-        "pattern": "^[a-z0-9][a-z0-9._-]*$",
-        "type": "string"
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Source id, e.g. src.iproute2.ip-route",
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "locator": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
       },
       "minItems": 1,
       "type": "array"
@@ -36,29 +46,56 @@
       "type": "string"
     },
     "verification": {
-      "enum": [
-        "unverified",
-        "verified",
-        "conflict",
-        "rejected"
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "enum": [
+            "documentation",
+            "executable",
+            "expert"
+          ],
+          "type": "string"
+        },
+        "notes": {
+          "description": "Markdown text, rendered by the web app",
+          "type": "string"
+        },
+        "reviewer": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "unverified",
+            "verified",
+            "conflict",
+            "rejected"
+          ],
+          "type": "string"
+        },
+        "test_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "verified_at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status"
       ],
-      "type": "string"
-    },
-    "verified_at": {
-      "description": "UTC instant in ISO-8601 with a trailing Z",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
-      "type": "string"
-    },
-    "verified_by": {
-      "maxLength": 120,
-      "type": "string"
+      "type": "object"
     }
   },
   "required": [
     "id",
     "lesson_id",
     "statement",
-    "source_ids",
+    "sources",
     "verification"
   ],
   "title": "Claim",

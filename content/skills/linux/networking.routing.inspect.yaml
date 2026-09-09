@@ -1,0 +1,15 @@
+id: linux.networking.routing.inspect
+version: 1.0.0
+name: Inspecting route state
+domain: linux
+description: |
+  Read `ip route show` output (prefix, via, dev, proto, scope, src, metric) and confirm a
+  decision with `ip route get`, including the interface and source address the kernel
+  would use.
+status: active
+parent: linux.networking.routing_table
+prerequisites: [linux.networking.routing.lookup]
+related: []
+tags: [routing, iproute2, inspection]
+evidence_modes: [learn, guided_lab, practice, challenge, blind_incident]
+blind_assessable: true

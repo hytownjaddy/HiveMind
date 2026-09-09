@@ -123,6 +123,7 @@ describe("compileContent", () => {
     expectContains("cites unknown source src.nope");
     expectContains("requires review.approved_by");
     expectContains("missing RFP §110 elements");
+    expectContains("estimated_minutes.total 12 must equal");
   });
 });
 

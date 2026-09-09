@@ -32,6 +32,8 @@ export const skillDefinitionSchema = z.strictObject({
   domain: slugSchema.describe("Top-level domain slug, e.g. linux, networking, python"),
   description: markdownSchema,
   status: definitionStatusSchema,
+  /** Coarser skill this one is part of; evidence rolls up through it in the graph. */
+  parent: skillIdSchema.optional(),
   prerequisites: z.array(skillIdSchema),
   related: z.array(skillIdSchema),
   tags: z.array(slugSchema),
@@ -52,7 +54,12 @@ export const skillDefinitionSchema = z.strictObject({
 });
 export type SkillDefinition = z.infer<typeof skillDefinitionSchema>;
 
-export const skillEdgeKindSchema = z.enum(["prerequisite", "related", "supersedes"]);
+export const skillEdgeKindSchema = z.enum([
+  "prerequisite",
+  "related",
+  "supersedes",
+  "part_of",
+]);
 
 export const skillEdgeSchema = z.strictObject({
   from: skillIdSchema,

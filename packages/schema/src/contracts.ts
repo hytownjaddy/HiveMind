@@ -123,11 +123,11 @@ export const CONTRACTS: readonly ContractEntry[] = [
   entry("Capability", "1.0.0", "Lab capability id", capabilitySchema),
   // Learner and skills
   entry("Learner", "1.0.1", "Learner record", learnerSchema),
-  entry("SkillDefinition", "1.0.0", "Versioned skill", skillDefinitionSchema),
-  entry("SkillGraph", "1.0.0", "Skill graph", skillGraphSchema),
+  entry("SkillDefinition", "1.1.0", "Versioned skill", skillDefinitionSchema),
+  entry("SkillGraph", "1.1.0", "Skill graph", skillGraphSchema),
   // Content
   entry("SourceRecord", "1.0.1", "Source with provenance and trust", sourceRecordSchema),
-  entry("Claim", "1.0.0", "Factual claim with provenance", claimSchema),
+  entry("Claim", "2.0.0", "Factual claim with provenance", claimSchema),
   entry("InlineNode", "1.0.0", "Lesson inline render node", inlineNodeSchema),
   entry("BlockNode", "1.0.0", "Lesson block render node", blockNodeSchema),
   entry(
@@ -137,7 +137,7 @@ export const CONTRACTS: readonly ContractEntry[] = [
     lessonSectionSchema,
   ),
   entry("Question", "1.0.0", "Lesson question", questionSchema),
-  entry("Lesson", "1.1.0", "Compiled lesson", lessonSchema),
+  entry("Lesson", "2.0.0", "Compiled lesson", lessonSchema),
   entry("Module", "1.1.0", "Course module", moduleSchema),
   entry("CourseManifest", "1.1.0", "Course manifest", courseManifestSchema),
   entry("ContentBundle", "1.1.0", "Compiled content bundle", contentBundleSchema),

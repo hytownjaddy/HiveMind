@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract SkillGraph v1.0.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract SkillGraph v1.1.0; generated from packages/schema, do not edit",
   "$id": "SkillGraph.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -20,7 +20,8 @@
             "enum": [
               "prerequisite",
               "related",
-              "supersedes"
+              "supersedes",
+              "part_of"
             ],
             "type": "string"
           },

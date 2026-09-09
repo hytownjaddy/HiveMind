@@ -7,10 +7,14 @@ qa_state: draft
 objectives:
   - id: read
     text: Read a routing table
-    skill_id: linux.networking.routing_table
+    skill_ids: [linux.networking.routing_table]
 skill_ids: [linux.networking.routing_table]
 difficulty: 2
-estimated_minutes: 30
+estimated_minutes:
+  instruction: 20
+  guided_lab: 5
+  independent_practice: 5
+  total: 30
 labs:
   - problem_id: linux.routing.static_route
     mode: guided_lab

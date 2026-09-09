@@ -44,7 +44,7 @@
     A gateway must be on-link: reachable through a connected route on the interface the
     route uses. 172.16.0.1 is not within any connected prefix, so the kernel rejects the
     route with "Nexthop has invalid gateway".
-  skill_ids: [linux.networking.routing_table]
+  skill_ids: [linux.networking.routing.gateway_reachability]
   difficulty: 3
 - id: check-default
   kind: knowledge_check
@@ -62,7 +62,7 @@
       correct: false
       feedback: That is a connected route, added automatically with the address.
   explanation: default is shorthand for 0.0.0.0/0, the least specific route possible.
-  skill_ids: [linux.networking.routing_table]
+  skill_ids: [linux.networking.routing.lookup]
   difficulty: 1
 - id: check-get
   kind: knowledge_check
@@ -84,7 +84,7 @@
   explanation: >-
     ip route get runs the kernel's lookup for that destination and prints the decision,
     including dev and src.
-  skill_ids: [linux.networking.routing_table]
+  skill_ids: [linux.networking.routing.inspect]
   difficulty: 1
 - id: reflect-asymmetric
   kind: reflection
@@ -93,14 +93,17 @@
     host is correct. Explain, in two or three sentences, where the missing piece is and
     which host you would inspect next.
   answer: >-
-    Routing is decided independently at every hop in each direction. The reply is routed
-    by 10.1.2.3 and the routers on its way back, so the missing route (or the wrong
-    gateway) is on the remote host or a router in the return path, not on this host;
-    inspect 10.1.2.3's table first, then the router that should carry the return traffic.
+    My outbound lookup is correct, so the question is where the exchange breaks: does the
+    request reach 10.1.2.3, and does a reply leave it? I would capture on 10.1.2.3 (or the
+    nearest hop I control) to see whether the request arrives and a reply departs, inspect
+    10.1.2.3's route to my source address, and only then hypothesise a missing or wrong
+    return route on that host or an intermediate router; strict reverse-path filtering on
+    either side is the other candidate when the reply's path differs from the request's.
   explanation: >-
-    Each direction is a separate lookup on a different machine; a correct outbound route
-    says nothing about the return path.
-  skill_ids: [linux.networking.routing_table]
+    Observe, localize, then hypothesise: each direction is a separate lookup on a
+    different machine, so a correct outbound route says nothing about the return path;
+    packet capture tells you where the reply disappears before you guess at a cause.
+  skill_ids: [linux.networking.routing.return_path]
   difficulty: 3
 - id: mastery-metric
   kind: mastery
@@ -120,7 +123,7 @@
       feedback: Equal-cost sharing needs an explicit multipath route, not two separate routes.
   explanation: >-
     The prefixes are equal, so the metric decides; the lower value is preferred.
-  skill_ids: [linux.networking.routing_table]
+  skill_ids: [linux.networking.routing.lookup]
   difficulty: 2
 - id: mastery-diagnose
   kind: mastery
@@ -144,5 +147,5 @@
     The lookup fell through to the default route because nothing more specific matched;
     a static /24 route toward 10.0.0.3 is the smallest change that fixes exactly this
     destination.
-  skill_ids: [linux.networking.routing_table]
+  skill_ids: [linux.networking.routing.static_routes]
   difficulty: 3

@@ -1,0 +1,15 @@
+id: linux.networking.routing.static_routes
+version: 1.0.0
+name: Static route manipulation
+domain: linux
+description: |
+  Add, replace, and delete static and default routes, use discard route types
+  (blackhole, unreachable, prohibit), and know that `ip route` changes are not
+  persistent without the OS network configuration.
+status: active
+parent: linux.networking.routing_table
+prerequisites: [linux.networking.routing.inspect]
+related: []
+tags: [routing, iproute2, configuration]
+evidence_modes: [learn, guided_lab, practice, challenge]
+blind_assessable: true

@@ -172,7 +172,11 @@ export async function compileContent(options: CompileOptions): Promise<CompileRe
     }
   }
   for (const skill of skills) {
-    for (const prerequisite of [...skill.prerequisites, ...skill.related]) {
+    for (const prerequisite of [
+      ...skill.prerequisites,
+      ...skill.related,
+      ...(skill.parent === undefined ? [] : [skill.parent]),
+    ]) {
       if (!skillIds.has(prerequisite)) {
         diagnostics.error(
           `content/skills`,
@@ -450,7 +454,7 @@ async function compileLesson(context: LessonContext): Promise<Lesson | null> {
     }
   }
   for (const claim of claims) {
-    for (const sourceId of claim.source_ids) {
+    for (const { id: sourceId } of claim.sources) {
       if (!context.sourceIds.has(sourceId)) {
         diagnostics.error(
           rel(paths.claims),
@@ -484,10 +488,13 @@ async function compileLesson(context: LessonContext): Promise<Lesson | null> {
     }
   }
   for (const objective of metadata.objectives) {
-    if (objective.skill_id !== undefined && !context.skillIds.has(objective.skill_id)) {
+    for (const skillId of objective.skill_ids) {
+      if (context.skillIds.has(skillId)) {
+        continue;
+      }
       diagnostics.error(
         rel(paths.metadata),
-        `objective ${objective.id} references unknown skill ${objective.skill_id}`,
+        `objective ${objective.id} references unknown skill ${skillId}`,
       );
     }
   }
@@ -516,7 +523,19 @@ async function compileLesson(context: LessonContext): Promise<Lesson | null> {
     );
   }
 
-  const sourceIds = unique(claims.flatMap((claim) => claim.source_ids));
+  const minutes = metadata.estimated_minutes;
+  if (
+    minutes.total !==
+    minutes.instruction + minutes.guided_lab + minutes.independent_practice
+  ) {
+    diagnostics.error(
+      rel(paths.metadata),
+      `estimated_minutes.total ${minutes.total} must equal instruction + guided_lab + independent_practice`,
+    );
+  }
+  const sourceIds = unique(
+    claims.flatMap((claim) => claim.sources.map((source) => source.id)),
+  );
   const body_hash = await hashCanonical(parsed.sections);
   return parseWith(
     lessonSchema,

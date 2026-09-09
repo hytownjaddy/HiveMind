@@ -11,8 +11,24 @@ from . import claim, lesson_section, product_mode, question
 from . import qa_state as qa_state_1
 
 
+class EstimatedMinutes(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    guided_lab: Annotated[int, Field(ge=0, le=9007199254740991)]
+    independent_practice: Annotated[int, Field(ge=0, le=9007199254740991)]
+    instruction: Annotated[int, Field(ge=0, le=9007199254740991)]
+    total: Annotated[int, Field(ge=1, le=9007199254740991)]
+
+
+class GraderConstraints(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    preserve: list[PreserveItem]
+    reject: list[RejectItem]
+    required: Annotated[list[RequiredItem], Field(min_length=1)]
+
+
 class Lab(BaseModel):
     model_config = ConfigDict(extra="forbid")
+    grader_constraints: GraderConstraints | None = None
     mode: product_mode.ProductMode
     problem_id: Annotated[
         str, Field(max_length=128, min_length=1, pattern="^[a-z0-9][a-z0-9._-]*$")
@@ -33,7 +49,7 @@ class Lesson(BaseModel):
     Course id slug, e.g. linux-networking
     """
     difficulty: Annotated[int, Field(ge=1, le=5)]
-    estimated_minutes: Annotated[int, Field(ge=1, le=9007199254740991)]
+    estimated_minutes: EstimatedMinutes
     id: Annotated[str, Field(pattern="^HM-LESSON-[a-z0-9-]+-\\d{2}$")]
     labs: list[Lab]
     module_id: Annotated[str, Field(pattern="^[a-z0-9-]+\\.[a-z0-9-]+$")]
@@ -62,17 +78,24 @@ class Lesson(BaseModel):
 class Objective(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: Annotated[str, Field(max_length=128, min_length=1, pattern="^[a-z0-9][a-z0-9._-]*$")]
-    skill_id: Annotated[
-        str | None, Field(max_length=96, min_length=3, pattern="^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$")
-    ] = None
-    """
-    Skill id: domain.area.skill, e.g. linux.networking.routing_table
-    """
+    skill_ids: Annotated[list[SkillId], Field(min_length=1)]
     text: Annotated[str, Field(max_length=300, min_length=1)]
 
 
 class PrerequisiteLessonId(RootModel[str]):
     root: Annotated[str, Field(pattern="^HM-LESSON-[a-z0-9-]+-\\d{2}$")]
+
+
+class PreserveItem(RootModel[str]):
+    root: Annotated[str, Field(max_length=200, min_length=1)]
+
+
+class RejectItem(RootModel[str]):
+    root: Annotated[str, Field(max_length=200, min_length=1)]
+
+
+class RequiredItem(RootModel[str]):
+    root: Annotated[str, Field(max_length=200, min_length=1)]
 
 
 class Review(BaseModel):

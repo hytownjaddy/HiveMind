@@ -31,12 +31,14 @@ same prefix length does a second key decide: the **metric**, where lower wins:cl
 
 Two more ideas complete the model:
 
-- **Connected routes.** Giving an interface an address such as `10.0.0.10/24` makes the
-  kernel add the route `10.0.0.0/24 dev eth0` by itself:claim[connected]. That route says
-  "these hosts are on my own segment; deliver directly, no gateway".
-- **Gateways must be on-link.** A route that says `via 10.0.0.2` only works if `10.0.0.2`
-  is itself covered by a connected route on that interface:claim[gateway-onlink]. The
-  gateway is the first hop; the host must be able to hand the packet over directly.
+- **Connected routes.** Normally, giving an interface an address such as `10.0.0.10/24`
+  makes the kernel add the route `10.0.0.0/24 dev eth0` by itself:claim[connected]. That
+  route says "these hosts are on my own segment; deliver directly, no gateway".
+- **Gateways must be reachable on the link.** By default a route that says
+  `via 10.0.0.2` is accepted only if the kernel can resolve `10.0.0.2` as directly
+  reachable on that interface, which is normally true because a connected prefix covers
+  it:claim[gateway-onlink]. For now, think: your gateway needs to be on your local
+  segment. The demonstration below shows the two ways to satisfy the rule when it is not.
 
 ## Reading, querying, and changing the table {#explanation}
 
@@ -94,25 +96,31 @@ $ ip route add blackhole 192.0.2.0/24              # silently discard
 $ ip route add unreachable 198.51.100.0/24         # discard and answer ICMP unreachable
 ```
 
-`replace` is the safe way to change a default route: it swaps atomically instead of
-leaving a moment with no default at all. `blackhole`, `unreachable`, and `prohibit` install
+`replace` changes an existing route or adds it if absent, which avoids a separate
+delete-then-add sequence:claim[replace]. `blackhole`, `unreachable`, and `prohibit` install
 routes that discard matching traffic rather than forward it:claim[route-types].
 
-Changes made with `ip route` take effect immediately and are lost at reboot unless a
-configuration system (NetworkManager, systemd-networkd, netplan) recreates
-them:claim[not-persistent]. In this course you practice on disposable lab hosts, so
+:::callout{kind=warning title="Operational safety: changing a default route"}
+Nothing about `replace` makes changing a remote host's default route safe. If the new
+gateway is wrong, the host's path back to you disappears the instant the command runs,
+and your SSH session goes with it. Before touching `default` on a machine you are not
+sitting at: confirm the new next hop answers (`ip route get`, `ping`), have a console or
+out-of-band path, and prepare the rollback command so it can be issued blind. On a
+disposable lab host the worst case is a restart; on `prod-router-01` it is a drive.
+:::
+
+Changes made with `ip route` take effect immediately and are lost at reboot unless the
+OS network configuration recreates them; on Red Hat systems that is the NetworkManager
+connection profile:claim[not-persistent]. In this course you practice on disposable lab hosts, so
 non-persistence is a feature; on a real server, put the route in the network configuration
 as well.
 
-### Two switches that change the rules
-
-The table decides where packets _go_, but two kernel settings decide whether some packets
-are handled at all. `net.ipv4.ip_forward` must be `1` before a host forwards packets on
-behalf of others; without it, a host with a perfect table is still not a
-router:claim[forwarding]. And with reverse-path filtering in strict mode
-(`net.ipv4.conf.<if>.rp_filter = 1`), the kernel drops incoming packets whose _source_
-address would not be routed back out through the interface they arrived
-on:claim[rp-filter]. Keep both in mind when a route looks right and packets still vanish.
+:::callout{kind=note title="When the table is right and traffic still fails"}
+The routing table decides where this host _sends_ packets. Forwarding policy
+(`ip_forward`), reverse-path filtering, neighbour resolution (ARP), and the return path
+on other hosts can each still make traffic disappear. The misconception section touches
+the return path; the rest gets its own lesson on routing failure modes.
+:::
 
 ## The decision, drawn {#diagram}
 
@@ -187,18 +195,23 @@ bottom beats a `default` at the top every time.
 :::
 
 :::callout{kind=misconception title="A default route makes any gateway usable"}
-No. `via` names a first hop that must already be reachable directly, through a connected
-route on that interface:claim[gateway-onlink]. `ip route add default via 172.16.0.1` on a host
-whose only address is `10.0.0.10/24` fails with `Nexthop has invalid gateway`. The fix is
-not to force the route; it is to notice that the host is on the wrong segment or the
-gateway address is wrong.
+No. `via` names a first hop the kernel must be able to resolve as directly reachable on
+that link, which by default means a connected prefix covers it:claim[gateway-onlink].
+`ip route add default via 172.16.0.1` on a host whose only address is `10.0.0.10/24` fails
+with `Nexthop has invalid gateway`. The fix is not to force the route; it is to notice that
+the host is on the wrong segment or the gateway address is wrong. (An explicit link-scope
+route or `onlink` can assert reachability when the addressing really is unusual; the
+demonstration shows the first form.)
 :::
 
 :::callout{kind=misconception title="If my route is right, replies will come back"}
 No. Routing is decided independently at every hop, in each direction. Your route to
-`10.1.2.3` says nothing about `10.1.2.3`'s route back to you. When `ping` shows packets sent
-and none received, and your table is correct, the missing route is on the remote host or a
-router on the return path. `tcpdump` on the far side settles it: if the request arrives and
+`10.1.2.3` says nothing about `10.1.2.3`'s route back to you. Asymmetry itself is not a
+fault: replies routinely take a different path from requests. It becomes a fault when the
+return route is missing, when a stateful middlebox expects to see both directions, or when
+strict reverse-path filtering rejects the source. When `ping` shows packets sent and none
+received and your table is correct, the missing piece is on the remote host or a router on
+the return path. `tcpdump` on the far side settles it: if the request arrives and
 no reply leaves, look at the far side's table; if a reply leaves and never arrives, look at
 the routers in between. Strict reverse-path filtering adds a twist: a return packet can be
 dropped by the receiving host because its _source_ would not route back the way it
@@ -260,8 +273,8 @@ The gateway `172.16.0.1` is reachable only _through_ the default route, not dire
 cannot serve as a first hop. Two ways forward exist: use a gateway on the segment, or, if
 `172.16.0.1` really is a neighbour on the wire despite the addressing, add an explicit
 on-link route to it first (`ip route add 172.16.0.1/32 dev eth0`) and then the route via it.
-The second form is a deliberate statement that the addressing is unusual; use it only when
-you know why.
+The second form is a deliberate statement that the addressing is unusual; `ip route add
+… via 172.16.0.1 onlink` says the same thing per route. Use either only when you know why.
 
 ```console
 $ ip route add 172.16.0.1/32 dev eth0
@@ -281,8 +294,10 @@ The practice lab `A subnet the host cannot reach` gives you a host that can reac
 default gateway and the internet but not the servers in `10.1.2.0/24`, which sit behind a
 router on the host's own segment. Restore reachability to `10.1.2.0/24` **without changing
 the default route**, and prove it with `ip route get` before and after. Hints are available
-in the lab and cap the mastery credit for the attempt; the grader checks reachability and
-that the default route is unchanged.
+in the lab and cap the mastery credit for the attempt. The grader checks the desired state
+and the constraints, not your keystrokes: `10.1.2.10` reachable and looked up via
+`10.0.0.3`; the default route and interface addresses unchanged; no broader route than
+needed and no deletion of routes the host already needed.
 :::
 
 ## Reflection {#reflection}

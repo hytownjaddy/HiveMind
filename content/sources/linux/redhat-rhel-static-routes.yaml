@@ -1,0 +1,11 @@
+id: src.redhat.rhel-static-routes
+title: Red Hat Enterprise Linux 10 — Configuring a static route
+kind: vendor_documentation
+trust_tier: vendor
+url: https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/configuring_and_managing_networking/configuring-a-static-route
+ingested: true
+retrieved_at: "2026-09-09"
+notes: |
+  Persistent static routes are configured in the NetworkManager connection profile; the
+  documentation assumes the gateway is reachable on that connection. OS-configuration
+  source per the source-selection rule.
