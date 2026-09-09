@@ -21,7 +21,9 @@ that a fresh context can contribute without re-deriving decisions.
   Python only on the lab worker for providers, faults, graders, reference solutions, and
   validation runners (D-030, D-034). Contracts are Zod; Pydantic is generated (D-032).
 - No business logic in route handlers or Durable Object fetch handlers: thin adapters over
-  `packages/core` services (D-031).
+  `packages/core` services (D-031). See "Route handler checklist" below; ESLint
+  (`no-restricted-imports` on `apps/web/app/api/**/route.ts`) and dependency-cruiser
+  (`route-handlers-are-thin`) enforce the import boundary.
 - Every acceptance criterion in a stage is a test or a scripted check. Do not weaken one to
   pass (invariant 13).
 - Content is data: no course-specific branches in application code (invariants 1–2).
@@ -29,6 +31,21 @@ that a fresh context can contribute without re-deriving decisions.
   rows, never rewrites.
 - Anything AI-generated that executes goes through a schema and a controlled implementation
   (invariant 4) and through review before publication (invariant 10).
+
+## Route handler checklist (D-031, Stage 01 acceptance 7)
+
+A `route.ts` (and the session gateway's `fetch`) does exactly four things, in order:
+
+1. Parse: read params, query, and body through a Zod schema (`readJson`).
+2. Authenticate: `withAuth(request, { learner: true } | { scope })`; failures map to 401/403.
+3. Call one `packages/core` service method from `lib/server/services`.
+4. Serialize: return the service result as JSON with a status code.
+
+Not allowed: SQL or repositories, loops that combine several services, conditionals that
+encode a rule (state machines, visibility, versioning), `fetch` to other systems, or
+imports from components, client code, or `packages/core/src/db`. When a handler needs
+logic, add a service method and a test in `packages/core`. Reviewers reject handlers that
+break this shape even when lint passes.
 
 ## Verification
 

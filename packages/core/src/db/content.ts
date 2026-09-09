@@ -316,14 +316,21 @@ export class ContentRepository {
       : parseJsonColumn(row.lesson_json, (v) => lessonSchema.parse(v));
   }
 
-  /** Lesson ids and QA states across a version, for tree rendering without bodies. */
-  async lessonStates(
-    contentVersionId: string,
-  ): Promise<{ id: string; qa_state: QaState; course_id: string; module_id: string }[]> {
+  /** Lesson ids, versions, hashes, and QA states across a version, for trees and diffs. */
+  async lessonStates(contentVersionId: string): Promise<
+    {
+      id: string;
+      version: string;
+      body_hash: string;
+      qa_state: QaState;
+      course_id: string;
+      module_id: string;
+    }[]
+  > {
     return allRows(
       this.db
         .prepare(
-          'SELECT id, qa_state, course_id, module_id FROM lessons WHERE content_version_id = ? ORDER BY course_id, module_id, "order"',
+          'SELECT id, version, body_hash, qa_state, course_id, module_id FROM lessons WHERE content_version_id = ? ORDER BY course_id, module_id, "order"',
         )
         .bind(contentVersionId),
     );

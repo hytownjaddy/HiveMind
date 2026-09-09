@@ -63,6 +63,32 @@ export class ContentService {
     return this.content.listVersions();
   }
 
+  /** What `hivemind content diff` compares against: the latest version's course and lesson identities. */
+  async summary(): Promise<{
+    content_version_id: string | null;
+    courses: { id: string; version: string }[];
+    lessons: { id: string; version: string; body_hash: string; qa_state: string }[];
+  }> {
+    const versionId = await this.content.latestVersionId();
+    if (versionId === null) {
+      return { content_version_id: null, courses: [], lessons: [] };
+    }
+    const [courses, lessons] = await Promise.all([
+      this.content.listCourses(versionId),
+      this.content.lessonStates(versionId),
+    ]);
+    return {
+      content_version_id: versionId,
+      courses: courses.map((course) => ({ id: course.id, version: course.version })),
+      lessons: lessons.map((lesson) => ({
+        id: lesson.id,
+        version: lesson.version,
+        body_hash: lesson.body_hash,
+        qa_state: lesson.qa_state,
+      })),
+    };
+  }
+
   async latestVersion(): Promise<ContentVersion | null> {
     const id = await this.content.latestVersionId();
     return id === null ? null : this.content.getVersion(id);

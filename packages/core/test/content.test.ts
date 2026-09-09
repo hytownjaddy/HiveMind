@@ -91,6 +91,27 @@ describe("content versions", () => {
     expect(tree?.modules[0]?.lessons[0]?.qa_state).toBe("published");
   });
 
+  it("summarizes the latest version for diffs", async () => {
+    const content = service();
+    expect(await content.summary()).toEqual({
+      content_version_id: null,
+      courses: [],
+      lessons: [],
+    });
+    await content.publish(await bundle(lessonFixture), "test");
+    const summary = await content.summary();
+    expect(summary.content_version_id).toBe("HM-CV-0001");
+    expect(summary.courses).toEqual([{ id: "linux-networking", version: "0.1.0" }]);
+    expect(summary.lessons).toEqual([
+      {
+        id: lessonFixture.id,
+        version: "0.1.0",
+        body_hash: lessonFixture.body_hash,
+        qa_state: "draft",
+      },
+    ]);
+  });
+
   it("stripAnswers keeps structure but removes solutions", () => {
     const stripped = stripAnswers({
       ...lessonFixture,

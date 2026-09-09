@@ -22,7 +22,8 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zustand": "^5.0.15",
-    "@hivemind/core": "workspace:*"
+    "@hivemind/core": "workspace:*",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260908.1",
