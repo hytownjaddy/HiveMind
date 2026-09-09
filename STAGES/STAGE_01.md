@@ -147,7 +147,7 @@ carries `learner_id`.
    that handlers only call `packages/core` services (documented in `CONTRIBUTING.md`).
 8. Guest HMAC sessions, placeholder pages, and the demo labs UI are gone; the session
    Worker still passes its workerd tests under the new name.
-9. Gold lesson approved by Jacob and `PUBLISHED`.
+9. Gold lesson approved by Jacob and `published`.
 
 ## Automated test requirements
 
