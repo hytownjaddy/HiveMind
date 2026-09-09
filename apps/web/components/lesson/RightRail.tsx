@@ -45,7 +45,7 @@ export function RightRail({
               </li>
             ))}
           </ul>
-          <table className="w-full">
+          <table className="w-full table-fixed">
             <tbody className="hm-mono">
               <tr>
                 <td className="py-0.5 text-muted">estimated</td>
@@ -64,11 +64,17 @@ export function RightRail({
               </tr>
               <tr>
                 <td className="py-0.5 text-muted">skills</td>
-                <td className="text-right">{lesson.skill_ids.join(", ")}</td>
+                <td className="text-right">
+                  {lesson.skill_ids.map((skillId) => (
+                    <div key={skillId} className="break-all whitespace-normal">
+                      {skillId}
+                    </div>
+                  ))}
+                </td>
               </tr>
               <tr>
                 <td className="py-0.5 text-muted">prerequisites</td>
-                <td className="text-right">
+                <td className="text-right break-all whitespace-normal">
                   {lesson.prerequisite_lesson_ids.length === 0
                     ? "none"
                     : lesson.prerequisite_lesson_ids.join(", ")}
