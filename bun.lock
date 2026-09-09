@@ -53,6 +53,22 @@
         "wrangler": "^4.130.0",
       },
     },
+    "packages/cli": {
+      "name": "@hivemind/cli",
+      "version": "0.0.0",
+      "bin": {
+        "hivemind": "./src/main.ts",
+      },
+      "dependencies": {
+        "@hivemind/core": "workspace:*",
+        "@hivemind/schema": "workspace:*",
+        "zod": "^4.5.4",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "^5.20260908.1",
+        "@types/node": "^26.5.0",
+      },
+    },
     "packages/core": {
       "name": "@hivemind/core",
       "version": "0.0.0",
@@ -330,6 +346,8 @@
     "@eslint/object-schema": ["@eslint/object-schema@2.1.7", "", {}, "sha512-VtAOaymWVfZcmZbp6E2mympDIHvyjXs/12LqWYjVw6qjrfF+VK+fyG33kChz3nnK+SU5/NeHOqrTEHS8sXO3OA=="],
 
     "@eslint/plugin-kit": ["@eslint/plugin-kit@0.4.1", "", { "dependencies": { "@eslint/core": "^0.17.0", "levn": "^0.4.1" } }, "sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA=="],
+
+    "@hivemind/cli": ["@hivemind/cli@workspace:packages/cli"],
 
     "@hivemind/core": ["@hivemind/core@workspace:packages/core"],
 

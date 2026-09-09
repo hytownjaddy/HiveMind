@@ -35,7 +35,8 @@
     "schema:check": "bun --cwd packages/schema schema:check",
     "verify:py": "uv run --directory services/lab-worker task verify",
     "verify:all": "bun run verify && bun run verify:py",
-    "test:core": "bun --cwd packages/core test"
+    "test:core": "bun --cwd packages/core test",
+    "hivemind": "bun packages/cli/src/main.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

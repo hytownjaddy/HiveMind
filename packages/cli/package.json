@@ -1,0 +1,24 @@
+{
+  "name": "@hivemind/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "hivemind": "./src/main.ts"
+  },
+  "exports": {
+    ".": "./src/main.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hivemind/core": "workspace:*",
+    "@hivemind/schema": "workspace:*",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "@cloudflare/workers-types": "^5.20260908.1"
+  }
+}
