@@ -11,7 +11,7 @@ the pieces fit, not why they were chosen.
 ```text
                         CLOUDFLARE
 
-                    hivemindjrr.com
+                 hivemind.jryans.dev
                            │
                     Cloudflare Access (Google IdP)
                            │
@@ -169,7 +169,7 @@ seeding a disposable database with `hivemind content publish --sql-out`. Runbook
 Top-level wrangler config is `dev`; `--env production` selects `hivemind-web` and
 `hivemind-session`. Bindings are repeated per environment. Deploy order: D1 migrations →
 session Worker → web Worker → lab worker. The web app stays on OpenNext (D-031). Domain:
-`hivemindjrr.com` (D-040).
+`jryans.dev`, app at `hivemind.jryans.dev` (D-047).
 
 ## UI direction (D-037)
 

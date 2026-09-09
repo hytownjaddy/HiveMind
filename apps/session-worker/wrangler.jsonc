@@ -12,8 +12,8 @@
     // real providers (docker, containerlab, frr, k8s) live on lab hosts.
     "LAB_PROVIDER": "echo",
     // Cloudflare Access (D-033). Local dev bypasses via .dev.vars.
-    "ACCESS_TEAM_DOMAIN": "https://hivemindjrr.cloudflareaccess.com",
-    "ACCESS_AUD": "replace-with-access-application-aud",
+    "ACCESS_TEAM_DOMAIN": "https://royal-breeze-2b7c.cloudflareaccess.com",
+    "ACCESS_AUD": "0c109a114e394c77ac0d9805e440acd8773a717c4bdfbf521142876f7022ebf4",
     "HIVEMIND_ENV": "development",
   },
   // Same D1 database as the web Worker: identity → learner_id mapping and the
@@ -40,8 +40,8 @@
       "vars": {
         "ALLOWED_ORIGINS": "https://hivemind-web.internal",
         "LAB_PROVIDER": "echo",
-        "ACCESS_TEAM_DOMAIN": "https://hivemindjrr.cloudflareaccess.com",
-        "ACCESS_AUD": "replace-with-access-application-aud",
+        "ACCESS_TEAM_DOMAIN": "https://royal-breeze-2b7c.cloudflareaccess.com",
+        "ACCESS_AUD": "0c109a114e394c77ac0d9805e440acd8773a717c4bdfbf521142876f7022ebf4",
         "HIVEMIND_ENV": "production",
       },
       "d1_databases": [

@@ -63,7 +63,7 @@ authority, D1 for durable records, R2 for blobs and backups, Access with Google 
 identity, Sandbox for coding and simple Linux exercises. A disposable Ubuntu x86-64 host
 running a Python lab agent exists only for privileged networking (containerlab, FRR).
 Claude Code executes work orders from `.hivemind/work-orders/`; no AI API is required for
-normal operation. Domain: `hivemindjrr.com`.
+normal operation. Domain: `jryans.dev`; the app is `hivemind.jryans.dev` (D-047).
 
 ## Repository layout (D-039, as of Stage 01)
 

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 /*
  * Every workstation page requires a validated learner (D-033). Cloudflare
- * Access keeps anonymous browsers out at hivemindjrr.com; this guard covers
+ * Access keeps anonymous browsers out at hivemind.jryans.dev; this guard covers
  * any other hostname (workers.dev, a misconfigured AUD) with a bare 401 and no
  * data.
  */
@@ -18,7 +18,7 @@ export default async function AppLayout({ children }: Readonly<{ children: React
     return (
       <main className="hm-mono flex h-dvh flex-col items-center justify-center gap-2 text-[13px]">
         <div className="text-muted">401 · unauthenticated</div>
-        <div>sign in through Cloudflare Access at hivemindjrr.com</div>
+        <div>sign in through Cloudflare Access at hivemind.jryans.dev</div>
       </main>
     );
   }

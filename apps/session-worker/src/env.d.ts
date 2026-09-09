@@ -7,7 +7,7 @@ interface Env {
   DB: D1Database;
   ALLOWED_ORIGINS: string;
   LAB_PROVIDER: string;
-  /** Cloudflare Access team domain, e.g. https://hivemindjrr.cloudflareaccess.com (D-033). */
+  /** Cloudflare Access team domain, e.g. https://royal-breeze-2b7c.cloudflareaccess.com (D-033). */
   ACCESS_TEAM_DOMAIN: string;
   /** Access application audience tag. */
   ACCESS_AUD: string;

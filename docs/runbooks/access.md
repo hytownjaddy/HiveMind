@@ -10,9 +10,10 @@ out.
    redirect URI `https://<team>.cloudflareaccess.com/cdn-cgi/access/callback`. In Zero
    Trust → Settings → Authentication add Google with that client id and secret.
 2. **Access application.** Zero Trust → Access → Applications → Self-hosted:
-   domain `hivemindjrr.com` (and `www` if used), session duration 24 h, identity provider
+   domain `hivemind.jryans.dev`, session duration 24 h, identity provider
    Google only. Policy `Allow` with `Emails` = your Google address. Copy the application
-   **AUD tag**.
+   **AUD tag** (the 64-character hex string under Overview, not the Application ID UUID).
+   Team domain for this account: `https://royal-breeze-2b7c.cloudflareaccess.com`.
 3. **Worker vars.** Put the team domain and AUD into both wrangler configs
    (`ACCESS_TEAM_DOMAIN`, `ACCESS_AUD` under `env.production` in `apps/web/wrangler.jsonc`
    and `apps/session-worker/wrangler.jsonc`), then deploy.
@@ -21,7 +22,7 @@ out.
    token. Grant scopes on the Workers:
    `HIVEMIND_SERVICE_TOKEN_SCOPES='{"hivemind-cli":["content:publish","export:read"]}' tools/deploy.sh secrets production`.
    Locally export `HIVEMIND_ACCESS_CLIENT_ID` / `HIVEMIND_ACCESS_CLIENT_SECRET` and
-   `HIVEMIND_API_URL=https://hivemindjrr.com` for `hivemind content publish`.
+   `HIVEMIND_API_URL=https://hivemind.jryans.dev` for `hivemind content publish`.
 5. **First sign-in.** The seeded learner `HM-LRN-000001` binds to the first validated
    identity (`GET /api/me` shows it). Any other identity is rejected with 403 even if
    Access lets it through, so the Access policy and the binding agree.

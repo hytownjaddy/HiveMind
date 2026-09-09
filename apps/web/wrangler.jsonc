@@ -29,15 +29,15 @@
     "NEXTJS_ENV": "development",
     "HIVEMIND_ENV": "development",
     // Cloudflare Access (D-033). Local dev bypasses via .dev.vars.
-    "ACCESS_TEAM_DOMAIN": "https://hivemindjrr.cloudflareaccess.com",
-    "ACCESS_AUD": "replace-with-access-application-aud",
+    "ACCESS_TEAM_DOMAIN": "https://royal-breeze-2b7c.cloudflareaccess.com",
+    "ACCESS_AUD": "0c109a114e394c77ac0d9805e440acd8773a717c4bdfbf521142876f7022ebf4",
   },
   "env": {
     "production": {
       "name": "hivemind-web",
       "workers_dev": true,
-      // Custom domain (D-040); enable once DNS and Access are configured:
-      // "routes": [{ "pattern": "hivemindjrr.com", "custom_domain": true }],
+      // Custom domain (D-047); Access protects this hostname.
+      "routes": [{ "pattern": "hivemind.jryans.dev", "custom_domain": true }],
       "compatibility_date": "2026-08-15",
       "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
       "observability": { "enabled": true },
@@ -54,14 +54,12 @@
           "migrations_dir": "migrations",
         },
       ],
-      // Re-enable once R2 is enabled on the account (dashboard) and the bucket exists:
-      //   wrangler r2 bucket create hivemind-exports
-      // "r2_buckets": [{ "binding": "EXPORTS", "bucket_name": "hivemind-exports" }],
+      "r2_buckets": [{ "binding": "EXPORTS", "bucket_name": "hivemind-exports" }],
       "vars": {
         "NEXTJS_ENV": "production",
         "HIVEMIND_ENV": "production",
-        "ACCESS_TEAM_DOMAIN": "https://hivemindjrr.cloudflareaccess.com",
-        "ACCESS_AUD": "replace-with-access-application-aud",
+        "ACCESS_TEAM_DOMAIN": "https://royal-breeze-2b7c.cloudflareaccess.com",
+        "ACCESS_AUD": "0c109a114e394c77ac0d9805e440acd8773a717c4bdfbf521142876f7022ebf4",
       },
     },
   },

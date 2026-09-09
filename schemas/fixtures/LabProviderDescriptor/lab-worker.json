@@ -8,7 +8,7 @@
     "routing.frr",
     "privilege.net_admin"
   ],
-  "endpoint": "https://lab-worker.hivemindjrr.com",
+  "endpoint": "https://lab-worker.jryans.dev",
   "id": "ubuntu-lab-worker-1",
   "kind": "lab_worker",
   "version": "0.1.0"

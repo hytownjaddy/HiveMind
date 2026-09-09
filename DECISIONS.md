@@ -487,3 +487,11 @@ append-only: a schema whose hash changes at an unchanged version fails
 `bun run schema:export`, `schema:check`, and CI (acceptance 3); bump the version in
 `packages/schema/src/contracts.ts` instead. The scaffold's browser↔session transport
 (`lab-session.ts`) keeps its camelCase wire format until Stage 02 realigns it.
+
+## D-047 · 2026-09-09 · Locked · Domain is `jryans.dev`; the app is `hivemind.jryans.dev`
+
+Supersedes D-040. `hivemindjrr.com` was never registered. The zone on Cloudflare is
+`jryans.dev`: the web Worker's custom domain is `hivemind.jryans.dev`, the Access
+application protects that hostname (team `royal-breeze-2b7c.cloudflareaccess.com`), and
+the lab worker's Tunnel hostname will be `lab-worker.jryans.dev` (Stage 02). Every
+reference to `hivemindjrr.com` outside this log is updated; D-040 stays as history.

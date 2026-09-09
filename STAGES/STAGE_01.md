@@ -12,7 +12,7 @@ the gold-standard lesson authored with Jacob against the `docs/mockups/` directi
 
 ## User-visible outcome
 
-Jacob signs in with Google through Cloudflare Access at `hivemindjrr.com`, opens the Course
+Jacob signs in with Google through Cloudflare Access at `hivemind.jryans.dev`, opens the Course
 Workspace, and reads the gold-standard Linux networking lesson rendered from versioned files
 in `content/`. The Control Center shell shows the seeded learner, environment status, and
 an empty work-order queue. `hivemind` compiles and publishes content, creates and validates
@@ -45,7 +45,7 @@ leaves the lesson and learner intact.
   `hivemind work new|pull|validate|complete`, status machine, minimal templates
   (`lesson.add`, `lesson.update`, `problem.create` placeholder, `platform.feature`),
   identifiers per D-038.
-- Identity: Cloudflare Access application with Google IdP for `hivemindjrr.com`; JWT
+- Identity: Cloudflare Access application with Google IdP for `hivemind.jryans.dev`; JWT
   validation in the Worker; service tokens for CLI/worker; remove guest HMAC sessions.
 - Durability (D-020, D-030): nightly GitHub Actions `wrangler d1 export` to R2 with
   retention; `hivemind export`; scripted restore drill; recovery runbook.

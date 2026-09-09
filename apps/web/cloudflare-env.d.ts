@@ -15,7 +15,7 @@ interface CloudflareEnv {
   NEXTJS_ENV: string;
   /** development | production | test (D-033 dev bypass only in development). */
   HIVEMIND_ENV: string;
-  /** Cloudflare Access team domain, e.g. https://hivemindjrr.cloudflareaccess.com. */
+  /** Cloudflare Access team domain, e.g. https://royal-breeze-2b7c.cloudflareaccess.com. */
   ACCESS_TEAM_DOMAIN: string;
   /** Access application audience tag. */
   ACCESS_AUD: string;

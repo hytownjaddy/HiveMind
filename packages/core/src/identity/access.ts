@@ -19,7 +19,7 @@ export const ACCESS_JWT_HEADER = "cf-access-jwt-assertion";
 export const ACCESS_JWT_COOKIE = "CF_Authorization";
 
 export interface AccessConfig {
-  /** Team domain, e.g. `https://hivemindjrr.cloudflareaccess.com`. */
+  /** Team domain, e.g. `https://<team>.cloudflareaccess.com`. */
   readonly teamDomain: string;
   /** Application audience (AUD) tag from the Access application. */
   readonly audience: string;

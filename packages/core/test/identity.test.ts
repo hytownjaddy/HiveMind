@@ -12,7 +12,7 @@ import {
 } from "../src/identity/index";
 import { fixedClock } from "./clock";
 
-const TEAM = "https://hivemindjrr.cloudflareaccess.com";
+const TEAM = "https://example-team.cloudflareaccess.com";
 const AUD = "aud-tag-0123456789abcdef";
 
 let privateKey: CryptoKey;
@@ -54,7 +54,7 @@ function context(overrides: Partial<AuthContext> = {}): AuthContext {
 }
 
 function request(headers: Record<string, string> = {}): Request {
-  return new Request("https://hivemindjrr.com/api/me", { headers });
+  return new Request("https://hivemind.jryans.dev/api/me", { headers });
 }
 
 describe("Access JWT verification", () => {

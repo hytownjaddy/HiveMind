@@ -151,7 +151,7 @@ export default async function SettingsPage() {
               </tr>
               <tr>
                 <td className="text-muted">domain</td>
-                <td className="hm-mono">hivemindjrr.com</td>
+                <td className="hm-mono">hivemind.jryans.dev</td>
               </tr>
             </tbody>
           </table>

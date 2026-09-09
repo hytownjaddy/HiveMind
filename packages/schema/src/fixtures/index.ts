@@ -345,7 +345,7 @@ export const labWorkerProvider: LabProviderDescriptor = {
     "routing.frr",
     "privilege.net_admin",
   ],
-  endpoint: "https://lab-worker.hivemindjrr.com",
+  endpoint: "https://lab-worker.jryans.dev",
 };
 
 export const bgpFault: FaultSpec = {
