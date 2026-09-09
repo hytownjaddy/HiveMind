@@ -1,0 +1,81 @@
+{
+  "$comment": "HiveMind contract Evidence v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Evidence.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Mastery evidence",
+  "properties": {
+    "attempt_id": {
+      "pattern": "^HM-ATT-\\d{6,}$",
+      "type": "string"
+    },
+    "blind": {
+      "type": "boolean"
+    },
+    "correctness": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    },
+    "created_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "difficulty": {
+      "maximum": 5,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "id": {
+      "pattern": "^HM-EV-\\d{6,}$",
+      "type": "string"
+    },
+    "independence": {
+      "$ref": "HintTier.schema.json"
+    },
+    "kind": {
+      "enum": [
+        "lesson_question",
+        "guided_lab",
+        "practice_problem",
+        "challenge",
+        "blind_incident",
+        "interview",
+        "project"
+      ],
+      "type": "string"
+    },
+    "learner_id": {
+      "pattern": "^HM-LRN-\\d{6}$",
+      "type": "string"
+    },
+    "skill_id": {
+      "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+      "maxLength": 96,
+      "minLength": 3,
+      "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+      "type": "string"
+    },
+    "skill_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "attempt_id",
+    "learner_id",
+    "skill_id",
+    "skill_version",
+    "kind",
+    "correctness",
+    "independence",
+    "difficulty",
+    "blind",
+    "created_at"
+  ],
+  "title": "Evidence",
+  "type": "object"
+}

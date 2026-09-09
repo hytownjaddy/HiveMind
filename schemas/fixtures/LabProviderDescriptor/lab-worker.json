@@ -1,0 +1,15 @@
+{
+  "capabilities": [
+    "shell.linux",
+    "network.namespace",
+    "network.veth",
+    "network.bridge",
+    "network.containerlab",
+    "routing.frr",
+    "privilege.net_admin"
+  ],
+  "endpoint": "https://lab-worker.hivemindjrr.com",
+  "id": "ubuntu-lab-worker-1",
+  "kind": "lab_worker",
+  "version": "0.1.0"
+}

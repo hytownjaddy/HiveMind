@@ -1,0 +1,26 @@
+{
+  "$comment": "HiveMind contract DestroyResult v1.0.0; generated from packages/schema, do not edit",
+  "$id": "DestroyResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Destroy result",
+  "properties": {
+    "destroyed": {
+      "type": "boolean"
+    },
+    "detail": {
+      "maxLength": 500,
+      "type": "string"
+    },
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "lab_session_id",
+    "destroyed"
+  ],
+  "title": "DestroyResult",
+  "type": "object"
+}

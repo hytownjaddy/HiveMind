@@ -1,0 +1,200 @@
+{
+  "body_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "claims": [
+    {
+      "id": "lpm",
+      "lesson_id": "HM-LESSON-linux-networking-01",
+      "source_ids": [
+        "src.iproute2.ip-route"
+      ],
+      "statement": "The kernel selects the route with the longest matching prefix.",
+      "verification": "verified",
+      "verified_at": "2026-09-09T12:00:00Z",
+      "verified_by": "jacob"
+    }
+  ],
+  "course_id": "linux-networking",
+  "difficulty": 2,
+  "estimated_minutes": 45,
+  "id": "HM-LESSON-linux-networking-01",
+  "labs": [
+    {
+      "mode": "guided_lab",
+      "problem_id": "linux.routing.static_route",
+      "title": "Add and verify a static route"
+    }
+  ],
+  "module_id": "linux-networking.routing",
+  "objectives": [
+    {
+      "id": "read-table",
+      "skill_id": "linux.networking.routing_table",
+      "text": "Read a routing table and predict the chosen route"
+    }
+  ],
+  "order": 1,
+  "prerequisite_lesson_ids": [],
+  "qa_state": "draft",
+  "questions": [
+    {
+      "difficulty": 2,
+      "explanation": "Longest-prefix match prefers /16 over /0.",
+      "id": "predict-default",
+      "kind": "prediction",
+      "lesson_id": "HM-LESSON-linux-networking-01",
+      "options": [
+        {
+          "correct": false,
+          "feedback": "The default route is the shortest prefix; it loses.",
+          "id": "a",
+          "text": "10.0.0.1"
+        },
+        {
+          "correct": true,
+          "id": "b",
+          "text": "10.0.0.2"
+        }
+      ],
+      "prompt": "A host has `default via 10.0.0.1` and `10.1.0.0/16 via 10.0.0.2`. Which next hop carries a packet to 10.1.2.3?",
+      "skill_ids": [
+        "linux.networking.routing_table"
+      ]
+    }
+  ],
+  "review": {},
+  "sections": [
+    {
+      "blocks": [
+        {
+          "children": [
+            {
+              "kind": "text",
+              "value": "Every packet leaving a host consults the routing table"
+            },
+            {
+              "claim_id": "lpm",
+              "kind": "claim_ref"
+            },
+            {
+              "kind": "text",
+              "value": "."
+            }
+          ],
+          "kind": "paragraph"
+        },
+        {
+          "callout": "note",
+          "children": [
+            {
+              "children": [
+                {
+                  "kind": "text",
+                  "value": "IPv4 only in this lesson."
+                }
+              ],
+              "kind": "paragraph"
+            }
+          ],
+          "kind": "callout",
+          "title": "Scope"
+        },
+        {
+          "caption": "One hop",
+          "format": "ascii",
+          "kind": "diagram",
+          "source": "host --- gw --- internet"
+        },
+        {
+          "code": "$ ip route show\ndefault via 10.0.0.1 dev eth0",
+          "kind": "code_block",
+          "language": "console"
+        },
+        {
+          "kind": "question",
+          "question_id": "predict-default"
+        },
+        {
+          "items": [
+            [
+              {
+                "children": [
+                  {
+                    "kind": "code",
+                    "value": "ip route get"
+                  }
+                ],
+                "kind": "paragraph"
+              }
+            ]
+          ],
+          "kind": "list",
+          "ordered": true
+        },
+        {
+          "header": [
+            [
+              {
+                "kind": "text",
+                "value": "prefix"
+              }
+            ],
+            [
+              {
+                "kind": "text",
+                "value": "via"
+              }
+            ]
+          ],
+          "kind": "table",
+          "rows": [
+            [
+              [
+                {
+                  "kind": "text",
+                  "value": "0.0.0.0/0"
+                }
+              ],
+              [
+                {
+                  "kind": "text",
+                  "value": "10.0.0.1"
+                }
+              ]
+            ]
+          ]
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "kind": "kbd",
+                  "value": "ip route add"
+                }
+              ],
+              "kind": "paragraph"
+            }
+          ],
+          "exercise": "guided",
+          "kind": "exercise",
+          "title": "Add a static route"
+        },
+        {
+          "kind": "thematic_break"
+        }
+      ],
+      "element": "motivation",
+      "heading": "Why routes decide everything"
+    }
+  ],
+  "skill_ids": [
+    "linux.networking.routing_table"
+  ],
+  "slug": "routing-table-ip-route",
+  "source_ids": [
+    "src.iproute2.ip-route"
+  ],
+  "summary": "How the kernel selects a route and how to read and change the table.",
+  "title": "The Linux routing table and ip route",
+  "version": "0.1.0"
+}

@@ -1,0 +1,102 @@
+{
+  "$comment": "HiveMind contract SkillDefinition v1.0.0; generated from packages/schema, do not edit",
+  "$id": "SkillDefinition.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Versioned skill",
+  "properties": {
+    "blind_assessable": {
+      "type": "boolean"
+    },
+    "description": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "domain": {
+      "description": "Top-level domain slug, e.g. linux, networking, python",
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "evidence_modes": {
+      "items": {
+        "enum": [
+          "learn",
+          "guided_lab",
+          "practice",
+          "challenge",
+          "blind_incident",
+          "interview",
+          "project"
+        ],
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "id": {
+      "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+      "maxLength": 96,
+      "minLength": 3,
+      "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 120,
+      "minLength": 1,
+      "type": "string"
+    },
+    "prerequisites": {
+      "items": {
+        "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+        "maxLength": 96,
+        "minLength": 3,
+        "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "related": {
+      "items": {
+        "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+        "maxLength": 96,
+        "minLength": 3,
+        "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "status": {
+      "$ref": "DefinitionStatus.schema.json"
+    },
+    "tags": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[a-z0-9][a-z0-9._-]*$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "name",
+    "domain",
+    "description",
+    "status",
+    "prerequisites",
+    "related",
+    "tags",
+    "evidence_modes",
+    "blind_assessable"
+  ],
+  "title": "SkillDefinition",
+  "type": "object"
+}

@@ -1,0 +1,25 @@
+{
+  "capabilities": [
+    "shell.linux"
+  ],
+  "domain": "linux",
+  "id": "linux-networking",
+  "module_ids": [
+    "linux-networking.routing"
+  ],
+  "prerequisite_course_ids": [],
+  "skill_ids": [
+    "linux.networking.routing_table"
+  ],
+  "source_ids": [
+    "src.iproute2.ip-route"
+  ],
+  "status": "active",
+  "summary": "Interfaces, addresses, routes, and troubleshooting on Linux hosts.",
+  "title": "Linux Networking",
+  "tracks": [
+    "network-infrastructure"
+  ],
+  "uses_labs": true,
+  "version": "0.1.0"
+}

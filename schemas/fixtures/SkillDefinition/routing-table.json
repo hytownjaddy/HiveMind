@@ -1,0 +1,26 @@
+{
+  "blind_assessable": true,
+  "description": "Read, query, and change the kernel routing table with `ip route`.",
+  "domain": "linux",
+  "evidence_modes": [
+    "learn",
+    "guided_lab",
+    "practice",
+    "challenge",
+    "blind_incident"
+  ],
+  "id": "linux.networking.routing_table",
+  "name": "Linux routing table and ip route",
+  "prerequisites": [
+    "linux.networking.interfaces_addresses"
+  ],
+  "related": [
+    "networking.ipv4.subnetting"
+  ],
+  "status": "active",
+  "tags": [
+    "routing",
+    "iproute2"
+  ],
+  "version": "1.0.0"
+}

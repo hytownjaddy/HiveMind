@@ -1,0 +1,81 @@
+{
+  "$comment": "HiveMind contract MasteryUpdate v1.0.0; generated from packages/schema, do not edit",
+  "$id": "MasteryUpdate.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Versioned mastery update",
+  "properties": {
+    "algorithm_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "algorithm_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "confidence": {
+      "$ref": "Confidence.schema.json"
+    },
+    "created_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "evidence_count": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "evidence_ids": {
+      "items": {
+        "pattern": "^HM-EV-\\d{6,}$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "learner_id": {
+      "pattern": "^HM-LRN-\\d{6}$",
+      "type": "string"
+    },
+    "mastery_after": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    },
+    "mastery_before": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    },
+    "skill_id": {
+      "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+      "maxLength": 96,
+      "minLength": 3,
+      "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+      "type": "string"
+    },
+    "skill_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "learner_id",
+    "skill_id",
+    "skill_version",
+    "algorithm_id",
+    "algorithm_version",
+    "mastery_before",
+    "mastery_after",
+    "confidence",
+    "evidence_count",
+    "evidence_ids",
+    "created_at"
+  ],
+  "title": "MasteryUpdate",
+  "type": "object"
+}

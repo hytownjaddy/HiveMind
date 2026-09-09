@@ -1,0 +1,28 @@
+{
+  "$comment": "HiveMind contract ProvisionRequest v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ProvisionRequest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Provision request",
+  "properties": {
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    },
+    "lab_spec": {
+      "$ref": "LabSpec.schema.json"
+    },
+    "seed": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "lab_session_id",
+    "lab_spec",
+    "seed"
+  ],
+  "title": "ProvisionRequest",
+  "type": "object"
+}

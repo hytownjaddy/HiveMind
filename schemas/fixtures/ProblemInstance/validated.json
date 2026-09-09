@@ -1,0 +1,64 @@
+{
+  "created_at": "2026-09-09T12:00:00Z",
+  "fault_versions": [
+    {
+      "fault_id": "bgp.wrong_neighbor_asn",
+      "version": "1.0.0"
+    }
+  ],
+  "grader_version": "1.0.0",
+  "id": "HM-PI-000042",
+  "lab_spec_version": "1.0.0",
+  "parameters": {
+    "peer_subnet": "10.0.12.0/30",
+    "wrong_asn": 65042
+  },
+  "problem_id": "bgp.neighbor_misconfig",
+  "problem_version": "1.0.0",
+  "reference_solution_version": "1.0.0",
+  "seed": 829143,
+  "spec_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "validation": "validated",
+  "validation_steps": [
+    {
+      "at": "2026-09-09T12:00:00Z",
+      "passed": true,
+      "step": "schema_validation"
+    },
+    {
+      "at": "2026-09-09T12:00:00Z",
+      "passed": true,
+      "step": "provision_baseline"
+    },
+    {
+      "at": "2026-09-09T12:00:00Z",
+      "passed": true,
+      "step": "validate_baseline"
+    },
+    {
+      "at": "2026-09-09T12:00:00Z",
+      "passed": true,
+      "step": "inject_fault"
+    },
+    {
+      "at": "2026-09-09T12:00:00Z",
+      "passed": true,
+      "step": "verify_failure"
+    },
+    {
+      "at": "2026-09-09T12:00:00Z",
+      "passed": true,
+      "step": "execute_reference_solution"
+    },
+    {
+      "at": "2026-09-09T12:00:00Z",
+      "passed": true,
+      "step": "run_graders"
+    },
+    {
+      "at": "2026-09-09T12:00:00Z",
+      "passed": true,
+      "step": "restore_scenario"
+    }
+  ]
+}

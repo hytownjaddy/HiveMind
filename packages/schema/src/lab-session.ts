@@ -1,48 +1,36 @@
 import { z } from "zod";
 
+import { capabilitySchema } from "./capability";
+import { labStatusSchema } from "./common/enums";
+import { labSessionIdSchema } from "./common/ids";
 import { protocolVersionSchema } from "./version";
 
 /*
- * Lab session lifecycle (RFP §86). The LabSession Durable Object is the only
- * authority that may move a session between these states.
+ * Session transport v1 (browser ↔ session Worker). Lifecycle, identifiers,
+ * and capabilities come from the canonical contracts; this file keeps the
+ * scaffold's camelCase wire format until Stage 02 refactors the LabSession
+ * object to the capability/provider model.
  */
-export const LAB_STATUSES = [
-  "queued",
-  "provisioning",
-  "baseline_check",
-  "fault_injection",
-  "fault_check",
-  "ready",
-  "active",
-  "grading",
-  "completed",
-  "destroying",
-  "destroyed",
-  "failed",
-] as const;
-export const labStatusSchema = z.enum(LAB_STATUSES);
-export type LabStatus = z.infer<typeof labStatusSchema>;
-
-export const TERMINAL_STATUSES: readonly LabStatus[] = ["ready", "active"];
-export const FINAL_STATUSES: readonly LabStatus[] = ["destroyed", "failed"];
+export {
+  FINAL_STATUSES,
+  LAB_STATUSES,
+  TERMINAL_STATUSES,
+  labStatusSchema,
+} from "./common/enums";
+export type { LabStatus } from "./common/enums";
+export { labSessionIdSchema } from "./common/ids";
+export type { LabSessionId } from "./common/ids";
 
 /*
  * Identifiers
  */
-export const labSessionIdSchema = z.uuid();
-export type LabSessionId = z.infer<typeof labSessionIdSchema>;
-
 export const guestIdSchema = z.uuid();
 export type GuestId = z.infer<typeof guestIdSchema>;
 
 export const connectionIdSchema = z.uuid();
 
-/** Plugin-style capability id, e.g. `terminal.linux`, `network.frr` (RFP §106). */
-export const labCapabilitySchema = z
-  .string()
-  .trim()
-  .max(64)
-  .regex(/^[a-z0-9_]+(\.[a-z0-9_]+)+$/u, "invalid-capability");
+/** Capability id (D-035); alias of the canonical `capabilitySchema`. */
+export const labCapabilitySchema = capabilitySchema;
 export type LabCapability = z.infer<typeof labCapabilitySchema>;
 
 /** Opaque reference to a validated problem instance (RFP §47), e.g. `bgp.next_hop#42`. */

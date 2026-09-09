@@ -1,0 +1,55 @@
+{
+  "$comment": "HiveMind contract AttemptResult v1.0.0; generated from packages/schema, do not edit",
+  "$id": "AttemptResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Attempt result",
+  "properties": {
+    "attempt_id": {
+      "pattern": "^HM-ATT-\\d{6,}$",
+      "type": "string"
+    },
+    "duration_seconds": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "grader_result": {
+      "$ref": "GraderResult.schema.json"
+    },
+    "independence": {
+      "$ref": "HintTier.schema.json"
+    },
+    "objectives_passed": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "objectives_total": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "recorded_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "technical_score": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    }
+  },
+  "required": [
+    "attempt_id",
+    "objectives_total",
+    "objectives_passed",
+    "technical_score",
+    "independence",
+    "duration_seconds",
+    "recorded_at"
+  ],
+  "title": "AttemptResult",
+  "type": "object"
+}

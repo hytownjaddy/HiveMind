@@ -10,8 +10,10 @@ import { PROTOCOL_VERSION } from "./version";
 
 describe("capability ids", () => {
   it("accepts dotted plugin-style ids", () => {
-    expect(labCapabilitySchema.parse(" terminal.linux ")).toBe("terminal.linux");
-    expect(labCapabilitySchema.parse("network.frr")).toBe("network.frr");
+    expect(labCapabilitySchema.parse("shell.linux")).toBe("shell.linux");
+    expect(labCapabilitySchema.parse("routing.frr")).toBe("routing.frr");
+    // The canonical contract is strict: no trimming, so Python and TypeScript agree.
+    expect(labCapabilitySchema.safeParse(" shell.linux ").success).toBe(false);
   });
 
   it("rejects ids without a namespace", () => {

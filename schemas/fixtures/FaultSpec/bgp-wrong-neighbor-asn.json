@@ -1,0 +1,44 @@
+{
+  "category": "routing",
+  "description": "r1's neighbor statement names AS 65003 instead of 65002, so the session never leaves Active/Connect.",
+  "id": "bgp.wrong_neighbor_asn",
+  "inject_module": "hivemind_worker.faults.bgp:inject_wrong_neighbor_asn",
+  "observable_symptoms": [
+    "`show bgp summary` never shows Established",
+    "No prefixes learned from the neighbor"
+  ],
+  "parameters": [
+    {
+      "kind": "int_range",
+      "name": "wrong_asn",
+      "values": [
+        65003,
+        65100
+      ]
+    }
+  ],
+  "requires": [
+    "routing.frr"
+  ],
+  "restore_module": "hivemind_worker.faults.bgp:restore_wrong_neighbor_asn",
+  "status": "active",
+  "title": "Neighbor configured with the wrong remote AS",
+  "verify": [
+    {
+      "command": [
+        "vtysh",
+        "-c",
+        "show bgp summary json"
+      ],
+      "expect": {
+        "kind": "stdout_json_equals",
+        "path": "$.ipv4Unicast.peers['10.0.12.2'].state",
+        "value": "Active"
+      },
+      "id": "session-not-established",
+      "node": "r1",
+      "timeout_seconds": 30
+    }
+  ],
+  "version": "1.0.0"
+}

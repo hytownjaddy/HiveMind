@@ -1,0 +1,111 @@
+{
+  "$comment": "HiveMind contract CourseManifest v1.0.0; generated from packages/schema, do not edit",
+  "$id": "CourseManifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Course manifest",
+  "properties": {
+    "capabilities": {
+      "items": {
+        "$ref": "Capability.schema.json"
+      },
+      "type": "array"
+    },
+    "domain": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "id": {
+      "description": "Course id slug, e.g. linux-networking",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "module_ids": {
+      "items": {
+        "description": "Module id <course>.<slug>, e.g. linux-networking.routing",
+        "pattern": "^[a-z0-9-]+\\.[a-z0-9-]+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "prerequisite_course_ids": {
+      "items": {
+        "description": "Course id slug, e.g. linux-networking",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "skill_ids": {
+      "items": {
+        "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+        "maxLength": 96,
+        "minLength": 3,
+        "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "source_ids": {
+      "items": {
+        "description": "Source id, e.g. src.iproute2.ip-route",
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[a-z0-9][a-z0-9._-]*$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "status": {
+      "$ref": "DefinitionStatus.schema.json"
+    },
+    "summary": {
+      "maxLength": 600,
+      "minLength": 1,
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    },
+    "tracks": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[a-z0-9][a-z0-9._-]*$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "uses_labs": {
+      "type": "boolean"
+    },
+    "version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "title",
+    "domain",
+    "summary",
+    "status",
+    "tracks",
+    "prerequisite_course_ids",
+    "skill_ids",
+    "uses_labs",
+    "capabilities",
+    "module_ids",
+    "source_ids"
+  ],
+  "title": "CourseManifest",
+  "type": "object"
+}

@@ -1,0 +1,80 @@
+{
+  "$comment": "HiveMind contract Competency v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Competency.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Competency",
+  "properties": {
+    "category": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "description": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 160,
+      "minLength": 1,
+      "type": "string"
+    },
+    "skills": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "min_mastery": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "skill_id": {
+            "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+            "maxLength": 96,
+            "minLength": 3,
+            "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+            "type": "string"
+          },
+          "weight": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "skill_id",
+          "weight"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "status": {
+      "$ref": "DefinitionStatus.schema.json"
+    },
+    "version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "name",
+    "category",
+    "description",
+    "status",
+    "skills"
+  ],
+  "title": "Competency",
+  "type": "object"
+}

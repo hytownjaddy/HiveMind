@@ -1,0 +1,18 @@
+{
+  "$comment": "HiveMind contract QaState v1.0.0; generated from packages/schema, do not edit",
+  "$id": "QaState.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Content QA state",
+  "enum": [
+    "draft",
+    "technical_review",
+    "instructional_review",
+    "execution_test",
+    "approved",
+    "published",
+    "deprecated",
+    "archived"
+  ],
+  "title": "QaState",
+  "type": "string"
+}

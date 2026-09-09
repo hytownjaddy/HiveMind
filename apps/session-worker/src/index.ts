@@ -1,4 +1,8 @@
-import { createLabSessionRequestSchema, labSessionIdSchema } from "@hivemind/schema";
+import {
+  createLabSessionRequestSchema,
+  formatLabSessionId,
+  labSessionIdSchema,
+} from "@hivemind/schema";
 
 import {
   isAllowedOrigin,
@@ -43,6 +47,11 @@ async function readJson(request: Request): Promise<unknown> {
   return JSON.parse(body) as unknown;
 }
 
+/** Six-digit sequence for `HM-LAB-nnnnnn` (D-038); Stage 02 allocates from the D1 index. */
+function randomSessionSequence(): number {
+  return 100_000 + ((crypto.getRandomValues(new Uint32Array(1))[0] ?? 0) % 900_000);
+}
+
 function sessionStub(env: Env, sessionId: string): DurableObjectStub {
   return env.LAB_SESSIONS.get(env.LAB_SESSIONS.idFromName(sessionId));
 }
@@ -68,7 +77,7 @@ async function createSession(
   if (!parsed.success) {
     return jsonResponse({ error: "malformed" }, 400);
   }
-  const sessionId = crypto.randomUUID();
+  const sessionId = formatLabSessionId(randomSessionSequence());
   return sessionStub(env, sessionId).fetch(
     internal("/internal/create", guestId, {
       method: "POST",

@@ -12,3 +12,4 @@ test-results
 **/next-env.d.ts
 docs/RFP.md
 docs/STAGE_*.md
+schemas/

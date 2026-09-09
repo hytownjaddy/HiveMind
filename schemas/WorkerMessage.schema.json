@@ -1,0 +1,455 @@
+{
+  "$comment": "HiveMind contract WorkerMessage v1.0.0; generated from packages/schema, do not edit",
+  "$id": "WorkerMessage.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Worker protocol message",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "job_id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "lab_spec": {
+          "$ref": "LabSpec.schema.json"
+        },
+        "problem_instance": {
+          "$ref": "ProblemInstance.schema.json"
+        },
+        "seed": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "type": {
+          "const": "job.provision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "job_id",
+        "lab_session_id",
+        "lab_spec",
+        "seed"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "job_id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "node": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "maximum": 3600,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "type": {
+          "const": "job.exec",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "job_id",
+        "lab_session_id",
+        "node",
+        "command",
+        "timeout_seconds"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "fault_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "fault_version": {
+          "description": "Semantic version major.minor.patch",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "job_id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "parameters": {
+          "additionalProperties": {},
+          "propertyNames": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "type": {
+          "const": "job.fault.inject",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "job_id",
+        "lab_session_id",
+        "fault_id",
+        "fault_version",
+        "parameters"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "fault_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "fault_version": {
+          "description": "Semantic version major.minor.patch",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "job_id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "type": {
+          "const": "job.fault.verify",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "job_id",
+        "lab_session_id",
+        "fault_id",
+        "fault_version"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "grader_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "grader_version": {
+          "description": "Semantic version major.minor.patch",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "job_id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "type": {
+          "const": "job.grade",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "job_id",
+        "lab_session_id",
+        "grader_id",
+        "grader_version"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "job_id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "completed",
+            "expired",
+            "requested",
+            "failed",
+            "orphaned"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "const": "job.destroy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "job_id",
+        "lab_session_id",
+        "reason"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "detail": {
+          "maxLength": 500,
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "LabStatus.schema.json"
+        },
+        "type": {
+          "const": "event.status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "lab_session_id",
+        "status",
+        "at"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "level": {
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "type": {
+          "const": "event.log",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "lab_session_id",
+        "level",
+        "message",
+        "at"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "job_id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        },
+        "result": {
+          "$ref": "JobResult.schema.json"
+        },
+        "type": {
+          "const": "event.result",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "job_id",
+        "lab_session_id",
+        "ok",
+        "result"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "job_id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string"
+        },
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 2000,
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "type": {
+          "const": "event.error",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "code",
+        "message",
+        "retryable"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "active_sessions": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "capabilities": {
+          "items": {
+            "$ref": "Capability.schema.json"
+          },
+          "type": "array"
+        },
+        "load": {
+          "additionalProperties": false,
+          "properties": {
+            "cpu_percent": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            "memory_percent": {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": [
+            "cpu_percent",
+            "memory_percent"
+          ],
+          "type": "object"
+        },
+        "runtime_versions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "propertyNames": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "type": {
+          "const": "heartbeat",
+          "type": "string"
+        },
+        "worker_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "worker_id",
+        "capabilities",
+        "active_sessions",
+        "load",
+        "runtime_versions",
+        "at"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "WorkerMessage"
+}

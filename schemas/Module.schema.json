@@ -1,0 +1,62 @@
+{
+  "$comment": "HiveMind contract Module v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Module.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Course module",
+  "properties": {
+    "course_id": {
+      "description": "Course id slug, e.g. linux-networking",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "id": {
+      "description": "Module id <course>.<slug>, e.g. linux-networking.routing",
+      "pattern": "^[a-z0-9-]+\\.[a-z0-9-]+$",
+      "type": "string"
+    },
+    "lesson_ids": {
+      "items": {
+        "pattern": "^HM-LESSON-[a-z0-9-]+-\\d{2}$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "skill_ids": {
+      "items": {
+        "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+        "maxLength": 96,
+        "minLength": 3,
+        "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "summary": {
+      "maxLength": 600,
+      "minLength": 1,
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "course_id",
+    "title",
+    "summary",
+    "order",
+    "lesson_ids",
+    "skill_ids"
+  ],
+  "title": "Module",
+  "type": "object"
+}

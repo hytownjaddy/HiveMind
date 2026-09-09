@@ -1,0 +1,146 @@
+{
+  "$comment": "HiveMind contract FaultSpec v1.0.0; generated from packages/schema, do not edit",
+  "$id": "FaultSpec.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Fault module specification",
+  "properties": {
+    "category": {
+      "enum": [
+        "configuration",
+        "routing",
+        "connectivity",
+        "service",
+        "performance",
+        "security",
+        "code"
+      ],
+      "type": "string"
+    },
+    "defaults": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "description": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "inject_module": {
+      "pattern": "^[a-z0-9_.]+:[a-z0-9_]+$",
+      "type": "string"
+    },
+    "observable_symptoms": {
+      "items": {
+        "maxLength": 300,
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "parameters": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "choice",
+              "int_range",
+              "string",
+              "boolean"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "values": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "requires": {
+      "items": {
+        "$ref": "Capability.schema.json"
+      },
+      "type": "array"
+    },
+    "restore_module": {
+      "pattern": "^[a-z0-9_.]+:[a-z0-9_]+$",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "DefinitionStatus.schema.json"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    },
+    "verify": {
+      "items": {
+        "$ref": "CheckSpec.schema.json"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "title",
+    "status",
+    "category",
+    "description",
+    "requires",
+    "parameters",
+    "inject_module",
+    "restore_module",
+    "verify",
+    "observable_symptoms"
+  ],
+  "title": "FaultSpec",
+  "type": "object"
+}

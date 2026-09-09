@@ -1,0 +1,20 @@
+{
+  "algorithm_id": "readiness.weighted_gates",
+  "algorithm_version": "0.1.0",
+  "computed_at": "2026-09-09T12:00:00Z",
+  "confidence": "medium",
+  "evidence_count": 12,
+  "gates": [
+    {
+      "blocking": true,
+      "competency_id": "bgp-operations",
+      "satisfied": false,
+      "score_percent": 55
+    }
+  ],
+  "last_tested_at": "2026-09-09T12:00:00Z",
+  "learner_id": "HM-LRN-000001",
+  "role_profile_id": "meta-network-infrastructure-engineer",
+  "role_profile_version": "0.1.0",
+  "score_percent": 62
+}

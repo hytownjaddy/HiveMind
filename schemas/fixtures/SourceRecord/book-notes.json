@@ -1,0 +1,8 @@
+{
+  "citation": "Notes only; the book itself is not ingested (D-011).",
+  "id": "src.notes.bgp-book",
+  "ingested": false,
+  "kind": "book_notes",
+  "title": "Jacob's notes on a BGP book",
+  "trust_tier": "internal"
+}

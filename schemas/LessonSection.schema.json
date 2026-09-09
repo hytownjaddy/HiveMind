@@ -1,0 +1,30 @@
+{
+  "$comment": "HiveMind contract LessonSection v1.0.0; generated from packages/schema, do not edit",
+  "$id": "LessonSection.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Lesson section tagged with its §110 element",
+  "properties": {
+    "blocks": {
+      "items": {
+        "$ref": "BlockNode.schema.json"
+      },
+      "type": "array"
+    },
+    "element": {
+      "$ref": "LessonElement.schema.json"
+    },
+    "heading": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "element",
+    "heading",
+    "blocks"
+  ],
+  "title": "LessonSection",
+  "type": "object"
+}

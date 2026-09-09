@@ -1,0 +1,13 @@
+{
+  "course_id": "linux-networking",
+  "id": "linux-networking.routing",
+  "lesson_ids": [
+    "HM-LESSON-linux-networking-01"
+  ],
+  "order": 1,
+  "skill_ids": [
+    "linux.networking.routing_table"
+  ],
+  "summary": "The routing table, static routes, and the failures they cause.",
+  "title": "Routing"
+}

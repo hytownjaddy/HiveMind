@@ -30,7 +30,9 @@
     "cf-typegen": "bun run --filter './apps/*' cf-typegen",
     "deploy": "tools/deploy.sh all production",
     "deploy:dev": "tools/deploy.sh all dev",
-    "verify": "bun run format:check && bun run lint && bun run boundaries && bun run typecheck && bun run test && bun run build:web"
+    "verify": "bun run format:check && bun run lint && bun run boundaries && bun run typecheck && bun run schema:check && bun run test && bun run build:web",
+    "schema:export": "bun --cwd packages/schema schema:export",
+    "schema:check": "bun --cwd packages/schema schema:check"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

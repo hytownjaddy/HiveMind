@@ -1,0 +1,39 @@
+{
+  "$comment": "HiveMind contract ExecRequest v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ExecRequest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Command execution request",
+  "properties": {
+    "command": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    },
+    "node": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "timeout_seconds": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "lab_session_id",
+    "node",
+    "command",
+    "timeout_seconds"
+  ],
+  "title": "ExecRequest",
+  "type": "object"
+}

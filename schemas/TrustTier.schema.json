@@ -1,0 +1,14 @@
+{
+  "$comment": "HiveMind contract TrustTier v1.0.0; generated from packages/schema, do not edit",
+  "$id": "TrustTier.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Source trust tier",
+  "enum": [
+    "official",
+    "vendor",
+    "secondary",
+    "internal"
+  ],
+  "title": "TrustTier",
+  "type": "string"
+}

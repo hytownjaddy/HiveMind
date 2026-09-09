@@ -1,0 +1,13 @@
+{
+  "$comment": "HiveMind contract Confidence v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Confidence.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Confidence tier beside every score",
+  "enum": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "title": "Confidence",
+  "type": "string"
+}

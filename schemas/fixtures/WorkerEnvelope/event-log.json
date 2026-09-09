@@ -1,0 +1,17 @@
+{
+  "correlation_id": "6f2b7e6c-4d0f-4d7a-9a4c-2f1b5c3d8e90",
+  "message": {
+    "at": "2026-09-09T12:00:00Z",
+    "lab_session_id": "HM-LAB-829143",
+    "level": "info",
+    "message": "containerlab deploy finished",
+    "type": "event.log"
+  },
+  "message_id": "9c1d5a2e-7b3f-4e6a-8d2c-1a0b9f8e7d6c",
+  "protocol_version": 1,
+  "sender": {
+    "id": "hivemind-session",
+    "kind": "session_worker"
+  },
+  "sent_at": "2026-09-09T12:00:00Z"
+}

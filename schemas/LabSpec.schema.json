@@ -1,0 +1,171 @@
+{
+  "$comment": "HiveMind contract LabSpec v1.0.0; generated from packages/schema, do not edit",
+  "$id": "LabSpec.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Lab specification",
+  "properties": {
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "links": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "a": {
+            "description": "node:interface",
+            "minLength": 1,
+            "type": "string"
+          },
+          "b": {
+            "description": "node:interface",
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "a",
+          "b"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "network": {
+      "additionalProperties": false,
+      "properties": {
+        "allowlist": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "egress": {
+          "enum": [
+            "deny",
+            "allowlist"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "egress",
+        "allowlist"
+      ],
+      "type": "object"
+    },
+    "nodes": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "config": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "image": {
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "host",
+              "router",
+              "switch",
+              "server",
+              "client",
+              "runner"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "image",
+          "role"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "requires": {
+      "items": {
+        "$ref": "Capability.schema.json"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "resources": {
+      "additionalProperties": false,
+      "properties": {
+        "cpu_millicores": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "disk_mb": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "memory_mb": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "cpu_millicores",
+        "memory_mb",
+        "disk_mb"
+      ],
+      "type": "object"
+    },
+    "snapshot": {
+      "type": "boolean"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    },
+    "ttl_minutes": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "title",
+    "requires",
+    "nodes",
+    "links",
+    "resources",
+    "network",
+    "ttl_minutes",
+    "snapshot"
+  ],
+  "title": "LabSpec",
+  "type": "object"
+}

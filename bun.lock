@@ -59,6 +59,9 @@
       "dependencies": {
         "zod": "^4.5.4",
       },
+      "devDependencies": {
+        "@types/node": "^26.5.0",
+      },
     },
   },
   "packages": {

@@ -1,0 +1,19 @@
+{
+  "capabilities": [],
+  "domain": "career",
+  "id": "interview-foundations",
+  "module_ids": [
+    "interview-foundations.answers"
+  ],
+  "prerequisite_course_ids": [],
+  "skill_ids": [
+    "career.interview.structured_answers"
+  ],
+  "source_ids": [],
+  "status": "active",
+  "summary": "Structured answers, whiteboard reasoning, and incident narratives.",
+  "title": "Interview Foundations",
+  "tracks": [],
+  "uses_labs": false,
+  "version": "0.1.0"
+}

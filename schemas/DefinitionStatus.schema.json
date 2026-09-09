@@ -1,0 +1,13 @@
+{
+  "$comment": "HiveMind contract DefinitionStatus v1.0.0; generated from packages/schema, do not edit",
+  "$id": "DefinitionStatus.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Versioned definition lifecycle",
+  "enum": [
+    "active",
+    "deprecated",
+    "archived"
+  ],
+  "title": "DefinitionStatus",
+  "type": "string"
+}

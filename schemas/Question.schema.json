@@ -1,0 +1,98 @@
+{
+  "$comment": "HiveMind contract Question v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Question.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Lesson question",
+  "properties": {
+    "answer": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "difficulty": {
+      "maximum": 5,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "explanation": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "prediction",
+        "knowledge_check",
+        "reflection",
+        "mastery"
+      ],
+      "type": "string"
+    },
+    "lesson_id": {
+      "pattern": "^HM-LESSON-[a-z0-9-]+-\\d{2}$",
+      "type": "string"
+    },
+    "options": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "correct": {
+            "type": "boolean"
+          },
+          "feedback": {
+            "description": "Markdown text, rendered by the web app",
+            "type": "string"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "text": {
+            "description": "Markdown text, rendered by the web app",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "correct"
+        ],
+        "type": "object"
+      },
+      "minItems": 2,
+      "type": "array"
+    },
+    "prompt": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "skill_ids": {
+      "items": {
+        "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+        "maxLength": 96,
+        "minLength": 3,
+        "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "lesson_id",
+    "kind",
+    "prompt",
+    "explanation",
+    "skill_ids",
+    "difficulty"
+  ],
+  "title": "Question",
+  "type": "object"
+}

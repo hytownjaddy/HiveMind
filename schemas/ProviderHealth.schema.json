@@ -1,0 +1,40 @@
+{
+  "$comment": "HiveMind contract ProviderHealth v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ProviderHealth.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Provider health",
+  "properties": {
+    "active_sessions": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "checked_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "detail": {
+      "maxLength": 500,
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "provider_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider_id",
+    "ok",
+    "checked_at",
+    "active_sessions"
+  ],
+  "title": "ProviderHealth",
+  "type": "object"
+}

@@ -1,0 +1,91 @@
+{
+  "$comment": "HiveMind contract ContentVersion v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ContentVersion.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Immutable published content version",
+  "properties": {
+    "content_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "counts": {
+      "additionalProperties": false,
+      "properties": {
+        "courses": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "lessons": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "modules": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "skills": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "sources": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "courses",
+        "modules",
+        "lessons",
+        "skills",
+        "sources"
+      ],
+      "type": "object"
+    },
+    "course_ids": {
+      "items": {
+        "description": "Course id slug, e.g. linux-networking",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "created_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "git_commit": {
+      "pattern": "^[a-f0-9]{7,40}$",
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^HM-CV-\\d{4,}$",
+      "type": "string"
+    },
+    "note": {
+      "maxLength": 500,
+      "type": "string"
+    },
+    "published_by": {
+      "maxLength": 120,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "created_at",
+    "content_hash",
+    "published_by",
+    "course_ids",
+    "counts"
+  ],
+  "title": "ContentVersion",
+  "type": "object"
+}

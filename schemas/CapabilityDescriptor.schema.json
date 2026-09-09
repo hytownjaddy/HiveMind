@@ -1,0 +1,27 @@
+{
+  "$comment": "HiveMind contract CapabilityDescriptor v1.0.0; generated from packages/schema, do not edit",
+  "$id": "CapabilityDescriptor.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Capability with execution class",
+  "properties": {
+    "class": {
+      "$ref": "ExecutionClass.schema.json"
+    },
+    "description": {
+      "maxLength": 300,
+      "minLength": 1,
+      "type": "string"
+    },
+    "id": {
+      "$ref": "Capability.schema.json"
+    }
+  },
+  "required": [
+    "id",
+    "class",
+    "description"
+  ],
+  "title": "CapabilityDescriptor",
+  "type": "object"
+}

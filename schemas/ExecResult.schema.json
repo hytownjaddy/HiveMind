@@ -1,0 +1,37 @@
+{
+  "$comment": "HiveMind contract ExecResult v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ExecResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Command execution result",
+  "properties": {
+    "duration_ms": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "exit_code": {
+      "maximum": 9007199254740991,
+      "minimum": -9007199254740991,
+      "type": "integer"
+    },
+    "stderr": {
+      "type": "string"
+    },
+    "stdout": {
+      "type": "string"
+    },
+    "timed_out": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "exit_code",
+    "stdout",
+    "stderr",
+    "duration_ms",
+    "timed_out"
+  ],
+  "title": "ExecResult",
+  "type": "object"
+}

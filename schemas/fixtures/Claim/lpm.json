@@ -1,0 +1,11 @@
+{
+  "id": "lpm",
+  "lesson_id": "HM-LESSON-linux-networking-01",
+  "source_ids": [
+    "src.iproute2.ip-route"
+  ],
+  "statement": "The kernel selects the route with the longest matching prefix.",
+  "verification": "verified",
+  "verified_at": "2026-09-09T12:00:00Z",
+  "verified_by": "jacob"
+}

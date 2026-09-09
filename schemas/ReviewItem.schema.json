@@ -1,0 +1,69 @@
+{
+  "$comment": "HiveMind contract ReviewItem v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ReviewItem.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Review queue item",
+  "properties": {
+    "id": {
+      "pattern": "^HM-RVW-\\d{4,}$",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "lesson",
+        "claim",
+        "problem",
+        "source",
+        "work_order"
+      ],
+      "type": "string"
+    },
+    "notes": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "opened_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "qa_state": {
+      "$ref": "QaState.schema.json"
+    },
+    "resolution": {
+      "enum": [
+        "approved",
+        "rejected",
+        "changes_requested"
+      ],
+      "type": "string"
+    },
+    "resolved_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "reviewer": {
+      "maxLength": 120,
+      "type": "string"
+    },
+    "target_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "work_order_id": {
+      "pattern": "^HM-WO-\\d{4,}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "kind",
+    "target_id",
+    "qa_state",
+    "opened_at"
+  ],
+  "title": "ReviewItem",
+  "type": "object"
+}

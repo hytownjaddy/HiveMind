@@ -1,0 +1,292 @@
+{
+  "$comment": "HiveMind contract ProblemSpec v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ProblemSpec.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Problem archetype",
+  "properties": {
+    "difficulty": {
+      "maximum": 5,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "domain": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "faults": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "fault_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "version": {
+            "description": "Semantic version major.minor.patch",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fault_id",
+          "version"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "grader_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "grader_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "hints": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "mastery_cap_percent": {
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "text": {
+            "description": "Markdown text, rendered by the web app",
+            "type": "string"
+          },
+          "tier": {
+            "enum": [
+              "minor",
+              "strong",
+              "solution"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "tier",
+          "text",
+          "mastery_cap_percent"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "lab_spec_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "lab_spec_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "modes": {
+      "items": {
+        "$ref": "ProductMode.schema.json"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "objectives": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "check_ids": {
+            "items": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[a-z0-9][a-z0-9._-]*$",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "skill_id": {
+            "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+            "maxLength": 96,
+            "minLength": 3,
+            "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "check_ids"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "qa_state": {
+      "$ref": "QaState.schema.json"
+    },
+    "reference_solution": {
+      "pattern": "^[a-z0-9_.]+:[a-z0-9_]+$",
+      "type": "string"
+    },
+    "reference_solution_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "requires": {
+      "items": {
+        "$ref": "Capability.schema.json"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "scenario": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "skill_ids": {
+      "items": {
+        "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+        "maxLength": 96,
+        "minLength": 3,
+        "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "status": {
+      "$ref": "DefinitionStatus.schema.json"
+    },
+    "summary": {
+      "maxLength": 600,
+      "minLength": 1,
+      "type": "string"
+    },
+    "time_limit_minutes": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    },
+    "variation": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "choice",
+              "int_range",
+              "string",
+              "boolean"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "values": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
+                  "type": "integer"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "title",
+    "domain",
+    "status",
+    "qa_state",
+    "summary",
+    "scenario",
+    "skill_ids",
+    "difficulty",
+    "modes",
+    "requires",
+    "lab_spec_id",
+    "lab_spec_version",
+    "objectives",
+    "variation",
+    "faults",
+    "grader_id",
+    "grader_version",
+    "reference_solution",
+    "reference_solution_version",
+    "hints"
+  ],
+  "title": "ProblemSpec",
+  "type": "object"
+}

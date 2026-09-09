@@ -1,0 +1,19 @@
+{
+  "created_at": "2026-09-09T12:00:00Z",
+  "display_name": "Jacob",
+  "id": "HM-LRN-000001",
+  "identity": {
+    "email": "jacob@0pass.com",
+    "provider": "cloudflare_access"
+  },
+  "settings": {
+    "ai_execution": {
+      "coach": "external",
+      "interview": "external",
+      "review": "external",
+      "tutor": "external"
+    },
+    "timezone": "America/Los_Angeles"
+  },
+  "updated_at": "2026-09-09T12:00:00Z"
+}

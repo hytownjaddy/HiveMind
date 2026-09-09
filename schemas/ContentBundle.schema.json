@@ -1,0 +1,68 @@
+{
+  "$comment": "HiveMind contract ContentBundle v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ContentBundle.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Compiled content bundle",
+  "properties": {
+    "bundle_format": {
+      "const": 1,
+      "type": "number"
+    },
+    "content_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "courses": {
+      "items": {
+        "$ref": "CourseManifest.schema.json"
+      },
+      "type": "array"
+    },
+    "generated_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "git_commit": {
+      "pattern": "^[a-f0-9]{7,40}$",
+      "type": "string"
+    },
+    "lessons": {
+      "items": {
+        "$ref": "Lesson.schema.json"
+      },
+      "type": "array"
+    },
+    "modules": {
+      "items": {
+        "$ref": "Module.schema.json"
+      },
+      "type": "array"
+    },
+    "skills": {
+      "items": {
+        "$ref": "SkillDefinition.schema.json"
+      },
+      "type": "array"
+    },
+    "sources": {
+      "items": {
+        "$ref": "SourceRecord.schema.json"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "bundle_format",
+    "generated_at",
+    "content_hash",
+    "courses",
+    "modules",
+    "lessons",
+    "skills",
+    "sources"
+  ],
+  "title": "ContentBundle",
+  "type": "object"
+}

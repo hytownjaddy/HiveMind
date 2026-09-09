@@ -1,0 +1,22 @@
+{
+  "$comment": "HiveMind contract LabStatus v1.0.0; generated from packages/schema, do not edit",
+  "$id": "LabStatus.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Lab lifecycle state, RFP §86",
+  "enum": [
+    "queued",
+    "provisioning",
+    "baseline_check",
+    "fault_injection",
+    "fault_check",
+    "ready",
+    "active",
+    "grading",
+    "completed",
+    "destroying",
+    "destroyed",
+    "failed"
+  ],
+  "title": "LabStatus",
+  "type": "string"
+}

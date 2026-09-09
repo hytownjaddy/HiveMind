@@ -1,0 +1,17 @@
+{
+  "content_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "counts": {
+    "courses": 1,
+    "lessons": 1,
+    "modules": 1,
+    "skills": 2,
+    "sources": 2
+  },
+  "course_ids": [
+    "linux-networking"
+  ],
+  "created_at": "2026-09-09T12:00:00Z",
+  "git_commit": "7bad74d",
+  "id": "HM-CV-0001",
+  "published_by": "hivemind-cli"
+}

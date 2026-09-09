@@ -1,0 +1,239 @@
+{
+  "$comment": "HiveMind contract Lesson v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Lesson.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Compiled lesson",
+  "properties": {
+    "body_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "claims": {
+      "items": {
+        "$ref": "Claim.schema.json"
+      },
+      "type": "array"
+    },
+    "course_id": {
+      "description": "Course id slug, e.g. linux-networking",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "difficulty": {
+      "maximum": 5,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "estimated_minutes": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "id": {
+      "pattern": "^HM-LESSON-[a-z0-9-]+-\\d{2}$",
+      "type": "string"
+    },
+    "labs": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "mode": {
+            "$ref": "ProductMode.schema.json"
+          },
+          "problem_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "problem_id",
+          "mode",
+          "title"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "module_id": {
+      "description": "Module id <course>.<slug>, e.g. linux-networking.routing",
+      "pattern": "^[a-z0-9-]+\\.[a-z0-9-]+$",
+      "type": "string"
+    },
+    "objectives": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "skill_id": {
+            "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+            "maxLength": 96,
+            "minLength": 3,
+            "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "prerequisite_lesson_ids": {
+      "items": {
+        "pattern": "^HM-LESSON-[a-z0-9-]+-\\d{2}$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "qa_state": {
+      "$ref": "QaState.schema.json"
+    },
+    "questions": {
+      "items": {
+        "$ref": "Question.schema.json"
+      },
+      "type": "array"
+    },
+    "review": {
+      "additionalProperties": false,
+      "properties": {
+        "approved_at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "approved_by": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "execution_tested_at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "instructional_reviewed_at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "instructional_reviewed_by": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "notes": {
+          "description": "Markdown text, rendered by the web app",
+          "type": "string"
+        },
+        "technical_reviewed_at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "technical_reviewed_by": {
+          "maxLength": 120,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "sections": {
+      "items": {
+        "$ref": "LessonSection.schema.json"
+      },
+      "type": "array"
+    },
+    "skill_ids": {
+      "items": {
+        "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+        "maxLength": 96,
+        "minLength": 3,
+        "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "slug": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "source_ids": {
+      "items": {
+        "description": "Source id, e.g. src.iproute2.ip-route",
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[a-z0-9][a-z0-9._-]*$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "summary": {
+      "maxLength": 600,
+      "minLength": 1,
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    },
+    "version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "course_id",
+    "module_id",
+    "version",
+    "slug",
+    "title",
+    "summary",
+    "order",
+    "qa_state",
+    "review",
+    "objectives",
+    "skill_ids",
+    "prerequisite_lesson_ids",
+    "difficulty",
+    "estimated_minutes",
+    "sections",
+    "questions",
+    "claims",
+    "labs",
+    "source_ids",
+    "body_hash"
+  ],
+  "title": "Lesson",
+  "type": "object"
+}

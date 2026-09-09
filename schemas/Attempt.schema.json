@@ -1,0 +1,119 @@
+{
+  "$comment": "HiveMind contract Attempt v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Attempt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Attempt",
+  "properties": {
+    "course_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "finished_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "hints": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "description": "UTC instant in ISO-8601 with a trailing Z",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+            "type": "string"
+          },
+          "tier": {
+            "enum": [
+              "minor",
+              "strong",
+              "solution"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "tier",
+          "at"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "id": {
+      "pattern": "^HM-ATT-\\d{6,}$",
+      "type": "string"
+    },
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    },
+    "learner_id": {
+      "pattern": "^HM-LRN-\\d{6}$",
+      "type": "string"
+    },
+    "lesson_id": {
+      "pattern": "^HM-LESSON-[a-z0-9-]+-\\d{2}$",
+      "type": "string"
+    },
+    "mode": {
+      "$ref": "ProductMode.schema.json"
+    },
+    "problem_instance_id": {
+      "pattern": "^HM-PI-\\d{6,}$",
+      "type": "string"
+    },
+    "skill_versions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "skill_id": {
+            "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+            "maxLength": 96,
+            "minLength": 3,
+            "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Semantic version major.minor.patch",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "skill_id",
+          "version"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "started_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "in_progress",
+        "submitted",
+        "graded",
+        "abandoned",
+        "expired"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "learner_id",
+    "mode",
+    "skill_versions",
+    "started_at",
+    "status",
+    "hints"
+  ],
+  "title": "Attempt",
+  "type": "object"
+}

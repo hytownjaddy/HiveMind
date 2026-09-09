@@ -1,0 +1,24 @@
+{
+  "difficulty": 2,
+  "explanation": "Longest-prefix match prefers /16 over /0.",
+  "id": "predict-default",
+  "kind": "prediction",
+  "lesson_id": "HM-LESSON-linux-networking-01",
+  "options": [
+    {
+      "correct": false,
+      "feedback": "The default route is the shortest prefix; it loses.",
+      "id": "a",
+      "text": "10.0.0.1"
+    },
+    {
+      "correct": true,
+      "id": "b",
+      "text": "10.0.0.2"
+    }
+  ],
+  "prompt": "A host has `default via 10.0.0.1` and `10.1.0.0/16 via 10.0.0.2`. Which next hop carries a packet to 10.1.2.3?",
+  "skill_ids": [
+    "linux.networking.routing_table"
+  ]
+}

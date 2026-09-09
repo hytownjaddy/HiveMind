@@ -1,0 +1,30 @@
+{
+  "attempt_id": "HM-ATT-000001",
+  "duration_seconds": 1457,
+  "grader_result": {
+    "checks": [
+      {
+        "id": "established",
+        "message": "Established",
+        "passed": true,
+        "weight": 0.6
+      },
+      {
+        "id": "prefix-learned",
+        "passed": true,
+        "weight": 0.4
+      }
+    ],
+    "finished_at": "2026-09-09T12:00:07Z",
+    "grader_id": "bgp.session_established",
+    "grader_version": "1.0.0",
+    "score": 1,
+    "started_at": "2026-09-09T12:00:00Z",
+    "status": "passed"
+  },
+  "independence": "minor",
+  "objectives_passed": 1,
+  "objectives_total": 1,
+  "recorded_at": "2026-09-09T12:24:17Z",
+  "technical_score": 1
+}

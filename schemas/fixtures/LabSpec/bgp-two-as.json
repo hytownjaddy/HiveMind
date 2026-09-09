@@ -1,0 +1,45 @@
+{
+  "id": "bgp.two-as",
+  "links": [
+    {
+      "a": "r1:eth1",
+      "b": "r2:eth1"
+    }
+  ],
+  "network": {
+    "allowlist": [],
+    "egress": "deny"
+  },
+  "nodes": [
+    {
+      "config": {
+        "asn": 65001
+      },
+      "image": "quay.io/frrouting/frr:10.2.1",
+      "name": "r1",
+      "role": "router"
+    },
+    {
+      "config": {
+        "asn": 65002
+      },
+      "image": "quay.io/frrouting/frr:10.2.1",
+      "name": "r2",
+      "role": "router"
+    }
+  ],
+  "requires": [
+    "network.containerlab",
+    "routing.frr",
+    "privilege.net_admin"
+  ],
+  "resources": {
+    "cpu_millicores": 1000,
+    "disk_mb": 2048,
+    "memory_mb": 1024
+  },
+  "snapshot": false,
+  "title": "Two autonomous systems, one eBGP session",
+  "ttl_minutes": 120,
+  "version": "1.0.0"
+}

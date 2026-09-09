@@ -1,0 +1,54 @@
+{
+  "context": {
+    "acceptance_criteria": [
+      "`hivemind content compile content/` passes",
+      "Every new claim has a source in claims.yaml"
+    ],
+    "expected_output": [
+      "Updated lesson.md, claims.yaml, metadata.yaml with a version bump"
+    ],
+    "repository_paths": [
+      "content/courses/linux/networking/modules/01-routing/lessons/01-routing-table-ip-route/"
+    ],
+    "schemas": [
+      "schemas/Lesson.schema.json",
+      "schemas/Claim.schema.json"
+    ],
+    "source_requirements": [
+      "Only sources listed in content/sources (D-011)"
+    ],
+    "validation_commands": [
+      "bun run verify",
+      "bun run hivemind -- content compile content/"
+    ]
+  },
+  "created_at": "2026-09-09T12:00:00Z",
+  "dependencies": [],
+  "effort": "s",
+  "execution": "external",
+  "history": [
+    {
+      "at": "2026-09-09T12:00:00Z",
+      "by": "jacob",
+      "from": null,
+      "to": "draft"
+    }
+  ],
+  "id": "HM-WO-0184",
+  "instructions": "Add the asymmetric return-path failure as a second misconception.",
+  "labels": [
+    "content",
+    "linux"
+  ],
+  "priority": "normal",
+  "requested_by": "jacob",
+  "status": "draft",
+  "target": {
+    "kind": "lesson",
+    "lesson_id": "HM-LESSON-linux-networking-01"
+  },
+  "template": "lesson.update",
+  "title": "Tighten the misconception section of the routing-table lesson",
+  "updated_at": "2026-09-09T12:00:00Z",
+  "validation_runs": []
+}

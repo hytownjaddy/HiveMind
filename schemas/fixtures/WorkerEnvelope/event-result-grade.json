@@ -1,0 +1,40 @@
+{
+  "correlation_id": "6f2b7e6c-4d0f-4d7a-9a4c-2f1b5c3d8e90",
+  "message": {
+    "job_id": "6f2b7e6c-4d0f-4d7a-9a4c-2f1b5c3d8e90",
+    "lab_session_id": "HM-LAB-829143",
+    "ok": true,
+    "result": {
+      "kind": "grade",
+      "result": {
+        "checks": [
+          {
+            "id": "established",
+            "message": "Established",
+            "passed": true,
+            "weight": 0.6
+          },
+          {
+            "id": "prefix-learned",
+            "passed": true,
+            "weight": 0.4
+          }
+        ],
+        "finished_at": "2026-09-09T12:00:07Z",
+        "grader_id": "bgp.session_established",
+        "grader_version": "1.0.0",
+        "score": 1,
+        "started_at": "2026-09-09T12:00:00Z",
+        "status": "passed"
+      }
+    },
+    "type": "event.result"
+  },
+  "message_id": "9c1d5a2e-7b3f-4e6a-8d2c-1a0b9f8e7d6c",
+  "protocol_version": 1,
+  "sender": {
+    "id": "hivemind-session",
+    "kind": "session_worker"
+  },
+  "sent_at": "2026-09-09T12:00:00Z"
+}

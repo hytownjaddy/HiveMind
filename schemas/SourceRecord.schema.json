@@ -1,0 +1,74 @@
+{
+  "$comment": "HiveMind contract SourceRecord v1.0.0; generated from packages/schema, do not edit",
+  "$id": "SourceRecord.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Source with provenance and trust",
+  "properties": {
+    "citation": {
+      "maxLength": 500,
+      "type": "string"
+    },
+    "document_version": {
+      "maxLength": 80,
+      "type": "string"
+    },
+    "id": {
+      "description": "Source id, e.g. src.iproute2.ip-route",
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "ingested": {
+      "type": "boolean"
+    },
+    "kind": {
+      "enum": [
+        "rfc",
+        "standard",
+        "official_documentation",
+        "vendor_documentation",
+        "manual_page",
+        "certification_objectives",
+        "free_material",
+        "own_notes",
+        "book_notes"
+      ],
+      "type": "string"
+    },
+    "license_note": {
+      "maxLength": 500,
+      "type": "string"
+    },
+    "notes": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "retrieved_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    },
+    "trust_tier": {
+      "$ref": "TrustTier.schema.json"
+    },
+    "url": {
+      "format": "uri",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "kind",
+    "trust_tier",
+    "ingested"
+  ],
+  "title": "SourceRecord",
+  "type": "object"
+}

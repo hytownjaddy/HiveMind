@@ -1,0 +1,105 @@
+{
+  "$comment": "HiveMind contract RoleProfile v1.0.0; generated from packages/schema, do not edit",
+  "$id": "RoleProfile.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Role profile",
+  "properties": {
+    "company": {
+      "maxLength": 120,
+      "type": "string"
+    },
+    "competencies": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "competency_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "min_readiness": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "weight": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "competency_id",
+          "weight",
+          "required"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "family": {
+      "description": "Role family, e.g. network-infrastructure",
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "level": {
+      "maxLength": 60,
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_ids": {
+      "items": {
+        "description": "Source id, e.g. src.iproute2.ip-route",
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[a-z0-9][a-z0-9._-]*$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "status": {
+      "$ref": "DefinitionStatus.schema.json"
+    },
+    "summary": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    },
+    "version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "title",
+    "family",
+    "level",
+    "summary",
+    "status",
+    "competencies",
+    "source_ids"
+  ],
+  "title": "RoleProfile",
+  "type": "object"
+}

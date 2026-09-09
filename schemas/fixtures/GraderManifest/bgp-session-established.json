@@ -1,0 +1,43 @@
+{
+  "checks": [
+    {
+      "description": "Session to r2 is Established",
+      "hidden": false,
+      "id": "established",
+      "objective_id": "restore-session",
+      "spec": {
+        "command": [
+          "vtysh",
+          "-c",
+          "show bgp summary json"
+        ],
+        "expect": {
+          "kind": "stdout_json_equals",
+          "path": "$.ipv4Unicast.peers['10.0.12.2'].state",
+          "value": "Established"
+        },
+        "id": "established",
+        "node": "r1",
+        "timeout_seconds": 30
+      },
+      "weight": 0.6
+    },
+    {
+      "description": "r2's loopback is in r1's RIB",
+      "hidden": true,
+      "id": "prefix-learned",
+      "objective_id": "restore-session",
+      "weight": 0.4
+    }
+  ],
+  "entrypoint": "hivemind_worker.graders.bgp:session_established",
+  "id": "bgp.session_established",
+  "kind": "deterministic",
+  "requires": [
+    "routing.frr"
+  ],
+  "status": "active",
+  "timeout_seconds": 120,
+  "title": "eBGP session established and prefix learned",
+  "version": "1.0.0"
+}

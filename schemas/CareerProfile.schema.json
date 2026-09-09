@@ -1,0 +1,45 @@
+{
+  "$comment": "HiveMind contract CareerProfile v1.0.0; generated from packages/schema, do not edit",
+  "$id": "CareerProfile.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Learner career target",
+  "properties": {
+    "active": {
+      "type": "boolean"
+    },
+    "learner_id": {
+      "pattern": "^HM-LRN-\\d{6}$",
+      "type": "string"
+    },
+    "notes": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "role_profile_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "role_profile_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "set_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "learner_id",
+    "role_profile_id",
+    "role_profile_version",
+    "active",
+    "set_at"
+  ],
+  "title": "CareerProfile",
+  "type": "object"
+}

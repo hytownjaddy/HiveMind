@@ -1,0 +1,75 @@
+{
+  "difficulty": 3,
+  "domain": "networking",
+  "faults": [
+    {
+      "fault_id": "bgp.wrong_neighbor_asn",
+      "version": "1.0.0"
+    }
+  ],
+  "grader_id": "bgp.session_established",
+  "grader_version": "1.0.0",
+  "hints": [
+    {
+      "mastery_cap_percent": 80,
+      "text": "Compare what r1 expects with what r2 announces about itself.",
+      "tier": "minor"
+    },
+    {
+      "mastery_cap_percent": 50,
+      "text": "Check the remote-as on r1's neighbor statement.",
+      "tier": "strong"
+    },
+    {
+      "mastery_cap_percent": 10,
+      "text": "`neighbor 10.0.12.2 remote-as 65002`",
+      "tier": "solution"
+    }
+  ],
+  "id": "bgp.neighbor_misconfig",
+  "lab_spec_id": "bgp.two-as",
+  "lab_spec_version": "1.0.0",
+  "modes": [
+    "practice",
+    "challenge",
+    "blind_incident"
+  ],
+  "objectives": [
+    {
+      "check_ids": [
+        "established",
+        "prefix-learned"
+      ],
+      "id": "restore-session",
+      "skill_id": "networking.bgp.session_establishment",
+      "text": "Restore the eBGP session on r1"
+    }
+  ],
+  "qa_state": "draft",
+  "reference_solution": "hivemind_worker.solutions.bgp:fix_neighbor_asn",
+  "reference_solution_version": "1.0.0",
+  "requires": [
+    "network.containerlab",
+    "routing.frr",
+    "privilege.net_admin"
+  ],
+  "scenario": "The peering between r1 and r2 was working yesterday. Find out why it is down and restore it without changing r2.",
+  "skill_ids": [
+    "networking.bgp.session_establishment"
+  ],
+  "status": "active",
+  "summary": "Two routers, one eBGP session that never comes up.",
+  "time_limit_minutes": 30,
+  "title": "eBGP session will not establish",
+  "variation": [
+    {
+      "kind": "choice",
+      "name": "peer_subnet",
+      "values": [
+        "10.0.12.0/30",
+        "10.0.21.0/30"
+      ]
+    }
+  ],
+  "version": "1.0.0"
+}

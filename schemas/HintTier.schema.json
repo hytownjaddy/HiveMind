@@ -1,0 +1,14 @@
+{
+  "$comment": "HiveMind contract HintTier v1.0.0; generated from packages/schema, do not edit",
+  "$id": "HintTier.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Hint tier",
+  "enum": [
+    "none",
+    "minor",
+    "strong",
+    "solution"
+  ],
+  "title": "HintTier",
+  "type": "string"
+}

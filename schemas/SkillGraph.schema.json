@@ -1,0 +1,82 @@
+{
+  "$comment": "HiveMind contract SkillGraph v1.0.0; generated from packages/schema, do not edit",
+  "$id": "SkillGraph.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Skill graph",
+  "properties": {
+    "edges": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+            "maxLength": 96,
+            "minLength": 3,
+            "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "prerequisite",
+              "related",
+              "supersedes"
+            ],
+            "type": "string"
+          },
+          "to": {
+            "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+            "maxLength": 96,
+            "minLength": 3,
+            "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "skills": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "skill_id": {
+            "description": "Skill id: domain.area.skill, e.g. linux.networking.routing_table",
+            "maxLength": 96,
+            "minLength": 3,
+            "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Semantic version major.minor.patch",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "skill_id",
+          "version"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "skills",
+    "edges"
+  ],
+  "title": "SkillGraph",
+  "type": "object"
+}

@@ -1,0 +1,57 @@
+{
+  "$comment": "HiveMind contract ProvisionResult v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ProvisionResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Provision result",
+  "properties": {
+    "handle": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "lab_session_id": {
+      "pattern": "^HM-LAB-\\d{6}$",
+      "type": "string"
+    },
+    "nodes": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "provider_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "LabStatus.schema.json"
+    }
+  },
+  "required": [
+    "lab_session_id",
+    "provider_id",
+    "status",
+    "handle",
+    "nodes"
+  ],
+  "title": "ProvisionResult",
+  "type": "object"
+}

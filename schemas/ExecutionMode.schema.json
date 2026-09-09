@@ -1,0 +1,12 @@
+{
+  "$comment": "HiveMind contract ExecutionMode v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ExecutionMode.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "AI execution mode",
+  "enum": [
+    "external",
+    "api"
+  ],
+  "title": "ExecutionMode",
+  "type": "string"
+}

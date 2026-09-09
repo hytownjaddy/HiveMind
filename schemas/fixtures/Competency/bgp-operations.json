@@ -1,0 +1,15 @@
+{
+  "category": "routing",
+  "description": "Configure, verify, and troubleshoot eBGP and iBGP sessions.",
+  "id": "bgp-operations",
+  "name": "BGP operations",
+  "skills": [
+    {
+      "min_mastery": 0.7,
+      "skill_id": "networking.bgp.session_establishment",
+      "weight": 0.5
+    }
+  ],
+  "status": "active",
+  "version": "1.0.0"
+}

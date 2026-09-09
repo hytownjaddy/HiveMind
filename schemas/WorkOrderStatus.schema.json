@@ -1,0 +1,18 @@
+{
+  "$comment": "HiveMind contract WorkOrderStatus v1.0.0; generated from packages/schema, do not edit",
+  "$id": "WorkOrderStatus.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Work-order state",
+  "enum": [
+    "draft",
+    "exported",
+    "in_progress",
+    "implemented",
+    "validation_failed",
+    "review_required",
+    "approved",
+    "done"
+  ],
+  "title": "WorkOrderStatus",
+  "type": "string"
+}

@@ -1,0 +1,19 @@
+{
+  "company": "Meta",
+  "competencies": [
+    {
+      "competency_id": "bgp-operations",
+      "min_readiness": 0.7,
+      "required": true,
+      "weight": 0.3
+    }
+  ],
+  "family": "network-infrastructure",
+  "id": "meta-network-infrastructure-engineer",
+  "level": "IC4",
+  "source_ids": [],
+  "status": "active",
+  "summary": "Operates large-scale data-center and backbone networks.",
+  "title": "Network Infrastructure Engineer",
+  "version": "0.1.0"
+}

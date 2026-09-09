@@ -1,0 +1,148 @@
+{
+  "$comment": "HiveMind contract ProblemInstance v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ProblemInstance.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Seeded problem instance",
+  "properties": {
+    "created_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "fault_versions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "fault_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Semantic version major.minor.patch",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fault_id",
+          "version"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "grader_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^HM-PI-\\d{6,}$",
+      "type": "string"
+    },
+    "lab_spec_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "parameters": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "problem_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "problem_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "reference_solution_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "seed": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "spec_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "validation": {
+      "enum": [
+        "pending",
+        "validated",
+        "rejected"
+      ],
+      "type": "string"
+    },
+    "validation_steps": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "description": "UTC instant in ISO-8601 with a trailing Z",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+            "type": "string"
+          },
+          "detail": {
+            "maxLength": 1000,
+            "type": "string"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "step": {
+            "enum": [
+              "schema_validation",
+              "provision_baseline",
+              "validate_baseline",
+              "inject_fault",
+              "verify_failure",
+              "execute_reference_solution",
+              "run_graders",
+              "restore_scenario"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "passed",
+          "at"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "problem_id",
+    "problem_version",
+    "seed",
+    "lab_spec_version",
+    "fault_versions",
+    "grader_version",
+    "reference_solution_version",
+    "parameters",
+    "spec_hash",
+    "validation",
+    "validation_steps",
+    "created_at"
+  ],
+  "title": "ProblemInstance",
+  "type": "object"
+}

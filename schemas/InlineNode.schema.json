@@ -1,0 +1,158 @@
+{
+  "$comment": "HiveMind contract InlineNode v1.0.0; generated from packages/schema, do not edit",
+  "$id": "InlineNode.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Lesson inline render node",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "text",
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "value"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "code",
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "value"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "kbd",
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "value"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "break",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "kind": {
+          "const": "claim_ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "claim_id"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "children": {
+          "items": {
+            "$ref": "InlineNode.schema.json"
+          },
+          "type": "array"
+        },
+        "kind": {
+          "const": "strong",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "children"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "children": {
+          "items": {
+            "$ref": "InlineNode.schema.json"
+          },
+          "type": "array"
+        },
+        "kind": {
+          "const": "emphasis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "children"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "children": {
+          "items": {
+            "$ref": "InlineNode.schema.json"
+          },
+          "type": "array"
+        },
+        "href": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "kind": {
+          "const": "link",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "href",
+        "children"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "InlineNode"
+}

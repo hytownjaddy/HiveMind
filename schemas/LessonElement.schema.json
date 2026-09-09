@@ -1,0 +1,22 @@
+{
+  "$comment": "HiveMind contract LessonElement v1.0.0; generated from packages/schema, do not edit",
+  "$id": "LessonElement.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "RFP §110 lesson element",
+  "enum": [
+    "motivation",
+    "mental_model",
+    "explanation",
+    "diagram",
+    "worked_example",
+    "misconception",
+    "prediction",
+    "guided_exercise",
+    "demonstration",
+    "independent_problem",
+    "reflection",
+    "mastery_evaluation"
+  ],
+  "title": "LessonElement",
+  "type": "string"
+}

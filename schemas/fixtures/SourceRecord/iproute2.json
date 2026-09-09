@@ -1,0 +1,9 @@
+{
+  "id": "src.iproute2.ip-route",
+  "ingested": true,
+  "kind": "manual_page",
+  "retrieved_at": "2026-09-09",
+  "title": "ip-route(8) — iproute2 manual page",
+  "trust_tier": "official",
+  "url": "https://man7.org/linux/man-pages/man8/ip-route.8.html"
+}

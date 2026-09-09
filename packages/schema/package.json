@@ -7,9 +7,14 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "schema:export": "bun run scripts/export.ts",
+    "schema:check": "bun run scripts/export.ts --check"
   },
   "dependencies": {
     "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0"
   }
 }

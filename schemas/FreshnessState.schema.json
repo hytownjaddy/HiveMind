@@ -1,0 +1,15 @@
+{
+  "$comment": "HiveMind contract FreshnessState v1.0.0; generated from packages/schema, do not edit",
+  "$id": "FreshnessState.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Maintenance freshness",
+  "enum": [
+    "current",
+    "needs_review",
+    "stale",
+    "broken",
+    "update_available"
+  ],
+  "title": "FreshnessState",
+  "type": "string"
+}

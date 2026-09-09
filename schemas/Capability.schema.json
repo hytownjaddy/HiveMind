@@ -1,0 +1,11 @@
+{
+  "$comment": "HiveMind contract Capability v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Capability.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Capability id, e.g. shell.linux, network.containerlab, routing.frr",
+  "maxLength": 96,
+  "minLength": 3,
+  "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+  "title": "Capability",
+  "type": "string"
+}

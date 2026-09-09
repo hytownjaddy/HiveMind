@@ -1,0 +1,66 @@
+{
+  "$comment": "HiveMind contract Claim v1.0.0; generated from packages/schema, do not edit",
+  "$id": "Claim.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Factual claim with provenance",
+  "properties": {
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "lesson_id": {
+      "pattern": "^HM-LESSON-[a-z0-9-]+-\\d{2}$",
+      "type": "string"
+    },
+    "notes": {
+      "description": "Markdown text, rendered by the web app",
+      "type": "string"
+    },
+    "source_ids": {
+      "items": {
+        "description": "Source id, e.g. src.iproute2.ip-route",
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[a-z0-9][a-z0-9._-]*$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "statement": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "type": "string"
+    },
+    "verification": {
+      "enum": [
+        "unverified",
+        "verified",
+        "conflict",
+        "rejected"
+      ],
+      "type": "string"
+    },
+    "verified_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "verified_by": {
+      "maxLength": 120,
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "lesson_id",
+    "statement",
+    "source_ids",
+    "verification"
+  ],
+  "title": "Claim",
+  "type": "object"
+}
