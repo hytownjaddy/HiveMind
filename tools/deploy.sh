@@ -4,7 +4,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-WRANGLER="$ROOT/node_modules/.bin/wrangler"
+# bun installs wrangler under the workspace that depends on it.
+WRANGLER="$ROOT/apps/web/node_modules/.bin/wrangler"
+if [[ ! -x "$WRANGLER" ]]; then
+  WRANGLER="$ROOT/node_modules/.bin/wrangler"
+fi
 if [[ ! -x "$WRANGLER" ]]; then
   echo "Missing wrangler binary. Run: bun install" >&2
   exit 1

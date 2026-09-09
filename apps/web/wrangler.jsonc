@@ -19,7 +19,7 @@
       // Placeholder works for local dev. For a remote DB run
       //   bunx wrangler d1 create hivemind-dev
       // and paste the returned id here.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "7aaf747b-bd2b-4f98-9271-f570ad63a9b7",
       "migrations_dir": "migrations",
     },
   ],
@@ -50,11 +50,13 @@
         {
           "binding": "DB",
           "database_name": "hivemind",
-          "database_id": "00000000-0000-0000-0000-000000000000",
+          "database_id": "51e411b9-b8b2-4a9a-93b3-7c2a33d3d720",
           "migrations_dir": "migrations",
         },
       ],
-      "r2_buckets": [{ "binding": "EXPORTS", "bucket_name": "hivemind-exports" }],
+      // Re-enable once R2 is enabled on the account (dashboard) and the bucket exists:
+      //   wrangler r2 bucket create hivemind-exports
+      // "r2_buckets": [{ "binding": "EXPORTS", "bucket_name": "hivemind-exports" }],
       "vars": {
         "NEXTJS_ENV": "production",
         "HIVEMIND_ENV": "production",
