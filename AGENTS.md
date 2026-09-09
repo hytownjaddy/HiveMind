@@ -6,6 +6,34 @@ target architecture (`ARCHITECTURE.md`). Read those three before touching code. 
 rules are in `CONTRIBUTING.md`; content and lab rules in `COURSE_AUTHORING.md` and
 `LAB_AUTHORING.md`; UI rules in `docs/ui/UI-SYSTEM.md` and per-screen contracts in `docs/mockups/NN-name.md` (images are reference only; authority order in D-041).
 
+## Starting a stage (the only entry point for implementation work)
+
+Jacob will say "do stage 03" or run `/stage 03`. Then, before writing any code:
+
+1. Read in this order: `DECISIONS.md` (all entries; later entries supersede earlier ones),
+   `ARCHITECTURE.md`, `STAGES/README.md`, the stage file `STAGES/STAGE_nn.md`, each
+   prerequisite stage's "Definition of done" checklist, `docs/ui/UI-SYSTEM.md`, and every
+   companion spec listed under the stage's "UI specifications". Read `docs/RFP.md` sections
+   the stage cites; do not read the whole RFP unless the stage says so.
+2. Pre-flight: `git status` is clean and on `main`; prerequisite stages are marked done in
+   `STAGES/README.md`; the stage's "Open questions" (if any) are answered by Jacob; the
+   toolchains install (`bun install`, and `uv sync` in `services/lab-worker` once it
+   exists).
+3. Post a short plan to Jacob: work breakdown in dependency order, the first three
+   commits, and anything in the stage file that conflicts with the current tree. Wait for
+   a go only if the plan changes scope; otherwise proceed.
+4. Execute in the stage's work-breakdown order. One coherent commit per task (D-025).
+   Run `bun run verify` (and the Python checks) before every commit. Never weaken an
+   acceptance criterion (invariant 13). Anything outside the stage becomes a proposal in
+   `DECISIONS.md`, not code.
+5. Finish: every acceptance criterion demonstrated, docs updated in the same change-set,
+   the stage's "Definition of done" boxes ticked, `STAGES/README.md` status updated,
+   milestone commit and tag per the stage file, push, and a closing report to Jacob
+   listing what was left out and why.
+
+If anything in this file, a stage file, or a spec disagrees with `DECISIONS.md`, the
+decision wins; say so and propose an edit rather than silently picking one.
+
 ## Global invariants (D-022, D-031, D-035)
 
 1. No hard-coded assumption that HiveMind only teaches networking.
