@@ -31,6 +31,31 @@ jobs:
       - run: uv sync --frozen
       - run: uv run task verify
 
+  lab-worker-docker:
+    name: Lab worker providers on Docker (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: services/lab-worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Build the linux-lab image (digest-pinned base)
+        run: docker build -q -t hivemind/linux-lab:1.0.0 images/linux-lab
+      - name: container.linux integration tests, 20 up/down cycles (acceptance 2, 3, 5, 6)
+        run: HIVEMIND_TEST_CYCLES=20 uv run pytest -q -m docker
+      - name: Nothing left on the runner
+        if: always()
+        run: |
+          docker ps -a --filter label=hivemind.session --format '{{.Names}}' | tee /tmp/leftovers
+          test ! -s /tmp/leftovers
+          docker network ls --filter label=hivemind.session --format '{{.Name}}' | tee /tmp/leftover-nets
+          test ! -s /tmp/leftover-nets
+
   restore-drill:
     name: Restore drill (export → fresh D1 → content readable)
     runs-on: ubuntu-latest

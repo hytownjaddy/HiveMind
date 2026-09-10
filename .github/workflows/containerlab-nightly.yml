@@ -1,0 +1,38 @@
+name: Nightly containerlab labs
+
+# Class B on a real Linux kernel (Stage 02 automated test requirements): the
+# containerlab provider brings up bgp.dual_spine with FRR, proves BGP converges,
+# egress is blocked, PTYs work, and nothing is left behind. GitHub's Ubuntu runner
+# stands in for the lab host; the same tests run on the host with
+# `sudo .venv/bin/pytest -m containerlab`.
+
+on:
+  schedule:
+    - cron: "41 4 * * *"
+  workflow_dispatch:
+
+jobs:
+  containerlab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: services/lab-worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Host tooling (the provisioning script's CI path)
+        run: sudo -E ../../tools/host/provision.sh --ci --source "$GITHUB_WORKSPACE"
+      - run: uv sync --frozen
+      - name: containerlab integration tests (as root, like the agent)
+        run: |
+          sudo -E env "PATH=$PATH" HIVEMIND_TEST_CLAB_CYCLES=3 \
+            "$(uv python find)" -m pytest -q -m containerlab -p no:cacheprovider
+      - name: Nothing left on the host
+        if: always()
+        run: |
+          docker ps -a --filter label=hivemind.session --format '{{.Names}}' | tee /tmp/leftovers
+          test ! -s /tmp/leftovers
+          sudo iptables -S DOCKER-USER | grep -c 'hivemind:' || true
