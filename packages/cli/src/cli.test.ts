@@ -368,4 +368,42 @@ describe("hivemind CLI", () => {
       JSON.parse(readFileSync(join(root, "out", "archive.json"), "utf8")).archive_format,
     ).toBe(1);
   });
+
+  it("lists and renders topology archetypes deterministically", async () => {
+    const out = capture();
+    const deps = {
+      config,
+      api: new HiveMindApi(config, fakeApi().fetch),
+      out,
+      now: () => "2026-09-09T12:00:00Z",
+    };
+    expect(await run(["topology", "list"], deps)).toBe(0);
+    expect(out.lines.join("\n")).toContain("linux.single@1.0.0 (linux.basic)");
+    const target = join(root, "instance.json");
+    expect(
+      await run(
+        [
+          "topology",
+          "render",
+          "bgp.dual_spine",
+          "--seed",
+          "7",
+          "--param",
+          "leaf_count=3",
+          "--out",
+          target,
+        ],
+        deps,
+      ),
+    ).toBe(0);
+    const instance = JSON.parse(readFileSync(target, "utf8")) as {
+      parameters: Record<string, unknown>;
+      lab_spec: { nodes: { name: string }[] };
+      spec_hash: string;
+    };
+    expect(instance.parameters["leaf_count"]).toBe(3);
+    expect(instance.lab_spec.nodes).toHaveLength(5);
+    await expect(run(["topology", "render", "nope.nope"], deps)).resolves.toBe(1);
+    expect(out.errors.at(-1)).toContain("unknown archetype");
+  });
 });

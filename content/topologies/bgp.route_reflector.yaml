@@ -1,0 +1,20 @@
+id: bgp.route_reflector
+version: 1.0.0
+title: iBGP with route reflectors
+description: >-
+  One autonomous system: one or two route reflectors in a full mesh, and clients
+  that peer only with the reflectors over loopbacks (RFC 4456).
+status: active
+aliases: []
+requires: [network.containerlab, routing.frr, privilege.net_admin]
+generator: bgp.route_reflector
+parameters:
+  - { name: rr_count, kind: int_range, values: [1, 2] }
+  - { name: client_count, kind: int_range, values: [2, 4] }
+  - { name: asn_scheme, kind: choice, values: [private, public] }
+images:
+  router: quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2
+resources: { cpu_millicores: 2000, memory_mb: 2048, disk_mb: 4096 }
+network: { egress: deny, allowlist: [] }
+ttl_minutes: 120
+snapshot: false

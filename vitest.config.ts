@@ -10,6 +10,7 @@ export default defineConfig({
       // packages/core runs inside workerd (its own config); only the node-side
       // content compiler tests belong here.
       "packages/core/src/content/compiler/**/*.test.ts",
+      "packages/core/src/labs/compile/**/*.test.ts",
       "packages/cli/**/*.test.ts",
       "apps/web/**/*.test.ts",
     ],

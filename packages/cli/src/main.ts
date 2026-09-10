@@ -11,6 +11,7 @@ import {
 } from "./commands/content";
 import { dbMigrate } from "./commands/db";
 import { exportArchive } from "./commands/export";
+import { topologyCompile, topologyList, topologyRender } from "./commands/topology";
 import { workComplete, workList, workNew, workPull, workValidate } from "./commands/work";
 import { loadConfig, type CliConfig } from "./config";
 import { CliError, consoleOutput, type Output } from "./output";
@@ -34,6 +35,9 @@ const USAGE = `hivemind <group> <command> [options]
   work list [--status s]
   export [--out dir] [--sql local|remote|production]
   db migrate [--local|--remote|--production] [--down nnnn]
+  topology compile [--check]
+  topology list
+  topology render <archetype> --seed n [--param k=v]… [--out file]
 
 Environment: HIVEMIND_API_URL, HIVEMIND_ACCESS_CLIENT_ID, HIVEMIND_ACCESS_CLIENT_SECRET, HIVEMIND_ACTOR, HIVEMIND_ROOT
 `;
@@ -59,6 +63,9 @@ const COMMANDS: Readonly<Record<string, Handler>> = {
   "work list": workList,
   export: (args, deps) => exportArchive(args, deps),
   "db migrate": dbMigrate,
+  "topology compile": topologyCompile,
+  "topology list": topologyList,
+  "topology render": topologyRender,
 };
 
 export async function run(argv: readonly string[], deps: RunDeps): Promise<number> {

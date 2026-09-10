@@ -42,6 +42,14 @@ module.exports = {
       to: { path: "^packages/core/src/content/compiler" },
     },
     {
+      name: "labs-compile-is-node-only",
+      severity: "error",
+      comment:
+        "The archetype compiler reads content/topologies with node:fs; Workers import the generated JSON.",
+      from: { path: "^apps|^packages/core/src/(?!labs/compile)" },
+      to: { path: "^packages/core/src/labs/compile" },
+    },
+    {
       name: "route-handlers-are-thin",
       severity: "error",
       comment:

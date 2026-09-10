@@ -1,0 +1,21 @@
+# Topology archetype (schemas/TopologyArchetype.schema.json). Compiled into
+# packages/core/src/labs/archetypes.generated.json by `hivemind topology compile`.
+id: linux.single
+version: 1.0.0
+title: One Linux host
+description: >-
+  A single Linux host on the management network only: the simplest real runtime
+  for shell, filesystem, process, and routing-table exercises (D-012).
+status: active
+aliases: [linux.basic]
+requires: [shell.linux]
+generator: linux.single
+parameters: []
+images:
+  # Built on the lab host by tools/host/provision.sh from
+  # services/lab-worker/images/linux-lab/Dockerfile, whose base is pinned by digest.
+  host: hivemind/linux-lab:1.0.0
+resources: { cpu_millicores: 500, memory_mb: 512, disk_mb: 1024 }
+network: { egress: deny, allowlist: [] }
+ttl_minutes: 60
+snapshot: false
