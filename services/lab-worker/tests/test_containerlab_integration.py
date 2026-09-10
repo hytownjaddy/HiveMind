@@ -76,6 +76,16 @@ async def wait_for_bgp(provider: ContainerlabProvider, node: str, peers: int) ->
     return established
 
 
+async def wait_for_route(provider: ContainerlabProvider, node: str, prefix: str) -> bool:
+    deadline = time.monotonic() + 60
+    while time.monotonic() < deadline:
+        routes = await provider.exec(SESSION, node, ["vtysh", "-c", "show ip route bgp"], 20)
+        if prefix in routes.stdout:
+            return True
+        await asyncio.sleep(2)
+    return False
+
+
 async def test_dual_spine_comes_up_with_established_bgp_and_leaves_nothing(
     provider: ContainerlabProvider,
 ) -> None:
@@ -92,9 +102,8 @@ async def test_dual_spine_comes_up_with_established_bgp_and_leaves_nothing(
         # Every leaf peers with both spines; every spine with both leaves.
         assert len(await wait_for_bgp(provider, "spine1", 2)) == 2
         assert len(await wait_for_bgp(provider, "leaf1", 2)) == 2
-        # Loopbacks are learned across the fabric.
-        routes = await provider.exec(SESSION, "leaf1", ["vtysh", "-c", "show ip route bgp"], 20)
-        assert "10.255.1.2/32" in routes.stdout
+        # Loopbacks are learned across the fabric (installed shortly after the sessions come up).
+        assert await wait_for_route(provider, "leaf1", "10.255.1.2/32")
         # Egress is denied: nothing leaves the management subnet (acceptance 6).
         egress = await provider.exec(
             SESSION, "spine1", ["sh", "-c", "ping -c1 -W2 1.1.1.1 >/dev/null 2>&1"], 10

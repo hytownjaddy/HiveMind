@@ -153,10 +153,15 @@ def _frr_files(config: lab_node_config.LabNodeConfig2, hostname: str) -> NodeFil
     if config.loopback is not None and config.loopback.ipv4 is not None:
         commands.append(f"ip addr replace {config.loopback.ipv4} dev lo")
     return NodeFiles(
-        binds=(("daemons", "/etc/frr/daemons"), ("frr.conf", "/etc/frr/frr.conf")),
+        binds=(
+            ("daemons", "/etc/frr/daemons"),
+            ("frr.conf", "/etc/frr/frr.conf"),
+            ("vtysh.conf", "/etc/frr/vtysh.conf"),
+        ),
         contents={
             "daemons": frr_daemons_file(config),
             "frr.conf": frr_conf(config, hostname),
+            "vtysh.conf": "service integrated-vtysh-config\n",
         },
         exec_after_start=tuple(commands),
     )

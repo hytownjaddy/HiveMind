@@ -43,6 +43,7 @@ def test_dual_spine_renders_links_binds_and_labels() -> None:
     assert nodes["spine1"]["labels"][CONTAINER_LABEL_SESSION] == "HM-LAB-000007"
     assert nodes["spine1"]["image"].startswith("quay.io/frrouting/frr:10.7.1@sha256:")
     assert "spine1/frr.conf:/etc/frr/frr.conf" in nodes["spine1"]["binds"]
+    assert "spine1/vtysh.conf:/etc/frr/vtysh.conf" in nodes["spine1"]["binds"]
     assert "ip addr replace 10.0.1.0/31 dev eth1" in nodes["spine1"]["exec"]
     assert {"endpoints": ["spine1:eth1", "leaf1:eth1"]} in topology["topology"]["links"]
     assert len(topology["topology"]["links"]) == 4
