@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-09T12:00:00Z",
+  "event": {
+    "data": "default via 10.0.12.2 dev eth1\r\n",
+    "node": "host1",
+    "type": "pty_output"
+  },
+  "protocol_version": 2,
+  "revision": 3,
+  "sequence": 4,
+  "type": "event"
+}

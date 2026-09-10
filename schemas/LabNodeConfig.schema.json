@@ -1,0 +1,219 @@
+{
+  "$comment": "HiveMind contract LabNodeConfig v1.0.0; generated from packages/schema, do not edit",
+  "$id": "LabNodeConfig.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Node configuration rendered by providers",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "hostname": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "interfaces": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "ipv4": {
+                "pattern": "^\\d{1,3}(?:\\.\\d{1,3}){3}\\/\\d{1,2}$",
+                "type": "string"
+              },
+              "name": {
+                "maxLength": 15,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "kind": {
+          "const": "linux",
+          "type": "string"
+        },
+        "routes": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "prefix": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "via": {
+                "pattern": "^\\d{1,3}(?:\\.\\d{1,3}){3}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "prefix",
+              "via"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "shell": {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "interfaces",
+        "routes",
+        "shell"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "asn": {
+          "maximum": 4294967295,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "bgp": {
+          "additionalProperties": false,
+          "properties": {
+            "cluster_id": {
+              "pattern": "^\\d{1,3}(?:\\.\\d{1,3}){3}$",
+              "type": "string"
+            },
+            "neighbors": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "address": {
+                    "pattern": "^\\d{1,3}(?:\\.\\d{1,3}){3}$",
+                    "type": "string"
+                  },
+                  "description": {
+                    "maxLength": 80,
+                    "type": "string"
+                  },
+                  "remote_asn": {
+                    "maximum": 4294967295,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "route_reflector_client": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "address",
+                  "remote_asn"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "networks": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "neighbors",
+            "networks"
+          ],
+          "type": "object"
+        },
+        "daemons": {
+          "items": {
+            "enum": [
+              "bgpd",
+              "ospfd",
+              "isisd",
+              "ldpd",
+              "bfdd"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "hostname": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "interfaces": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "ipv4": {
+                "pattern": "^\\d{1,3}(?:\\.\\d{1,3}){3}\\/\\d{1,2}$",
+                "type": "string"
+              },
+              "name": {
+                "maxLength": 15,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "kind": {
+          "const": "frr",
+          "type": "string"
+        },
+        "loopback": {
+          "additionalProperties": false,
+          "properties": {
+            "ipv4": {
+              "pattern": "^\\d{1,3}(?:\\.\\d{1,3}){3}\\/\\d{1,2}$",
+              "type": "string"
+            },
+            "name": {
+              "maxLength": 15,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "type": "object"
+        },
+        "router_id": {
+          "pattern": "^\\d{1,3}(?:\\.\\d{1,3}){3}$",
+          "type": "string"
+        },
+        "shell": {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "asn",
+        "router_id",
+        "interfaces",
+        "bgp",
+        "daemons",
+        "shell"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "LabNodeConfig"
+}

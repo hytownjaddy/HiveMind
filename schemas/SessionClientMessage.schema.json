@@ -1,0 +1,156 @@
+{
+  "$comment": "HiveMind contract SessionClientMessage v2.0.0; generated from packages/schema, do not edit",
+  "$id": "SessionClientMessage.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Client → session Worker WebSocket message",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "node": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "size": {
+          "additionalProperties": false,
+          "properties": {
+            "cols": {
+              "maximum": 500,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "rows": {
+              "maximum": 200,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "cols",
+            "rows"
+          ],
+          "type": "object"
+        },
+        "type": {
+          "const": "pty_open",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "node",
+        "size"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "maxLength": 16384,
+          "minLength": 1,
+          "type": "string"
+        },
+        "node": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "type": {
+          "const": "pty_input",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "node",
+        "data"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "node": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "size": {
+          "additionalProperties": false,
+          "properties": {
+            "cols": {
+              "maximum": 500,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "rows": {
+              "maximum": 200,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "cols",
+            "rows"
+          ],
+          "type": "object"
+        },
+        "type": {
+          "const": "pty_resize",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "node",
+        "size"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "latest_sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "type": {
+          "const": "resync",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "latest_sequence"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "SessionClientMessage"
+}

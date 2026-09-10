@@ -21,6 +21,7 @@ import type { SkillDefinition, SkillGraph } from "../skills";
 import type { Claim, SourceRecord } from "../sources";
 import type { ReviewItem, WorkOrder } from "../work-order";
 import type { WorkerEnvelope, WorkerMessage } from "../worker-protocol";
+import { STAGE02_FIXTURES } from "./stage02";
 
 /*
  * Deterministic example documents. They are validated against the Zod
@@ -842,7 +843,34 @@ export const workerMessages: readonly {
       capabilities: labWorkerProvider.capabilities,
       active_sessions: 1,
       load: { cpu_percent: 12.5, memory_percent: 41 },
-      runtime_versions: { containerlab: "0.68.0", frr: "10.2.1", docker: "28.3.0" },
+      runtime_versions: { containerlab: "0.79.0", frr: "10.7.1", docker: "28.5.1" },
+      at: AT,
+      endpoint: "https://lab-worker.jryans.dev",
+      agent_version: "0.2.0",
+      hostname: "lab-worker-1",
+    },
+  },
+  {
+    name: "event-reconcile",
+    message: {
+      type: "event.reconcile",
+      worker_id: "ubuntu-lab-worker-1",
+      sessions: [
+        {
+          lab_session_id: "HM-LAB-829143",
+          handle: "clab-hm-lab-829143",
+          nodes: ["r1", "r2"],
+        },
+      ],
+      at: AT,
+    },
+  },
+  {
+    name: "reconcile-expected",
+    message: {
+      type: "reconcile.expected",
+      worker_id: "ubuntu-lab-worker-1",
+      sessions: [{ lab_session_id: "HM-LAB-829143", status: "active" }],
       at: AT,
     },
   },
@@ -898,4 +926,5 @@ export const FIXTURES: readonly Fixture[] = [
     name,
     value: envelope(message),
   })),
+  ...STAGE02_FIXTURES,
 ];

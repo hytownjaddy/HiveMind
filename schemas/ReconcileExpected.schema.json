@@ -1,0 +1,51 @@
+{
+  "$comment": "HiveMind contract ReconcileExpected v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ReconcileExpected.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Sessions expected on a worker",
+  "properties": {
+    "at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "sessions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "lab_session_id": {
+            "pattern": "^HM-LAB-\\d{6}$",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "LabStatus.schema.json"
+          }
+        },
+        "required": [
+          "lab_session_id",
+          "status"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "type": {
+      "const": "reconcile.expected",
+      "type": "string"
+    },
+    "worker_id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "worker_id",
+    "sessions",
+    "at"
+  ],
+  "title": "ReconcileExpected",
+  "type": "object"
+}

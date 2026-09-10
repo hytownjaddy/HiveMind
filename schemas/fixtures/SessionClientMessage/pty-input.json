@@ -1,0 +1,6 @@
+{
+  "data": "ip route\r",
+  "node": "host1",
+  "protocol_version": 2,
+  "type": "pty_input"
+}

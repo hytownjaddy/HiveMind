@@ -1,0 +1,56 @@
+{
+  "$comment": "HiveMind contract TopologyInstance v1.0.0; generated from packages/schema, do not edit",
+  "$id": "TopologyInstance.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Seeded topology instance",
+  "properties": {
+    "archetype_id": {
+      "maxLength": 96,
+      "minLength": 3,
+      "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+      "type": "string"
+    },
+    "archetype_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "generator": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "type": "string"
+    },
+    "lab_spec": {
+      "$ref": "LabSpec.schema.json"
+    },
+    "parameters": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "seed": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "spec_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "archetype_id",
+    "archetype_version",
+    "generator",
+    "seed",
+    "parameters",
+    "lab_spec",
+    "spec_hash"
+  ],
+  "title": "TopologyInstance",
+  "type": "object"
+}

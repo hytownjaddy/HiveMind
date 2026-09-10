@@ -1,0 +1,107 @@
+{
+  "$comment": "HiveMind contract SessionEvent v2.0.0; generated from packages/schema, do not edit",
+  "$id": "SessionEvent.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Sequenced session event payload",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "$ref": "LabStatus.schema.json"
+        },
+        "reason": {
+          "maxLength": 500,
+          "type": "string"
+        },
+        "to": {
+          "$ref": "LabStatus.schema.json"
+        },
+        "type": {
+          "const": "status_changed",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "from",
+        "to"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "maxLength": 16384,
+          "minLength": 1,
+          "type": "string"
+        },
+        "node": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "type": {
+          "const": "pty_output",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "node",
+        "data"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "maxLength": 500,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "notice",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "text"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "type": {
+          "const": "log",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "level",
+        "message"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "SessionEvent"
+}

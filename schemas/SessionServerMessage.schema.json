@@ -1,0 +1,267 @@
+{
+  "$comment": "HiveMind contract SessionServerMessage v2.0.0; generated from packages/schema, do not edit",
+  "$id": "SessionServerMessage.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Session Worker → client WebSocket message",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "connection_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "type": "string"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "server_time": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "type": {
+          "const": "welcome",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "session_id",
+        "connection_id",
+        "server_time"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "latest_sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "recent_events": {
+          "items": {
+            "$ref": "SequencedSessionEvent.schema.json"
+          },
+          "type": "array"
+        },
+        "server_time": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "session": {
+          "$ref": "SessionSummary.schema.json"
+        },
+        "type": {
+          "const": "snapshot",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "session",
+        "latest_sequence",
+        "recent_events",
+        "server_time"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "event": {
+          "$ref": "SessionEvent.schema.json"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "type": {
+          "const": "event",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "sequence",
+        "revision",
+        "at",
+        "event"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "node": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "type": {
+          "const": "pty_ready",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "node"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "node": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "type": {
+          "const": "pty_exit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "node",
+        "code"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "malformed",
+            "not_owner",
+            "not_ready",
+            "unknown_node",
+            "pty_unavailable",
+            "rate_limited",
+            "resync_required",
+            "session_finished"
+          ],
+          "type": "string"
+        },
+        "detail": {
+          "maxLength": 500,
+          "type": "string"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "type": {
+          "const": "rejected",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "code",
+        "revision"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "reason": {
+          "enum": [
+            "malformed",
+            "not_owner",
+            "not_ready",
+            "unknown_node",
+            "pty_unavailable",
+            "rate_limited",
+            "resync_required",
+            "session_finished"
+          ],
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "type": {
+          "const": "resync_required",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "reason",
+        "revision"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "SessionServerMessage"
+}

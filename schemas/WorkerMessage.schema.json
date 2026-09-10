@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract WorkerMessage v1.0.1; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract WorkerMessage v1.1.0; generated from packages/schema, do not edit",
   "$id": "WorkerMessage.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "Worker protocol message",
@@ -36,6 +36,12 @@
     },
     {
       "$ref": "Heartbeat.schema.json"
+    },
+    {
+      "$ref": "ReconcileEvent.schema.json"
+    },
+    {
+      "$ref": "ReconcileExpected.schema.json"
     }
   ],
   "title": "WorkerMessage"

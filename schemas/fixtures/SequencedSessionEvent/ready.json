@@ -1,0 +1,10 @@
+{
+  "at": "2026-09-09T12:00:00Z",
+  "event": {
+    "from": "baseline_check",
+    "to": "ready",
+    "type": "status_changed"
+  },
+  "revision": 3,
+  "sequence": 3
+}

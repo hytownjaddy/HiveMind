@@ -1,0 +1,122 @@
+{
+  "$comment": "HiveMind contract LabWorker v1.0.0; generated from packages/schema, do not edit",
+  "$id": "LabWorker.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Registered lab worker",
+  "properties": {
+    "active_sessions": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "agent_version": {
+      "anyOf": [
+        {
+          "description": "Semantic version major.minor.patch",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "capabilities": {
+      "items": {
+        "$ref": "Capability.schema.json"
+      },
+      "type": "array"
+    },
+    "endpoint": {
+      "anyOf": [
+        {
+          "maxLength": 2048,
+          "pattern": "^https?:\\/\\/[^\\s/$.?#][^\\s]*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hostname": {
+      "anyOf": [
+        {
+          "maxLength": 253,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "type": "string"
+    },
+    "last_heartbeat_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "load": {
+      "additionalProperties": false,
+      "properties": {
+        "cpu_percent": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "memory_percent": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "cpu_percent",
+        "memory_percent"
+      ],
+      "type": "object"
+    },
+    "registered_at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "runtime_versions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "propertyNames": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "online",
+        "degraded",
+        "offline"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "status",
+    "capabilities",
+    "endpoint",
+    "agent_version",
+    "hostname",
+    "runtime_versions",
+    "load",
+    "active_sessions",
+    "registered_at",
+    "last_heartbeat_at"
+  ],
+  "title": "LabWorker",
+  "type": "object"
+}

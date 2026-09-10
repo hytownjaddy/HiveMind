@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 
 ROOT = Path(__file__).resolve().parents[3]
 SCHEMAS = ROOT / "schemas"
@@ -32,6 +32,24 @@ def model_for(contract: str) -> type[BaseModel]:
     model = getattr(module, contract)
     assert issubclass(model, BaseModel), f"{contract} is not a BaseModel"
     return model
+
+
+def validator_for(contract: str) -> TypeAdapter[Any]:
+    """Adapter for a contract; root unions collapse into numbered members (D-043)."""
+    module = importlib.import_module(f"hivemind_worker.contracts.{snake(contract)}")
+    direct = getattr(module, contract, None)
+    if direct is not None and issubclass(direct, BaseModel):
+        return TypeAdapter(direct)
+    members = [
+        getattr(module, name)
+        for name in sorted(dir(module))
+        if re.fullmatch(rf"{contract}\d+", name)
+    ]
+    assert members, f"{contract} has neither a model nor union members"
+    union: Any = members[0]
+    for member in members[1:]:
+        union = union | member
+    return TypeAdapter(union)
 
 
 def fixture_paths() -> list[Path]:
@@ -59,9 +77,9 @@ def test_fixture_directory_is_populated() -> None:
 @pytest.mark.parametrize("path", fixture_paths(), ids=lambda p: f"{p.parent.name}/{p.stem}")
 def test_fixture_round_trips(path: Path) -> None:
     document: Any = json.loads(path.read_text(encoding="utf-8"))
-    model = model_for(path.parent.name)
-    parsed = model.model_validate(document)
-    dumped = parsed.model_dump(mode="json", by_alias=True, exclude_unset=True)
+    adapter = validator_for(path.parent.name)
+    parsed = adapter.validate_python(document)
+    dumped = adapter.dump_python(parsed, mode="json", by_alias=True, exclude_unset=True)
     assert dumped == document
 
 

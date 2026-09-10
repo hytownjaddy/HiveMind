@@ -1,0 +1,35 @@
+{
+  "$comment": "HiveMind contract SequencedSessionEvent v2.0.0; generated from packages/schema, do not edit",
+  "$id": "SequencedSessionEvent.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Session event with sequence and revision",
+  "properties": {
+    "at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "event": {
+      "$ref": "SessionEvent.schema.json"
+    },
+    "revision": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "sequence": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "sequence",
+    "revision",
+    "at",
+    "event"
+  ],
+  "title": "SequencedSessionEvent",
+  "type": "object"
+}

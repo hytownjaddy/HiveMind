@@ -1,0 +1,41 @@
+{
+  "asn": 65000,
+  "bgp": {
+    "neighbors": [
+      {
+        "address": "10.0.1.1",
+        "description": "leaf1",
+        "remote_asn": 65001
+      },
+      {
+        "address": "10.0.1.3",
+        "description": "leaf2",
+        "remote_asn": 65002
+      }
+    ],
+    "networks": [
+      "10.255.0.1/32"
+    ]
+  },
+  "daemons": [
+    "bgpd"
+  ],
+  "hostname": "spine1",
+  "interfaces": [
+    {
+      "ipv4": "10.0.1.0/31",
+      "name": "eth1"
+    },
+    {
+      "ipv4": "10.0.1.2/31",
+      "name": "eth2"
+    }
+  ],
+  "kind": "frr",
+  "loopback": {
+    "ipv4": "10.255.0.1/32",
+    "name": "lo"
+  },
+  "router_id": "10.255.0.1",
+  "shell": "/usr/bin/vtysh"
+}

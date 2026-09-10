@@ -1,0 +1,9 @@
+{
+  "node": "host1",
+  "protocol_version": 2,
+  "size": {
+    "cols": 120,
+    "rows": 40
+  },
+  "type": "pty_open"
+}

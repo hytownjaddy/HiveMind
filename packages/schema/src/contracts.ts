@@ -49,11 +49,27 @@ import {
   provisionRequestSchema,
   provisionResultSchema,
 } from "./lab";
+import { labWorkerSchema } from "./lab-worker";
 import { learnerSchema } from "./learner";
 import { blockNodeSchema, inlineNodeSchema, lessonSectionSchema } from "./lesson-body";
 import { problemInstanceSchema, problemSpecSchema } from "./problem";
+import { recordingHeaderSchema } from "./recording";
+import {
+  createSessionRequestSchema,
+  ptyControlMessageSchema,
+  sequencedSessionEventSchema,
+  sessionClientMessageSchema,
+  sessionEventSchema,
+  sessionServerMessageSchema,
+  sessionSummarySchema,
+} from "./session-transport";
 import { skillDefinitionSchema, skillGraphSchema } from "./skills";
 import { claimSchema, sourceRecordSchema } from "./sources";
+import {
+  labNodeConfigSchema,
+  topologyArchetypeSchema,
+  topologyInstanceSchema,
+} from "./topology";
 import { reviewItemSchema, workOrderSchema } from "./work-order";
 import {
   destroyJobResultSchema,
@@ -71,6 +87,8 @@ import {
   logEventSchema,
   provisionJobResultSchema,
   provisionJobSchema,
+  reconcileEventSchema,
+  reconcileExpectedSchema,
   resultEventSchema,
   statusEventSchema,
   workerEnvelopeSchema,
@@ -168,6 +186,49 @@ export const CONTRACTS: readonly ContractEntry[] = [
   entry("ExecResult", "1.0.0", "Command execution result", execResultSchema),
   entry("DestroyRequest", "1.0.0", "Destroy request", destroyRequestSchema),
   entry("DestroyResult", "1.0.0", "Destroy result", destroyResultSchema),
+  entry(
+    "LabNodeConfig",
+    "1.0.0",
+    "Node configuration rendered by providers",
+    labNodeConfigSchema,
+  ),
+  entry("TopologyArchetype", "1.0.0", "Topology archetype", topologyArchetypeSchema),
+  entry("TopologyInstance", "1.0.0", "Seeded topology instance", topologyInstanceSchema),
+  entry("LabWorker", "1.0.0", "Registered lab worker", labWorkerSchema),
+  entry(
+    "RecordingHeader",
+    "1.0.0",
+    "asciicast v2 recording header",
+    recordingHeaderSchema,
+  ),
+  // Session transport v2 (browser or CLI ↔ session Worker)
+  entry(
+    "CreateSessionRequest",
+    "2.0.0",
+    "Create a lab session",
+    createSessionRequestSchema,
+  ),
+  entry("SessionSummary", "2.0.0", "Lab session summary", sessionSummarySchema),
+  entry("SessionEvent", "2.0.0", "Sequenced session event payload", sessionEventSchema),
+  entry(
+    "SequencedSessionEvent",
+    "2.0.0",
+    "Session event with sequence and revision",
+    sequencedSessionEventSchema,
+  ),
+  entry(
+    "SessionClientMessage",
+    "2.0.0",
+    "Client → session Worker WebSocket message",
+    sessionClientMessageSchema,
+  ),
+  entry(
+    "SessionServerMessage",
+    "2.0.0",
+    "Session Worker → client WebSocket message",
+    sessionServerMessageSchema,
+  ),
+  entry("PtyControlMessage", "1.0.0", "PTY control frame", ptyControlMessageSchema),
   // Problems, faults, graders
   entry("CheckSpec", "1.0.0", "Deterministic check", checkSpecSchema),
   entry("FaultSpec", "1.0.0", "Fault module specification", faultSpecSchema),
@@ -204,15 +265,22 @@ export const CONTRACTS: readonly ContractEntry[] = [
   entry("LogEvent", "1.0.0", "Log line event", logEventSchema),
   entry("ResultEvent", "1.0.0", "Job result event", resultEventSchema),
   entry("ErrorEvent", "1.0.0", "Error event", errorEventSchema),
-  entry("Heartbeat", "1.0.0", "Worker heartbeat", heartbeatSchema),
+  entry("Heartbeat", "1.1.0", "Worker heartbeat", heartbeatSchema),
+  entry("ReconcileEvent", "1.0.0", "Worker reconciliation report", reconcileEventSchema),
+  entry(
+    "ReconcileExpected",
+    "1.0.0",
+    "Sessions expected on a worker",
+    reconcileExpectedSchema,
+  ),
   entry("ProvisionJobResult", "1.0.0", "Provision job result", provisionJobResultSchema),
   entry("ExecJobResult", "1.0.0", "Exec job result", execJobResultSchema),
   entry("FaultJobResult", "1.0.0", "Fault job result", faultJobResultSchema),
   entry("GradeJobResult", "1.0.0", "Grade job result", gradeJobResultSchema),
   entry("DestroyJobResult", "1.0.0", "Destroy job result", destroyJobResultSchema),
   entry("JobResult", "1.0.1", "Worker job result", jobResultSchema),
-  entry("WorkerMessage", "1.0.1", "Worker protocol message", workerMessageSchema),
-  entry("WorkerEnvelope", "1.0.1", "Worker protocol envelope", workerEnvelopeSchema),
+  entry("WorkerMessage", "1.1.0", "Worker protocol message", workerMessageSchema),
+  entry("WorkerEnvelope", "1.1.0", "Worker protocol envelope", workerEnvelopeSchema),
 ];
 
 export function contractById(id: string): ContractEntry {

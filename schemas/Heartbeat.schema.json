@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract Heartbeat v1.0.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract Heartbeat v1.1.0; generated from packages/schema, do not edit",
   "$id": "Heartbeat.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
@@ -9,6 +9,11 @@
       "maximum": 9007199254740991,
       "minimum": 0,
       "type": "integer"
+    },
+    "agent_version": {
+      "description": "Semantic version major.minor.patch",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
     },
     "at": {
       "description": "UTC instant in ISO-8601 with a trailing Z",
@@ -20,6 +25,15 @@
         "$ref": "Capability.schema.json"
       },
       "type": "array"
+    },
+    "endpoint": {
+      "maxLength": 2048,
+      "pattern": "^https?:\\/\\/[^\\s/$.?#][^\\s]*$",
+      "type": "string"
+    },
+    "hostname": {
+      "maxLength": 253,
+      "type": "string"
     },
     "load": {
       "additionalProperties": false,

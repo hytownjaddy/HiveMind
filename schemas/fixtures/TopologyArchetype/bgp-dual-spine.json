@@ -1,0 +1,46 @@
+{
+  "aliases": [],
+  "description": "Leaf routers peer with both spines over point-to-point links; every router announces a loopback.",
+  "generator": "bgp.dual_spine",
+  "id": "bgp.dual_spine",
+  "images": {
+    "router": "quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2"
+  },
+  "network": {
+    "allowlist": [],
+    "egress": "deny"
+  },
+  "parameters": [
+    {
+      "kind": "int_range",
+      "name": "leaf_count",
+      "values": [
+        2,
+        4
+      ]
+    },
+    {
+      "kind": "choice",
+      "name": "asn_scheme",
+      "values": [
+        "private",
+        "public"
+      ]
+    }
+  ],
+  "requires": [
+    "network.containerlab",
+    "routing.frr",
+    "privilege.net_admin"
+  ],
+  "resources": {
+    "cpu_millicores": 2000,
+    "disk_mb": 4096,
+    "memory_mb": 2048
+  },
+  "snapshot": false,
+  "status": "active",
+  "title": "Two spines, N leaves, eBGP everywhere",
+  "ttl_minutes": 120,
+  "version": "1.0.0"
+}

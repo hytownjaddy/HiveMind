@@ -1,0 +1,98 @@
+{
+  "$comment": "HiveMind contract RecordingHeader v1.0.0; generated from packages/schema, do not edit",
+  "$id": "RecordingHeader.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "asciicast v2 recording header",
+  "properties": {
+    "env": {
+      "additionalProperties": false,
+      "properties": {
+        "SHELL": {
+          "type": "string"
+        },
+        "TERM": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "TERM",
+        "SHELL"
+      ],
+      "type": "object"
+    },
+    "height": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "hivemind": {
+      "additionalProperties": false,
+      "properties": {
+        "lab_session_id": {
+          "pattern": "^HM-LAB-\\d{6}$",
+          "type": "string"
+        },
+        "node": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "provider_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "recorded_at": {
+          "description": "UTC instant in ISO-8601 with a trailing Z",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+          "type": "string"
+        },
+        "redaction_version": {
+          "description": "Semantic version major.minor.patch",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lab_session_id",
+        "node",
+        "provider_id",
+        "redaction_version",
+        "recorded_at"
+      ],
+      "type": "object"
+    },
+    "timestamp": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "title": {
+      "maxLength": 200,
+      "type": "string"
+    },
+    "version": {
+      "const": 2,
+      "type": "number"
+    },
+    "width": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "version",
+    "width",
+    "height",
+    "timestamp",
+    "title",
+    "env",
+    "hivemind"
+  ],
+  "title": "RecordingHeader",
+  "type": "object"
+}

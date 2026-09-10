@@ -1,0 +1,62 @@
+{
+  "$comment": "HiveMind contract ReconcileEvent v1.0.0; generated from packages/schema, do not edit",
+  "$id": "ReconcileEvent.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Worker reconciliation report",
+  "properties": {
+    "at": {
+      "description": "UTC instant in ISO-8601 with a trailing Z",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "sessions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "handle": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "lab_session_id": {
+            "pattern": "^HM-LAB-\\d{6}$",
+            "type": "string"
+          },
+          "nodes": {
+            "items": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[a-z0-9][a-z0-9._-]*$",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "lab_session_id",
+          "handle",
+          "nodes"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "type": {
+      "const": "event.reconcile",
+      "type": "string"
+    },
+    "worker_id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "worker_id",
+    "sessions",
+    "at"
+  ],
+  "title": "ReconcileEvent",
+  "type": "object"
+}

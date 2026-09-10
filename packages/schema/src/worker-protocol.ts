@@ -8,6 +8,7 @@ import {
   semverSchema,
   slugSchema,
   timestampSchema,
+  urlSchema,
   uuidSchema,
 } from "./common/primitives";
 import { graderResultSchema } from "./grader";
@@ -160,6 +161,41 @@ export const heartbeatSchema = z.strictObject({
   }),
   runtime_versions: z.record(z.string(), z.string()),
   at: timestampSchema,
+  /** Tunnel hostname the session Worker pushes jobs to (Stage 02). */
+  endpoint: urlSchema.optional(),
+  agent_version: semverSchema.optional(),
+  hostname: z.string().max(253).optional(),
+});
+
+/*
+ * Reconciliation (Stage 02 acceptance 7). On start, and whenever it suspects
+ * drift, the agent reports every lab it can see on the host; the session
+ * Worker answers with the sessions the objects still expect on that worker.
+ * The agent destroys anything unexpected; the objects fail anything missing.
+ */
+export const reconcileEventSchema = z.strictObject({
+  type: z.literal("event.reconcile"),
+  worker_id: z.string().min(1).max(120),
+  sessions: z.array(
+    z.strictObject({
+      lab_session_id: labSessionIdSchema,
+      handle: z.string().min(1),
+      nodes: z.array(slugSchema),
+    }),
+  ),
+  at: timestampSchema,
+});
+
+export const reconcileExpectedSchema = z.strictObject({
+  type: z.literal("reconcile.expected"),
+  worker_id: z.string().min(1).max(120),
+  sessions: z.array(
+    z.strictObject({
+      lab_session_id: labSessionIdSchema,
+      status: labStatusSchema,
+    }),
+  ),
+  at: timestampSchema,
 });
 
 export const workerMessageSchema = z.discriminatedUnion("type", [
@@ -174,6 +210,8 @@ export const workerMessageSchema = z.discriminatedUnion("type", [
   resultEventSchema,
   errorEventSchema,
   heartbeatSchema,
+  reconcileEventSchema,
+  reconcileExpectedSchema,
 ]);
 export type WorkerMessage = z.infer<typeof workerMessageSchema>;
 

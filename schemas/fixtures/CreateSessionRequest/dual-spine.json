@@ -1,0 +1,7 @@
+{
+  "archetype": "bgp.dual_spine",
+  "parameters": {
+    "leaf_count": 2
+  },
+  "seed": 7
+}

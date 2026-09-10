@@ -1,0 +1,17 @@
+{
+  "hostname": "host1",
+  "interfaces": [
+    {
+      "ipv4": "10.0.12.1/30",
+      "name": "eth1"
+    }
+  ],
+  "kind": "linux",
+  "routes": [
+    {
+      "prefix": "10.1.2.0/24",
+      "via": "10.0.12.2"
+    }
+  ],
+  "shell": "/bin/bash"
+}

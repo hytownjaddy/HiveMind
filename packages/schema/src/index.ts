@@ -16,6 +16,10 @@ export * from "./attempt";
 export * from "./career";
 export * from "./work-order";
 export * from "./worker-protocol";
+export * from "./topology";
+export * from "./lab-worker";
+export * from "./recording";
+export * from "./session-transport";
 export * from "./contracts";
 
 // Session transport v1 (scaffold wire format; realigned in Stage 02).

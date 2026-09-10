@@ -1,0 +1,44 @@
+{
+  "id": "linux.single",
+  "links": [],
+  "network": {
+    "allowlist": [],
+    "egress": "deny"
+  },
+  "nodes": [
+    {
+      "config": {
+        "hostname": "host1",
+        "interfaces": [
+          {
+            "ipv4": "10.0.12.1/30",
+            "name": "eth1"
+          }
+        ],
+        "kind": "linux",
+        "routes": [
+          {
+            "prefix": "10.1.2.0/24",
+            "via": "10.0.12.2"
+          }
+        ],
+        "shell": "/bin/bash"
+      },
+      "image": "hivemind/linux-lab:1.0.0",
+      "name": "host1",
+      "role": "host"
+    }
+  ],
+  "requires": [
+    "shell.linux"
+  ],
+  "resources": {
+    "cpu_millicores": 500,
+    "disk_mb": 1024,
+    "memory_mb": 512
+  },
+  "snapshot": false,
+  "title": "One Linux host",
+  "ttl_minutes": 60,
+  "version": "1.0.0"
+}

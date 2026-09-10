@@ -1,0 +1,18 @@
+{
+  "env": {
+    "SHELL": "/bin/bash",
+    "TERM": "xterm-256color"
+  },
+  "height": 40,
+  "hivemind": {
+    "lab_session_id": "HM-LAB-829143",
+    "node": "host1",
+    "provider_id": "ubuntu-lab-worker-1",
+    "recorded_at": "2026-09-09T12:00:00Z",
+    "redaction_version": "1.0.0"
+  },
+  "timestamp": 1788955200,
+  "title": "HM-LAB-829143 · host1",
+  "version": 2,
+  "width": 120
+}

@@ -17,6 +17,12 @@ class Heartbeat(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     active_sessions: Annotated[int, Field(ge=0, le=9007199254740991)]
+    agent_version: Annotated[
+        str | None, Field(pattern="^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$")
+    ] = None
+    """
+    Semantic version major.minor.patch
+    """
     at: Annotated[
         str, Field(pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$")
     ]
@@ -24,6 +30,10 @@ class Heartbeat(BaseModel):
     UTC instant in ISO-8601 with a trailing Z
     """
     capabilities: list[capability.Capability]
+    endpoint: Annotated[
+        str | None, Field(max_length=2048, pattern="^https?:\\/\\/[^\\s/$.?#][^\\s]*$")
+    ] = None
+    hostname: Annotated[str | None, Field(max_length=253)] = None
     load: Load
     runtime_versions: dict[str, str]
     type: Literal["heartbeat"]

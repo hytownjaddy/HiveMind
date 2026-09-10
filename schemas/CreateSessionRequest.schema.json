@@ -1,0 +1,42 @@
+{
+  "$comment": "HiveMind contract CreateSessionRequest v2.0.0; generated from packages/schema, do not edit",
+  "$id": "CreateSessionRequest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Create a lab session",
+  "properties": {
+    "archetype": {
+      "maxLength": 96,
+      "minLength": 3,
+      "pattern": "^[a-z0-9_]+(?:\\.[a-z0-9_]+)+$",
+      "type": "string"
+    },
+    "parameters": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "problem_instance_id": {
+      "pattern": "^HM-PI-\\d{6,}$",
+      "type": "string"
+    },
+    "seed": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "ttl_minutes": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "archetype",
+    "seed"
+  ],
+  "title": "CreateSessionRequest",
+  "type": "object"
+}

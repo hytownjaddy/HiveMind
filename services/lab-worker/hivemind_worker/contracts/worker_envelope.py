@@ -18,6 +18,8 @@ from . import (
     heartbeat,
     log_event,
     provision_job,
+    reconcile_event,
+    reconcile_expected,
     result_event,
     status_event,
 )
@@ -56,7 +58,9 @@ class WorkerEnvelope(BaseModel):
         | log_event.LogEvent
         | result_event.ResultEvent
         | error_event.ErrorEvent
-        | heartbeat.Heartbeat,
+        | heartbeat.Heartbeat
+        | reconcile_event.ReconcileEvent
+        | reconcile_expected.ReconcileExpected,
         Field(title="WorkerMessage"),
     ]
     """
