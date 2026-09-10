@@ -11,14 +11,16 @@ import {
 } from "./commands/content";
 import { dbMigrate } from "./commands/db";
 import { exportArchive } from "./commands/export";
+import { labAttach, labDown, labLogs, labLs, labUp } from "./commands/lab";
 import { topologyCompile, topologyList, topologyRender } from "./commands/topology";
 import { workComplete, workList, workNew, workPull, workValidate } from "./commands/work";
 import { loadConfig, type CliConfig } from "./config";
 import { CliError, consoleOutput, type Output } from "./output";
 
 /*
- * `hivemind` (D-034): content, work orders, export, and database commands.
- * Lab orchestration commands arrive in Stage 02.
+ * `hivemind` (D-034): content, work orders, export, database, topology, and
+ * lab commands. Lab commands invoke the worker protocol through the session
+ * Worker; the CLI never reaches a provider directly.
  */
 
 const USAGE = `hivemind <group> <command> [options]
@@ -38,8 +40,13 @@ const USAGE = `hivemind <group> <command> [options]
   topology compile [--check]
   topology list
   topology render <archetype> --seed n [--param k=v]… [--out file]
+  lab up <archetype> [--seed n] [--param k=v]… [--ttl-minutes m] [--node name] [--no-attach] [--no-wait]
+  lab down <id> | --all
+  lab ls
+  lab attach <id> [--node name]
+  lab logs <id> [--follow]
 
-Environment: HIVEMIND_API_URL, HIVEMIND_ACCESS_CLIENT_ID, HIVEMIND_ACCESS_CLIENT_SECRET, HIVEMIND_ACTOR, HIVEMIND_ROOT
+Environment: HIVEMIND_API_URL, HIVEMIND_SESSION_URL, HIVEMIND_ACCESS_CLIENT_ID, HIVEMIND_ACCESS_CLIENT_SECRET, HIVEMIND_ACTOR, HIVEMIND_ROOT
 `;
 
 export interface RunDeps {
@@ -66,6 +73,11 @@ const COMMANDS: Readonly<Record<string, Handler>> = {
   "topology compile": topologyCompile,
   "topology list": topologyList,
   "topology render": topologyRender,
+  "lab up": labUp,
+  "lab down": labDown,
+  "lab ls": labLs,
+  "lab attach": labAttach,
+  "lab logs": labLogs,
 };
 
 export async function run(argv: readonly string[], deps: RunDeps): Promise<number> {

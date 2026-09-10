@@ -149,6 +149,7 @@ describe("hivemind CLI", () => {
     root = mkdtempSync(join(tmpdir(), "hivemind-cli-"));
     config = {
       apiUrl: "http://api.test",
+      sessionUrl: "http://api.test",
       accessClientId: undefined,
       accessClientSecret: undefined,
       actor: "jacob",

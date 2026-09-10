@@ -3,6 +3,8 @@ import { execSync } from "node:child_process";
 /*
  * CLI configuration from the environment (never from content or work orders):
  *   HIVEMIND_API_URL               web app origin (default http://localhost:3000)
+ *   HIVEMIND_SESSION_URL           session Worker origin; defaults to HIVEMIND_API_URL (the web
+ *                                  Worker proxies /session/*); `next dev` needs http://localhost:8787
  *   HIVEMIND_ACCESS_CLIENT_ID      Access service token id (production)
  *   HIVEMIND_ACCESS_CLIENT_SECRET  Access service token secret (production)
  *   HIVEMIND_ACTOR                 who acts (default: git user.name, else "jacob")
@@ -11,6 +13,7 @@ import { execSync } from "node:child_process";
 
 export interface CliConfig {
   readonly apiUrl: string;
+  readonly sessionUrl: string;
   readonly accessClientId: string | undefined;
   readonly accessClientSecret: string | undefined;
   readonly actor: string;
@@ -33,8 +36,13 @@ export function loadConfig(
   env: NodeJS.ProcessEnv = process.env,
   cwd: string = process.cwd(),
 ): CliConfig {
+  const apiUrl = (env["HIVEMIND_API_URL"] ?? "http://localhost:3000").replace(
+    /\/+$/u,
+    "",
+  );
   return {
-    apiUrl: (env["HIVEMIND_API_URL"] ?? "http://localhost:3000").replace(/\/+$/u, ""),
+    apiUrl,
+    sessionUrl: (env["HIVEMIND_SESSION_URL"] ?? apiUrl).replace(/\/+$/u, ""),
     accessClientId: env["HIVEMIND_ACCESS_CLIENT_ID"],
     accessClientSecret: env["HIVEMIND_ACCESS_CLIENT_SECRET"],
     actor: env["HIVEMIND_ACTOR"] ?? gitValue("git config user.name") ?? "jacob",

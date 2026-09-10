@@ -2,12 +2,16 @@ import type {
   ChangeReport,
   ContentBundle,
   ContentVersion,
+  CreateSessionRequest,
+  SequencedSessionEvent,
+  SessionSummary,
   ValidationRun,
   WorkOrder,
   WorkOrderStatus,
   WorkOrderTemplate,
   WorkOrderTarget,
 } from "@hivemind/schema";
+import type { LabSessionIndex } from "@hivemind/core";
 import type { BundleSummary } from "@hivemind/core/compiler";
 
 import type { CliConfig } from "./config";
@@ -48,12 +52,22 @@ export class HiveMindApi {
     return headers;
   }
 
-  private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
-    const url = `${this.config.apiUrl}${path}`;
+  private async request<T>(
+    method: string,
+    path: string,
+    body?: unknown,
+    base: string = this.config.apiUrl,
+  ): Promise<T> {
+    const url = `${base}${path}`;
     const response = await this.fetchImpl(url, {
       method,
       headers: {
         ...this.headers(),
+        // The session gateway allow-lists the web origin; the web Worker's proxy
+        // requires the request's own origin.
+        ...(base === this.config.sessionUrl
+          ? { origin: new URL(this.config.apiUrl).origin }
+          : {}),
         ...(body === undefined ? {} : { "content-type": "application/json" }),
       },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
@@ -142,5 +156,54 @@ export class HiveMindApi {
 
   exportArchive(): Promise<unknown> {
     return this.request("GET", "/api/export");
+  }
+
+  /* Session Worker (through the web proxy, or directly in local development). */
+
+  createLab(request: CreateSessionRequest): Promise<SessionSummary> {
+    return this.request("POST", "/session/labs", request, this.config.sessionUrl);
+  }
+
+  getLab(id: string): Promise<SessionSummary> {
+    return this.request(
+      "GET",
+      `/session/labs/${encodeURIComponent(id)}`,
+      undefined,
+      this.config.sessionUrl,
+    );
+  }
+
+  listLabs(): Promise<{ sessions: LabSessionIndex[] }> {
+    return this.request("GET", "/session/labs", undefined, this.config.sessionUrl);
+  }
+
+  destroyLab(id: string): Promise<SessionSummary> {
+    return this.request(
+      "POST",
+      `/session/labs/${encodeURIComponent(id)}/destroy`,
+      undefined,
+      this.config.sessionUrl,
+    );
+  }
+
+  labEvents(
+    id: string,
+    after = 0,
+  ): Promise<{ session: SessionSummary; events: SequencedSessionEvent[] }> {
+    return this.request(
+      "GET",
+      `/session/labs/${encodeURIComponent(id)}/events?after=${after}`,
+      undefined,
+      this.config.sessionUrl,
+    );
+  }
+
+  /** WebSocket URL and headers for `hivemind lab attach`. */
+  labSocket(id: string): { url: string; headers: Record<string, string> } {
+    const url = `${this.config.sessionUrl.replace(/^http/u, "ws")}/session/labs/${encodeURIComponent(id)}/ws`;
+    return {
+      url,
+      headers: { ...this.headers(), origin: new URL(this.config.apiUrl).origin },
+    };
   }
 }
