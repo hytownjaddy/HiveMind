@@ -37,7 +37,7 @@ def docker_ready() -> bool:
 def image_present(runtime: DockerRuntime, reference: str) -> bool:
     try:
         runtime.client.images.get(reference)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return False
     return True
 
