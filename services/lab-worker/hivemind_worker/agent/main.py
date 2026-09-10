@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from pathlib import Path
 
 import aiohttp
 from aiohttp import web
@@ -20,9 +21,44 @@ from hivemind_worker.providers.docker_runtime import DockerRuntime
 log = logging.getLogger(__name__)
 
 
+def disk_quotas_supported(info: dict[str, object], mounts: str) -> bool:
+    """overlay2 on xfs mounted with project quotas is what `storage-opt size` needs."""
+    if info.get("Driver") != "overlay2":
+        return False
+    root = str(info.get("DockerRootDir", "/var/lib/docker"))
+    backing = ""
+    for status in info.get("DriverStatus") or []:
+        if (
+            isinstance(status, list | tuple)
+            and len(status) == 2
+            and status[0] == "Backing Filesystem"
+        ):
+            backing = str(status[1]).lower()
+    if backing != "xfs":
+        return False
+    best = ""
+    for line in mounts.splitlines():
+        parts = line.split()
+        if len(parts) >= 4 and root.startswith(parts[1]) and len(parts[1]) > len(best):
+            best = parts[1]
+            options = parts[3].split(",")
+            if "prjquota" in options or "pquota" in options:
+                return True
+            if parts[1] == root:
+                return False
+    return False
+
+
 def build_providers(config: WorkerConfig, runtime: DockerRuntime | None = None) -> list[Provider]:
     runtime = runtime or DockerRuntime()
-    providers: list[Provider] = [ContainerProvider(runtime)]
+    quotas = False
+    try:
+        info: dict[str, object] = runtime.client.info()
+        quotas = disk_quotas_supported(info, Path("/proc/mounts").read_text(encoding="utf-8"))
+    except Exception:
+        quotas = False
+    log.info("per-lab disk quotas %s", "enabled (xfs prjquota)" if quotas else "unavailable")
+    providers: list[Provider] = [ContainerProvider(runtime, disk_quota_supported=quotas)]
     if CommandRunner.available("containerlab"):
         providers.append(ContainerlabProvider(runtime, config.state_dir))
     else:

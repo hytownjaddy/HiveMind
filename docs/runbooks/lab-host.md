@@ -43,8 +43,10 @@ hivemind.jryans.dev (web Worker) ──/session/*──▶ session Worker ──
 
 ## Provision the host
 
-Rent an Ubuntu 24.04 x86-64 host (4 vCPU, 8 GB, 80 GB is plenty for the first track).
-Only sshd may listen publicly; the agent and cloudflared are loopback-only.
+Rent an Ubuntu 24.04 x86-64 host (4 vCPU, 8 GB, 80 GB is plenty for the first track), or
+use home hardware: [home-laptop.md](home-laptop.md) takes a Windows laptop to a Wi-Fi-only
+Ubuntu Server box that runs this section unchanged. Only sshd may listen publicly; the
+agent and cloudflared are loopback-only.
 
 ```bash
 ssh root@<host>
