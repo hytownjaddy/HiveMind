@@ -77,3 +77,21 @@ test("settings shows identity and export status", async ({ page }) => {
   await expect(page.getByTestId("pane-data")).toContainText("last D1 export");
   await expect(page.getByTestId("pane-ai")).toContainText("external");
 });
+
+test("infrastructure console renders the overview and the workers empty state", async ({
+  page,
+}) => {
+  await page.goto("/system/infrastructure");
+  await expect(
+    page.getByRole("heading", { name: "Infrastructure", level: 1 }),
+  ).toBeVisible();
+  await expect(page.getByTestId("pane-overview")).toContainText("workers online");
+  await expect(page.getByRole("tab", { name: "Images & Runtimes" })).toBeVisible();
+  await page.getByRole("tab", { name: "Images & Runtimes" }).click();
+  await expect(page.getByTestId("table-runtimes")).toContainText("frr");
+  await expect(page.getByTestId("table-runtimes")).toContainText("@sha256:");
+  const response = await page.request.get("/api/infrastructure");
+  expect(response.status()).toBe(200);
+  const body = (await response.json()) as { runtimes: { name: string }[] };
+  expect(body.runtimes.some((row) => row.name === "linux-lab")).toBe(true);
+});

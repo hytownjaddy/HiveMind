@@ -49,8 +49,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
   {
     label: "SYSTEM",
     items: [
-      { label: "Infrastructure", href: "/system/infrastructure", stage: "02" },
-      { label: "Runtimes", href: "/system/runtimes", stage: "02" },
+      { label: "Infrastructure", href: "/system/infrastructure" },
+      { label: "Runtimes", href: "/system/runtimes" },
       { label: "Settings", href: "/settings" },
     ],
   },

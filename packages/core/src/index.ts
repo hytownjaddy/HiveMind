@@ -22,3 +22,4 @@ export * from "./services/learner";
 export * from "./services/health";
 export * from "./services/export";
 export * from "./services/lab-sessions";
+export * from "./services/infrastructure";

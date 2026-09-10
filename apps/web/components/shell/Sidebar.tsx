@@ -6,7 +6,13 @@ import { usePathname } from "next/navigation";
 import { NAV_GROUPS } from "./nav";
 
 export interface SidebarProps {
-  readonly labHost: { readonly state: string; readonly detail: string };
+  readonly labHost: {
+    readonly state: string;
+    readonly detail: string;
+    readonly cpu_percent: number | null;
+    readonly memory_percent: number | null;
+    readonly environments: number;
+  };
   readonly target: string;
 }
 
@@ -76,11 +82,19 @@ export function Sidebar({ labHost, target }: SidebarProps) {
             </tr>
             <tr>
               <td className="text-muted">cpu / mem</td>
-              <td className="text-right">— / —</td>
+              <td className="text-right">
+                {labHost.cpu_percent === null
+                  ? "—"
+                  : `${Math.round(labHost.cpu_percent)}%`}
+                {" / "}
+                {labHost.memory_percent === null
+                  ? "—"
+                  : `${Math.round(labHost.memory_percent)}%`}
+              </td>
             </tr>
             <tr>
               <td className="text-muted">envs</td>
-              <td className="text-right">0</td>
+              <td className="text-right">{labHost.environments}</td>
             </tr>
           </tbody>
         </table>

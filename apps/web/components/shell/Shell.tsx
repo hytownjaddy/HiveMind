@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { HealthReport } from "@hivemind/core";
+import type { HealthReport, LabHostSummary } from "@hivemind/core";
 
 import { Sidebar } from "./Sidebar";
 import { StatusBar, type StatusField } from "./StatusBar";
@@ -11,6 +11,7 @@ export interface ShellProps {
   readonly displayName: string;
   readonly target: string;
   readonly health: HealthReport;
+  readonly labHost: LabHostSummary;
   readonly statusFields?: readonly StatusField[];
 }
 
@@ -33,21 +34,10 @@ export function Shell({
   displayName,
   target,
   health,
+  labHost,
   statusFields = [],
 }: ShellProps) {
-  const session = health.components.find(
-    (component) => component.component === "session_worker",
-  );
-  const labHostState =
-    session?.state === "online"
-      ? "online"
-      : session?.state === "unconfigured"
-        ? "offline"
-        : "offline";
-  const labHostDetail =
-    session?.state === "unconfigured"
-      ? "no lab host (Stage 02)"
-      : (session?.detail ?? "session worker");
+  const labHostState = labHost.state;
   const connection = health.ok ? "online" : "degraded";
   return (
     <div className="flex h-dvh flex-col">
@@ -57,10 +47,7 @@ export function Shell({
         labHostState={labHostState}
       />
       <div className="flex min-h-0 flex-1">
-        <Sidebar
-          labHost={{ state: labHostState, detail: labHostDetail }}
-          target={target}
-        />
+        <Sidebar labHost={labHost} target={target} />
         <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
       </div>
       <StatusBar version={health.version} connection={connection} fields={statusFields} />

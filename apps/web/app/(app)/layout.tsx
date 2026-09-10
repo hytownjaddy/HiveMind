@@ -22,13 +22,17 @@ export default async function AppLayout({ children }: Readonly<{ children: React
       </main>
     );
   }
-  const { health } = await services();
-  const report = await health.report();
+  const { health, infrastructure } = await services();
+  const [report, labHost] = await Promise.all([
+    health.report(),
+    infrastructure.labHost(),
+  ]);
   return (
     <Shell
       displayName={principal.learner.display_name}
       target="no target · select target"
       health={report}
+      labHost={labHost}
     >
       {children}
     </Shell>

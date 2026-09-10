@@ -2,11 +2,15 @@ import {
   AttemptRepository,
   ContentRepository,
   ContentService,
+  defaultArchetypeRegistry,
   ExportService,
   ExportStore,
   HealthService,
+  InfrastructureService,
   isoNow,
+  LabSessionEventRepository,
   LabSessionIndexRepository,
+  LabWorkerRepository,
   LearnerRepository,
   LearnerService,
   ReviewItemRepository,
@@ -36,6 +40,16 @@ export async function services() {
   const attempts = new AttemptRepository(env.DB);
   const exportStore =
     env.EXPORTS === undefined ? undefined : new ExportStore(env.EXPORTS);
+  const health = new HealthService({
+    db: env.DB,
+    exports: exportStore,
+    sessionWorker: env.SESSION,
+    version: APP_VERSION,
+    environment: environmentOf(env),
+    runtimeVersions: RUNTIME_VERSIONS,
+    now: () => isoNow(),
+  });
+  const labSessions = new LabSessionIndexRepository(env.DB, systemClock);
   return {
     env,
     learners,
@@ -43,17 +57,21 @@ export async function services() {
     content: new ContentService(content),
     contentRepository: content,
     workOrders: new WorkOrderService(orders, systemClock),
-    labSessions: new LabSessionIndexRepository(env.DB, systemClock),
+    labSessions,
     reviewItems: new ReviewItemRepository(env.DB),
     exportStore,
     export: new ExportService(learners, content, orders, attempts, () => isoNow()),
-    health: new HealthService({
-      db: env.DB,
-      exports: exportStore,
-      sessionWorker: env.SESSION,
-      version: APP_VERSION,
-      environment: environmentOf(env),
-      runtimeVersions: RUNTIME_VERSIONS,
+    health,
+    infrastructure: new InfrastructureService({
+      workers: new LabWorkerRepository(env.DB, systemClock),
+      sessions: labSessions,
+      events: new LabSessionEventRepository(env.DB),
+      archetypes: defaultArchetypeRegistry(),
+      health: () => health.report(),
+      lastExport: async () => (exportStore === undefined ? null : exportStore.latest()),
+      // The web Worker cannot see the session Worker's bindings; the session
+      // Worker offers the Sandbox whenever it is deployed with one (Stage 02).
+      sandboxEnabled: true,
       now: () => isoNow(),
     }),
   };
