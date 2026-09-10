@@ -25,11 +25,13 @@ jobs:
           enable-cache: true
       - name: Host tooling (the provisioning script's CI path)
         run: sudo -E ../../tools/host/provision.sh --ci --source "$GITHUB_WORKSPACE"
-      - run: uv sync --frozen
+      # The script syncs the agent's venv as root (as on the host); stay root from here.
+      - name: Dev dependencies (as root)
+        run: sudo -E env "PATH=$PATH" uv sync --frozen
       - name: containerlab integration tests (as root, like the agent)
         run: |
           sudo -E env "PATH=$PATH" HIVEMIND_TEST_CLAB_CYCLES=3 \
-            "$(uv python find)" -m pytest -q -m containerlab -p no:cacheprovider
+            .venv/bin/python -m pytest -q -m containerlab -p no:cacheprovider
       - name: Nothing left on the host
         if: always()
         run: |
