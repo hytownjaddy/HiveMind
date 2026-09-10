@@ -94,15 +94,17 @@ class ContainerlabProvider:
     async def _iptables(self, rules: Sequence[Rule], add: bool) -> None:
         if not self.manage_iptables:
             return
-        commands = [rule.add() for rule in rules] if add else cleanup_for(rules)
-        for argv in commands:
-            if add:
-                check_code, _, _ = await self.commands.run(rules[commands.index(argv)].check(), 10)
+        if add:
+            for rule in rules:
+                check_code, _, _ = await self.commands.run(rule.check(), 10)
                 if check_code == 0:
                     continue
-            code, _, stderr = await self.commands.run(argv, 10)
-            if code != 0 and add:
-                raise ProviderError("egress_rules_failed", stderr.strip() or "iptables failed")
+                code, _, stderr = await self.commands.run(rule.add(), 10)
+                if code != 0:
+                    raise ProviderError("egress_rules_failed", stderr.strip() or "iptables failed")
+            return
+        for argv in cleanup_for(rules):
+            await self.commands.run(argv, 10)
 
     async def provision(
         self, session_id: str, spec: lab_spec.LabSpec, seed: int, ttl_at: str

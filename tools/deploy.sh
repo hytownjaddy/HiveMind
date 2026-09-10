@@ -34,7 +34,14 @@ apps/web/wrangler.jsonc and apps/session-worker/wrangler.jsonc. See docs/runbook
 Variables:
   HIVEMIND_SERVICE_TOKEN_SCOPES
       JSON map of Access service-token Client IDs (the JWT common_name) to scopes, e.g.
-      {"<client-id>.access":["content:publish","export:read"]}
+      {"<cli-id>.access":["content:publish","export:read","lab:operate"],
+       "<worker-id>.access":["worker:callback"]}
+  HIVEMIND_LAB_WORKER_CLIENT_ID / HIVEMIND_LAB_WORKER_CLIENT_SECRET
+      Service token the session Worker presents to lab workers behind Access
+      (docs/runbooks/lab-host.md step 3); set on the session Worker only.
+
+The session Worker deploy builds and pushes the Sandbox container image
+(apps/session-worker/sandbox/Dockerfile); Docker must be running locally.
 USAGE
 }
 
@@ -77,6 +84,13 @@ put_secrets() {
   echo "==> Setting SERVICE_TOKEN_SCOPES on web Worker"
   printf '%s' "$scopes" | "$WRANGLER" secret put SERVICE_TOKEN_SCOPES \
     -c apps/web/wrangler.jsonc "${ENV_ARGS[@]}"
+  if [[ -n "${HIVEMIND_LAB_WORKER_CLIENT_ID:-}" && -n "${HIVEMIND_LAB_WORKER_CLIENT_SECRET:-}" ]]; then
+    echo "==> Setting LAB_WORKER_CLIENT_ID/SECRET on session Worker"
+    printf '%s' "$HIVEMIND_LAB_WORKER_CLIENT_ID" | "$WRANGLER" secret put LAB_WORKER_CLIENT_ID \
+      -c apps/session-worker/wrangler.jsonc "${ENV_ARGS[@]}"
+    printf '%s' "$HIVEMIND_LAB_WORKER_CLIENT_SECRET" | "$WRANGLER" secret put LAB_WORKER_CLIENT_SECRET \
+      -c apps/session-worker/wrangler.jsonc "${ENV_ARGS[@]}"
+  fi
 }
 
 migrate() {
