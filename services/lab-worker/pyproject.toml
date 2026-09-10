@@ -3,10 +3,15 @@ name = "hivemind-worker"
 version = "0.1.0"
 description = "HiveMind lab agent and worker CLI (D-030, D-034): providers, faults, graders, reference solutions, validation runners."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.14"
 license = "MIT"
 dependencies = [
+  "aiohttp==3.14.3",
+  "docker==7.2.0",
+  "psutil==6.1.1",
   "pydantic==2.13.5",
+  "PyJWT[crypto]==2.13.0",
+  "PyYAML==6.0.3",
 ]
 
 [project.scripts]
@@ -17,8 +22,12 @@ dev = [
   "datamodel-code-generator==0.78.0",
   "pyright==1.1.413",
   "pytest==9.1.1",
+  "pytest-asyncio==1.4.0",
   "ruff==0.16.6",
   "taskipy==1.14.1",
+  "types-docker==7.2.0.20260827",
+  "types-psutil==6.1.0.20241221",
+  "types-PyYAML==6.0.12.20260906",
 ]
 
 [build-system]
@@ -55,3 +64,8 @@ venv = ".venv"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+  "docker: needs a Docker daemon (Linux CI job or the lab host)",
+  "containerlab: needs containerlab and Docker (nightly job or the lab host)",
+]

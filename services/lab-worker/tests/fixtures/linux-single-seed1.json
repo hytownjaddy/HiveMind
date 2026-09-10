@@ -1,0 +1,42 @@
+{
+  "archetype_id": "linux.single",
+  "archetype_version": "1.0.0",
+  "generator": "linux.single",
+  "seed": 1,
+  "parameters": {},
+  "lab_spec": {
+    "id": "linux.single",
+    "version": "1.0.0",
+    "title": "One Linux host",
+    "requires": [
+      "shell.linux"
+    ],
+    "nodes": [
+      {
+        "name": "host1",
+        "image": "hivemind/linux-lab:1.0.0",
+        "role": "host",
+        "config": {
+          "kind": "linux",
+          "hostname": "host1",
+          "interfaces": [],
+          "routes": [],
+          "shell": "/bin/bash"
+        }
+      }
+    ],
+    "links": [],
+    "resources": {
+      "cpu_millicores": 500,
+      "memory_mb": 512,
+      "disk_mb": 1024
+    },
+    "network": {
+      "egress": "deny",
+      "allowlist": []
+    },
+    "ttl_minutes": 60,
+    "snapshot": false
+  },
+  "spec_hash": "ee14a268b0df75cb65059eeaa0e57bb00000e4e7647452250514416f2fa02c02"
+}

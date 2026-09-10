@@ -1,0 +1,21 @@
+[Unit]
+Description=HiveMind lab agent (Stage 02, D-030)
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=/etc/hivemind/worker.env
+WorkingDirectory=/opt/hivemind/services/lab-worker
+ExecStart=/opt/hivemind/services/lab-worker/.venv/bin/hivemind-worker agent run
+Restart=always
+RestartSec=3
+# The agent listens on loopback only; cloudflared publishes it (no public ports).
+NoNewPrivileges=false
+ProtectSystem=full
+ReadWritePaths=/var/lib/hivemind-worker /etc/hivemind
+
+[Install]
+WantedBy=multi-user.target

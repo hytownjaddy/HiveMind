@@ -1,0 +1,73 @@
+{
+  "archetype_id": "linux.pair",
+  "archetype_version": "1.0.0",
+  "generator": "linux.pair",
+  "seed": 11,
+  "parameters": {
+    "subnet_second_octet": 36
+  },
+  "lab_spec": {
+    "id": "linux.pair",
+    "version": "1.0.0",
+    "title": "Two Linux hosts on a point-to-point link",
+    "requires": [
+      "shell.linux",
+      "network.veth",
+      "network.containerlab"
+    ],
+    "nodes": [
+      {
+        "name": "host1",
+        "image": "hivemind/linux-lab:1.0.0",
+        "role": "host",
+        "config": {
+          "kind": "linux",
+          "hostname": "host1",
+          "interfaces": [
+            {
+              "name": "eth1",
+              "ipv4": "10.36.33.1/30"
+            }
+          ],
+          "routes": [],
+          "shell": "/bin/bash"
+        }
+      },
+      {
+        "name": "host2",
+        "image": "hivemind/linux-lab:1.0.0",
+        "role": "host",
+        "config": {
+          "kind": "linux",
+          "hostname": "host2",
+          "interfaces": [
+            {
+              "name": "eth1",
+              "ipv4": "10.36.33.2/30"
+            }
+          ],
+          "routes": [],
+          "shell": "/bin/bash"
+        }
+      }
+    ],
+    "links": [
+      {
+        "a": "host1:eth1",
+        "b": "host2:eth1"
+      }
+    ],
+    "resources": {
+      "cpu_millicores": 1000,
+      "memory_mb": 1024,
+      "disk_mb": 2048
+    },
+    "network": {
+      "egress": "deny",
+      "allowlist": []
+    },
+    "ttl_minutes": 90,
+    "snapshot": false
+  },
+  "spec_hash": "154ece1d507fbb32c221aaadc9625aaa46e0d2965837b80cc25c8cbfad63162e"
+}

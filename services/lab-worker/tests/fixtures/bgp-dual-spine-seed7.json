@@ -1,0 +1,236 @@
+{
+  "archetype_id": "bgp.dual_spine",
+  "archetype_version": "1.0.0",
+  "generator": "bgp.dual_spine",
+  "seed": 7,
+  "parameters": {
+    "leaf_count": 2,
+    "asn_scheme": "private"
+  },
+  "lab_spec": {
+    "id": "bgp.dual_spine",
+    "version": "1.0.0",
+    "title": "Two spines, N leaves, eBGP everywhere",
+    "requires": [
+      "network.containerlab",
+      "routing.frr",
+      "privilege.net_admin"
+    ],
+    "nodes": [
+      {
+        "name": "spine1",
+        "image": "quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2",
+        "role": "router",
+        "config": {
+          "kind": "frr",
+          "hostname": "spine1",
+          "asn": 65000,
+          "router_id": "10.255.0.1",
+          "interfaces": [
+            {
+              "name": "eth1",
+              "ipv4": "10.0.1.0/31"
+            },
+            {
+              "name": "eth2",
+              "ipv4": "10.0.1.2/31"
+            }
+          ],
+          "loopback": {
+            "name": "lo",
+            "ipv4": "10.255.0.1/32"
+          },
+          "bgp": {
+            "neighbors": [
+              {
+                "address": "10.0.1.1",
+                "remote_asn": 65001,
+                "description": "leaf1"
+              },
+              {
+                "address": "10.0.1.3",
+                "remote_asn": 65002,
+                "description": "leaf2"
+              }
+            ],
+            "networks": [
+              "10.255.0.1/32"
+            ]
+          },
+          "daemons": [
+            "bgpd"
+          ],
+          "shell": "/bin/bash"
+        }
+      },
+      {
+        "name": "spine2",
+        "image": "quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2",
+        "role": "router",
+        "config": {
+          "kind": "frr",
+          "hostname": "spine2",
+          "asn": 65000,
+          "router_id": "10.255.0.2",
+          "interfaces": [
+            {
+              "name": "eth1",
+              "ipv4": "10.0.2.0/31"
+            },
+            {
+              "name": "eth2",
+              "ipv4": "10.0.2.2/31"
+            }
+          ],
+          "loopback": {
+            "name": "lo",
+            "ipv4": "10.255.0.2/32"
+          },
+          "bgp": {
+            "neighbors": [
+              {
+                "address": "10.0.2.1",
+                "remote_asn": 65001,
+                "description": "leaf1"
+              },
+              {
+                "address": "10.0.2.3",
+                "remote_asn": 65002,
+                "description": "leaf2"
+              }
+            ],
+            "networks": [
+              "10.255.0.2/32"
+            ]
+          },
+          "daemons": [
+            "bgpd"
+          ],
+          "shell": "/bin/bash"
+        }
+      },
+      {
+        "name": "leaf1",
+        "image": "quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2",
+        "role": "router",
+        "config": {
+          "kind": "frr",
+          "hostname": "leaf1",
+          "asn": 65001,
+          "router_id": "10.255.1.1",
+          "interfaces": [
+            {
+              "name": "eth1",
+              "ipv4": "10.0.1.1/31"
+            },
+            {
+              "name": "eth2",
+              "ipv4": "10.0.2.1/31"
+            }
+          ],
+          "loopback": {
+            "name": "lo",
+            "ipv4": "10.255.1.1/32"
+          },
+          "bgp": {
+            "neighbors": [
+              {
+                "address": "10.0.1.0",
+                "remote_asn": 65000,
+                "description": "spine1"
+              },
+              {
+                "address": "10.0.2.0",
+                "remote_asn": 65000,
+                "description": "spine2"
+              }
+            ],
+            "networks": [
+              "10.255.1.1/32"
+            ]
+          },
+          "daemons": [
+            "bgpd"
+          ],
+          "shell": "/bin/bash"
+        }
+      },
+      {
+        "name": "leaf2",
+        "image": "quay.io/frrouting/frr:10.7.1@sha256:e995beaa50fdc9edb35eadcfefa29b7f062cc06f2b812613789b68fa541554d2",
+        "role": "router",
+        "config": {
+          "kind": "frr",
+          "hostname": "leaf2",
+          "asn": 65002,
+          "router_id": "10.255.1.2",
+          "interfaces": [
+            {
+              "name": "eth1",
+              "ipv4": "10.0.1.3/31"
+            },
+            {
+              "name": "eth2",
+              "ipv4": "10.0.2.3/31"
+            }
+          ],
+          "loopback": {
+            "name": "lo",
+            "ipv4": "10.255.1.2/32"
+          },
+          "bgp": {
+            "neighbors": [
+              {
+                "address": "10.0.1.2",
+                "remote_asn": 65000,
+                "description": "spine1"
+              },
+              {
+                "address": "10.0.2.2",
+                "remote_asn": 65000,
+                "description": "spine2"
+              }
+            ],
+            "networks": [
+              "10.255.1.2/32"
+            ]
+          },
+          "daemons": [
+            "bgpd"
+          ],
+          "shell": "/bin/bash"
+        }
+      }
+    ],
+    "links": [
+      {
+        "a": "spine1:eth1",
+        "b": "leaf1:eth1"
+      },
+      {
+        "a": "spine1:eth2",
+        "b": "leaf2:eth1"
+      },
+      {
+        "a": "spine2:eth1",
+        "b": "leaf1:eth2"
+      },
+      {
+        "a": "spine2:eth2",
+        "b": "leaf2:eth2"
+      }
+    ],
+    "resources": {
+      "cpu_millicores": 2000,
+      "memory_mb": 2048,
+      "disk_mb": 4096
+    },
+    "network": {
+      "egress": "deny",
+      "allowlist": []
+    },
+    "ttl_minutes": 120,
+    "snapshot": false
+  },
+  "spec_hash": "65f875c5a469b5c0d7d0174305e841067dd0f4fe38c571e1ea9eac6629b6ddb6"
+}
