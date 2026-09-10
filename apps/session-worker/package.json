@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
+    "dev:sandbox": "wrangler dev -c wrangler.sandbox.jsonc",
     "cf-typegen": "wrangler types --env-interface Env worker-configuration.generated.d.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p test/tsconfig.json",
     "test": "vitest run"

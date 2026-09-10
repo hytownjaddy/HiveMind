@@ -193,7 +193,7 @@ describe("provider selection (acceptance 4)", () => {
     id: "cloudflare-sandbox",
     kind: "sandbox",
     version: "0.12.9",
-    capabilities: ["shell.linux", "python", "node"],
+    capabilities: ["shell.linux", "runtime.python", "runtime.node"],
   };
   const worker: LabProviderDescriptor = {
     id: "ubuntu-lab-worker-1",
@@ -262,7 +262,7 @@ describe("provider selection (acceptance 4)", () => {
     expect(selected.code).toBe("unsatisfiable");
     expect(selected.unsatisfied).toEqual(["orchestration.kubernetes"]);
     expect(selected.message).toContain("orchestration.kubernetes");
-    expect(executionClassOf(["python"])).toBe("A");
+    expect(executionClassOf(["runtime.python"])).toBe("A");
     expect(executionClassOf(["shell.linux"])).toBe("C");
     expect(executionClassOf(["unknown.thing"])).toBe("B");
   });

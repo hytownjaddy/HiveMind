@@ -1,4 +1,7 @@
 {
+  // wrangler.jsonc plus the Cloudflare Sandbox (Class A/C): a Sandbox Durable
+  // Object backed by a container built from sandbox/Dockerfile. Needs the Workers
+  // Paid plan; local `wrangler dev` runs the container in Docker.
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "hivemind-session-dev",
   "main": "src/index.ts",
@@ -15,9 +18,11 @@
     "HIVEMIND_ENV": "development",
     // Providers (D-035): the Sandbox binding below and any lab worker that heartbeats;
     // the loopback agent stands in for a lab worker outside production.
-    "SANDBOX_ENABLED": "false",
+    "SANDBOX_ENABLED": "true",
     "SANDBOX_SLEEP_AFTER": "20m",
-    "PROVIDER_LOOPBACK": "true",
+    // Only the Sandbox is offered here so Class C specs land on it (the loopback
+    // agent would otherwise win the Class C preference).
+    "PROVIDER_LOOPBACK": "false",
   },
   // Same D1 database as the web Worker: identity → learner_id mapping, the
   // lab_sessions index, the worker registry, and the session event log (D-030).
@@ -33,13 +38,19 @@
   "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "hivemind-artifacts-dev" }],
   "services": [{ "binding": "SELF", "service": "hivemind-session-dev" }],
   "durable_objects": {
-    "bindings": [{ "name": "LAB_SESSIONS", "class_name": "LabSession" }],
+    "bindings": [
+      { "name": "LAB_SESSIONS", "class_name": "LabSession" },
+      { "name": "Sandbox", "class_name": "Sandbox" },
+    ],
   },
-  // The Cloudflare Sandbox (Class A/C) needs Containers, which need the Workers
-  // Paid plan. wrangler.sandbox.jsonc is this file plus the Sandbox binding and
-  // the container; deploy with `tools/deploy.sh session <env> --sandbox` once the
-  // plan allows. The Sandbox class stays declared (the entry point exports it and
-  // the published script carries its migration); without a binding it is never used.
+  "containers": [
+    {
+      "class_name": "Sandbox",
+      "image": "./sandbox/Dockerfile",
+      "instance_type": "basic",
+      "max_instances": 4,
+    },
+  ],
   "migrations": [
     { "tag": "v1", "new_sqlite_classes": ["LabSession"] },
     { "tag": "v2", "new_sqlite_classes": ["Sandbox"] },
@@ -54,7 +65,7 @@
         "ACCESS_TEAM_DOMAIN": "https://royal-breeze-2b7c.cloudflareaccess.com",
         "ACCESS_AUD": "0c109a114e394c77ac0d9805e440acd8773a717c4bdfbf521142876f7022ebf4",
         "HIVEMIND_ENV": "production",
-        "SANDBOX_ENABLED": "false",
+        "SANDBOX_ENABLED": "true",
         "SANDBOX_SLEEP_AFTER": "20m",
         "PROVIDER_LOOPBACK": "false",
       },
@@ -69,8 +80,19 @@
       "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "hivemind-artifacts" }],
       "services": [{ "binding": "SELF", "service": "hivemind-session" }],
       "durable_objects": {
-        "bindings": [{ "name": "LAB_SESSIONS", "class_name": "LabSession" }],
+        "bindings": [
+          { "name": "LAB_SESSIONS", "class_name": "LabSession" },
+          { "name": "Sandbox", "class_name": "Sandbox" },
+        ],
       },
+      "containers": [
+        {
+          "class_name": "Sandbox",
+          "image": "./sandbox/Dockerfile",
+          "instance_type": "basic",
+          "max_instances": 4,
+        },
+      ],
       "migrations": [
         { "tag": "v1", "new_sqlite_classes": ["LabSession"] },
         { "tag": "v2", "new_sqlite_classes": ["Sandbox"] },

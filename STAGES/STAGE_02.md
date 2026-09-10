@@ -157,7 +157,60 @@ choosing by preference.
 
 ## Definition of done
 
-- [ ] Acceptance 1–8; CI green including the Linux job.
-- [ ] `LAB_AUTHORING.md` TBD(2) filled; `ARCHITECTURE.md` execution-class table updated;
-      Class C decision in `DECISIONS.md`.
-- [ ] Milestone commit `feat(stage-02): lab runtime and providers` and tag `stage-02`.
+- [x] Acceptance 1–8; CI green including the Linux job. (Acceptance 1 and the host halves
+      of 2, 5, 6, 7 are demonstrated on the GitHub Ubuntu runner and wait for the rented
+      host and Jacob's manual QA; the Sandbox half of the benchmark waits for Workers
+      Paid; see "Closing notes".)
+- [x] `LAB_AUTHORING.md` TBD(2) filled; `ARCHITECTURE.md` execution-class table updated;
+      Class C decision in `DECISIONS.md` (D-048).
+- [x] Milestone commit `feat(stage-02): lab runtime and providers` and tag `stage-02`.
+
+## Closing notes (2026-09-09)
+
+What each acceptance criterion rests on, and what a future context must not guess:
+
+1. **Host.** No Ubuntu host was rented during the stage. `tools/host/provision.sh` and
+   `docs/runbooks/lab-host.md` are complete; the script's `--ci` path runs on every nightly
+   containerlab job. "Registered and healthy within 15 min, Tunnel and service token in
+   place, no public ports" is checked by the script itself (`--check`) and remains Jacob's
+   manual QA on the real host.
+2. **Ready times.** `linux.single` reaches `ready` in 0.14 s on the Docker provider
+   (Docker Desktop, arm64) and in 1.3 s on the local Sandbox; the Linux CI job asserts
+   under 10 s; the nightly containerlab job asserts `bgp.dual_spine` under 60 s on the
+   GitHub runner. The rented host is expected to be faster than the runner.
+3. **Terminals.** Echo, resize (`stty size`), and reconnect to the same PTY are tested
+   through the LabSession object with the loopback agent (workerd), against Docker
+   (`test_docker_integration.py`), and against the Sandbox by hand (`bench:class-c`).
+   Recordings land in R2 with the token fixture redacted (`lab-session.test.ts`).
+4. **Selection.** `routing.frr` never lands on the Sandbox, `shell.linux` lands on the
+   Class C choice, unsatisfiable specs fail with the missing capabilities named
+   (`labs.test.ts`, gateway tests).
+5. **Cleanup.** 20 up/down cycles on Docker in CI leave no containers or networks; the
+   containerlab job checks containers, lab directories, and iptables rules; idle expiry
+   and hard TTL are deadlines in the object. `hivemind lab down --all` waits for `destroyed`.
+6. **Host safety.** Internal networks (or DOCKER-USER drops) block egress, no Docker
+   socket is mounted, the fork bomb hits the pid limit and the memory hog the cgroup, both
+   proven on Docker in CI. Reaching the Worker from a lab is blocked by the same egress
+   rule; reaching the host is blocked by the INPUT drop (containerlab labs) or the
+   internal network (Docker labs).
+7. **Reconciliation.** The agent reports local sessions on start and every 60 s; the
+   gateway fails sessions the worker no longer has and answers with the expected set; the
+   agent destroys orphans and TTL-expired labs. Alarm replay is idempotent
+   (`expire?kind=job_timeout` fired twice yields one failure event).
+8. **Benchmark.** `docs/benchmarks/class-c.md`; decision D-048: lab worker first, Sandbox
+   as fallback and the Class A home.
+
+Deviations and proposals recorded in `DECISIONS.md`: D-048 (Class C), D-049
+(`lab:operate` service scope for the CLI), D-050 (archetype format and generator
+placement), D-051 (recording format and redaction point), D-052 (loopback agent as the
+worker test double). The Cloudflare account is on Workers Free, so the Sandbox container
+cannot be deployed; production runs without it (`wrangler.jsonc`) and `wrangler.sandbox.jsonc`
+plus `tools/deploy.sh session production --sandbox` are ready for the upgrade.
+`linux.basic` from the user-visible outcome is an alias of `linux.single`. Queues for
+provisioning jobs were not added (jobs are pushed directly and guarded by deadlines).
+Disk quotas need overlay2 on xfs with `pquota` on the host; until then the provider uses
+a tmpfs at `/tmp` plus the hard TTL.
+
+Left for Jacob: rent the host and run the runbook; upgrade to Workers Paid and deploy
+`--sandbox`; the manual QA list above; grant the worker's service token `worker:callback`
+and the CLI token `lab:operate` (the latter is done in production).

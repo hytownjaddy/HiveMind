@@ -1,6 +1,6 @@
 # HiveMind Architecture
 
-Status: as built at the end of Stage 01 (2026-09-09), per `DECISIONS.md` D-030 to D-046
+Status: as built at the end of Stage 02 (2026-09-09), per `DECISIONS.md` D-030 to D-052
 (which supersede the earlier FastAPI/PostgreSQL/Redis direction). Cloudflare owns the
 durable/control-plane side; a disposable Ubuntu lab worker exists only for workloads
 Cloudflare cannot faithfully execute. Read `DECISIONS.md` first; this document explains how
@@ -81,24 +81,36 @@ nothing that cannot be rebuilt.
 A lab declares required capabilities; the session Worker selects a provider that satisfies
 all of them.
 
-| Capabilities (examples)                                                                           | Class | Provider                                              |
-| ------------------------------------------------------------------------------------------------- | ----- | ----------------------------------------------------- |
-| `shell.linux`, `python`, `node`, `compiler.cpp`                                                   | A     | Cloudflare Sandbox                                    |
-| `network.namespace`, `network.veth`, `network.containerlab`, `routing.frr`, `privilege.net_admin` | B     | Ubuntu lab worker (Python agent)                      |
-| single-node Linux exercises                                                                       | C     | whichever Stage 2 benchmarks as simplest and faithful |
+| Capabilities (examples)                                                                           | Class | Provider                                                                      |
+| ------------------------------------------------------------------------------------------------- | ----- | ----------------------------------------------------------------------------- |
+| `runtime.python`, `runtime.node`, `compiler.cpp`                                                  | A     | Cloudflare Sandbox (`wrangler.sandbox.jsonc`; needs Workers Paid)             |
+| `network.namespace`, `network.veth`, `network.containerlab`, `routing.frr`, `privilege.net_admin` | B     | Ubuntu lab worker (Python agent, `container.linux` + `network.containerlab`)  |
+| `shell.linux` only (single-node Linux)                                                            | C     | lab worker when one is online, else the Sandbox (D-048, `CLASS_C_PREFERENCE`) |
 
 Sandbox Docker-in-Docker is rootless with no privileged containers or iptables, so Class B
-is never moved to Class A.
+is never moved to Class A. Selection runs in `packages/core/src/labs/selection.ts` over the
+worker registry (`lab_workers`, fed by heartbeats) plus the Sandbox descriptor; an
+unsatisfiable spec fails at `POST /session/labs` with the missing capabilities named.
+
+Runtime providers live in `apps/session-worker/src/providers`: `WorkerProvider` pushes
+worker-protocol jobs to the agent's Tunnel hostname and receives events on the callback
+path; `SandboxProvider` drives the Sandbox SDK in-process; the loopback agent
+(`gateway/loopback.ts`) emulates a worker for dev and tests (D-052).
 
 ## Core flows
 
-**Launch a lab.** Browser → `POST /api/labs/sessions` (route handler) → `LabSessionService`
-in `packages/core` creates the D1 index row and asks the session Worker for a new
-`LabSession` object (`idFromName(HM-LAB-…)`) → the object instantiates the `ProblemInstance`
-from seed and versions, selects a provider by capabilities, and drives RFP §86 states with
-its alarm-fed deadline queue → Class A: Sandbox SDK; Class B: job to the Python agent over
-Tunnel → the object streams status events over the session WebSocket; PTY frames relay
-browser ↔ object ↔ provider.
+**Launch a lab.** Browser or `hivemind lab up` → `POST /session/labs` on the session
+Worker (through the web Worker's `/session/*` proxy; Access identity or a `lab:operate`
+service token, D-049) → `LabSessionService` in `packages/core` resolves the archetype,
+instantiates the `TopologyInstance` by seed (D-050), selects a provider by capability, and
+allocates `HM-LAB-nnnnnn` from the D1 index → the `LabSession` object persists the
+session in its SQLite, mirrors the row to D1, and drives RFP §86 with its alarm-fed
+deadline queue (provision start, job timeout, idle expiry, hard TTL, destroy timeout,
+cleanup) → Class B/C: `job.provision` pushed to the agent, `event.status`/`event.result`
+called back; Class A/C on the Sandbox: in-process → status events stream over the session
+WebSocket; per-node PTY frames relay client ↔ object ↔ provider, with the provider keeping
+the PTY alive across reconnects. Terminal output is recorded per node (asciicast v2,
+redacted before storage, D-051) and uploaded to R2 at teardown without blocking it.
 
 **Submit.** `POST /api/labs/sessions/{id}/submit` → object requests `grade` from the
 provider (Python grader on the worker, or the Sandbox test runner) → `GradeResult`
@@ -178,25 +190,50 @@ workspace, environment, seed, runtime versions, last check), dense panes, trees,
 logs, terminals. Identifier formats and lifecycle vocabulary per D-038. Global UI rules live in
 `docs/ui/UI-SYSTEM.md`; per-screen contracts in `docs/mockups/NN-name.md` (D-041).
 
+## Lab worker (Stage 02)
+
+`services/lab-worker` runs as a systemd unit on the Ubuntu host (`tools/host/provision.sh`,
+`docs/runbooks/lab-host.md`): an aiohttp agent on loopback behind a Cloudflare Tunnel and
+an Access application; Docker and containerlab do the work. Safety: per-session networks
+(internal when egress is denied, DOCKER-USER rules with an allowlist otherwise), cgroup
+and pid limits, capability drop except what routing exercises need, no host Docker
+socket, hard-TTL labels, and an orphan sweeper reconciled with the session Worker every
+60 s. The Infrastructure console (`/system/infrastructure`) shows the registry, sessions
+by class, runtime pins with `update_available`, failures, and the event log.
+
 ## State after Stage 01
 
 `apps/web` (OpenNext, canonical shell, Control Center, Courses/Course Workspace, Work
 Orders, Settings, API v1 thin handlers), `apps/session-worker` (renamed from the
-scaffold's realtime Worker; Access identity, learner-owned sessions, shared D1 binding;
-the capability/provider refactor is Stage 02), `packages/schema`, `packages/core`,
-`packages/cli`, `services/lab-worker` (skeleton), `content/` (registry plus the gold
-lesson), `schemas/`, `.hivemind/work-orders/`, `docs/runbooks/`, `tools/backup/`. Removed:
-guest HMAC sessions, placeholder pages, the demo labs UI, the scaffold D1 helpers. D1
-migrations live in `apps/web/migrations/` (with down scripts under `down/`) because the
-web Worker owns the binding; the session Worker binds the same database. The echo
-provider stays until a Class A/C provider exists (Stage 02).
+scaffold's realtime Worker; Access identity, learner-owned sessions, shared D1 binding),
+`packages/schema`, `packages/core`, `packages/cli`, `services/lab-worker` (skeleton),
+`content/` (registry plus the gold lesson), `schemas/`, `.hivemind/work-orders/`,
+`docs/runbooks/`, `tools/backup/`. Removed: guest HMAC sessions, placeholder pages, the
+demo labs UI, the scaffold D1 helpers. D1 migrations live in `apps/web/migrations/` (with
+down scripts under `down/`) because the web Worker owns the binding; the session Worker
+binds the same database.
+
+## State after Stage 02
+
+The session Worker runs the capability/provider model (session transport v2 in
+snake_case, D-046 realigned), the Python agent and both worker providers exist with
+Docker and containerlab tests in CI, `content/topologies` holds four archetypes,
+`hivemind lab` and `hivemind topology` exist, D1 migration 0003 adds the worker
+registry, session columns, and the event log, recordings go to R2
+(`hivemind-artifacts`), and the Infrastructure console is live. Not yet real: a rented
+Ubuntu host (the runbook and provisioning script are ready; acceptance 1 and the host
+halves of 2, 5, 6, 7 are Jacob's manual QA), and the Sandbox on the platform (needs
+Workers Paid; `wrangler.sandbox.jsonc` is ready, the provider is exercised under local
+`wrangler dev`). The echo provider is gone.
 
 ## Open points
 
-- Sandbox SDK fit for Class C (Stage 2 benchmark).
+- Sandbox on the platform: enable Workers Paid, deploy with `--sandbox`, re-run the
+  Class C benchmark for the edge half (D-048).
 - Topology renderer (React Flow vs Cytoscape), decided with the Lab Workspace mockup.
-- Whether to add Queues for provisioning jobs or keep DO → worker calls direct (Stage 2).
+- Queues for provisioning jobs stay out: the object pushes jobs directly and guards them
+  with deadlines; revisit only when more than one worker exists.
 - Mermaid rendering in lessons (source is shown verbatim until a renderer ships with the
   Lab Workspace); an asset pipeline for images.
-- Realigning the scaffold's camelCase session transport with the snake_case contracts
-  (Stage 2, D-046).
+- Disk quotas on the worker need overlay2 on xfs with `pquota`; until the host has it the
+  provider relies on the tmpfs at `/tmp` and the hard TTL.

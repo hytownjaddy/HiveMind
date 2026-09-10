@@ -24,8 +24,12 @@ export type CapabilityDescriptor = z.infer<typeof capabilityDescriptorSchema>;
 
 export const KNOWN_CAPABILITIES: readonly CapabilityDescriptor[] = [
   { id: "shell.linux", class: "C", description: "Single-node Linux shell" },
-  { id: "python", class: "A", description: "Python runtime with tests and linting" },
-  { id: "node", class: "A", description: "Node.js runtime with tests" },
+  {
+    id: "runtime.python",
+    class: "A",
+    description: "Python runtime with tests and linting",
+  },
+  { id: "runtime.node", class: "A", description: "Node.js runtime with tests" },
   { id: "compiler.cpp", class: "A", description: "C++ toolchain with a build step" },
   { id: "network.namespace", class: "B", description: "Linux network namespaces" },
   { id: "network.veth", class: "B", description: "veth pairs" },

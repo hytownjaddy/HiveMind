@@ -65,11 +65,12 @@ running a Python lab agent exists only for privileged networking (containerlab, 
 Claude Code executes work orders from `.hivemind/work-orders/`; no AI API is required for
 normal operation. Domain: `jryans.dev`; the app is `hivemind.jryans.dev` (D-047).
 
-## Repository layout (D-039, as of Stage 01)
+## Repository layout (D-039, as of Stage 02)
 
-Stage 01 is done: the layout below is real, the guest HMAC session, placeholder pages, and
-demo labs UI are gone, and `apps/session-worker` keeps the scaffold's `LabSession` object
-until Stage 02 refactors it to the capability/provider model.
+Stages 01 and 02 are done: the layout below is real. `apps/session-worker` runs the
+capability/provider model (lab workers over the Tunnel, the Cloudflare Sandbox when the
+plan allows, an in-Worker loopback agent for dev and tests); `services/lab-worker` is the
+Python agent for the Ubuntu host; `content/topologies` holds the archetypes.
 
 ```text
 apps/web/               Next.js 16 (TypeScript) on Workers via OpenNext; UI + thin route handlers; D1 migrations
@@ -78,10 +79,11 @@ packages/schema/        Zod contracts (canonical) → schemas/*.schema.json + lo
 packages/core/          application services + domain logic (D1/R2 access, identity, work orders, content compiler)
 packages/cli/           `hivemind` CLI (Bun): content, work, export, db
 services/lab-worker/    Python 3.13 lab agent + worker CLI (uv, ruff, pyright, pytest); generated contracts
-content/                skills, sources, careers, courses (gold lesson: linux/networking)
-docs/mockups/           NN-name.png + NN-name.md product-direction inputs; docs/runbooks/ recovery and Access
+content/                skills, sources, careers, courses (gold lesson: linux/networking), topologies (archetypes)
+docs/mockups/           NN-name.png + NN-name.md product-direction inputs; docs/runbooks/ recovery, Access, lab host
+docs/benchmarks/        Class C benchmark (D-048)
 .hivemind/work-orders/  work orders consumed by Claude Code
-tools/backup/           nightly export and restore drill
+tools/backup/           nightly export and restore drill; tools/host/ provisions the Ubuntu lab worker
 STAGES/                 stage contracts; docs/ holds the RFP and its review
 ```
 
@@ -93,8 +95,10 @@ bun run dev                      web dev server + session worker side by side (n
 bun run db:migrate:local         apply D1 migrations to the local database before the first dev run
 bun run verify                   TS format, lint, boundaries, typecheck, schema lock, tests, OpenNext build
 bun run verify:py                ruff, pyright, contract drift check, pytest (uv run --directory services/lab-worker task verify)
-bun run hivemind -- …            content compile|diff|approve|publish, work new|pull|validate|complete|list, export, db migrate
+bun run hivemind -- …            content …, work …, export, db migrate, topology compile|list|render, lab up|down|ls|attach|logs
 bun run test:e2e                 Playwright smoke against next dev (bunx playwright install chromium once)
+uv run pytest -m docker          lab worker provider tests against a Docker daemon (Linux CI, lab host)
+bun run bench:class-c            Class C benchmark against a session Worker (docs/benchmarks/class-c.md)
 ```
 
 ## Conventions
@@ -107,6 +111,8 @@ bun run test:e2e                 Playwright smoke against next dev (bunx playwri
 - One coherent commit per task, conventional messages, never a broken commit (D-025).
 - Work outside your stage is a proposal in `DECISIONS.md`, not code.
 - Never log secrets, cookies, or learner terminal contents outside redacted telemetry storage.
+- Labs declare capabilities; providers are selected, never hard-coded (invariant 17). The
+  worker renders `LabSpec`s; only `packages/core` resolves archetypes and seeds (D-050).
 
 ## Next.js
 

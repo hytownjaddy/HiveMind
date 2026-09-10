@@ -4,14 +4,20 @@
     {
       "name": "web",
       "runtimeExecutable": "bun",
-      "runtimeArgs": ["run", "dev:web"],
+      "runtimeArgs": ["--cwd", "apps/web", "dev"],
       "port": 3000
     },
     {
       "name": "session",
       "runtimeExecutable": "bun",
-      "runtimeArgs": ["run", "dev:session"],
+      "runtimeArgs": ["--cwd", "apps/session-worker", "dev"],
       "port": 8787
+    },
+    {
+      "name": "session-sandbox",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["--cwd", "apps/session-worker", "dev:sandbox"],
+      "port": 8788
     }
   ]
 }

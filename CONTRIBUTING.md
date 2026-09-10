@@ -57,8 +57,12 @@ bun run verify:py       # Python: ruff, pyright, contract drift check, pytest
 bun run test:e2e        # Playwright smoke against next dev (optional locally; needs chromium installed)
 ```
 
-Worker/provider tests that need Docker run on a Linux host (CI runner or the lab host), not
-on macOS.
+Provider tests that need Docker (`uv run pytest -m docker`) run in the Linux CI job and on
+the lab host; containerlab tests (`-m containerlab`, root) run in the nightly job and on
+the host. Running them against Docker Desktop is fine for iteration, but macOS is never a
+canonical runtime (D-005). The session Worker's tests use the in-Worker loopback agent
+(D-052); the Sandbox provider runs under `bun --cwd apps/session-worker dev:sandbox`
+(Docker) or on Workers Paid.
 
 ## Commits (D-025)
 

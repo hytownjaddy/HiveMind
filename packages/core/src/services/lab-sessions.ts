@@ -29,7 +29,7 @@ export const SANDBOX_PROVIDER: LabProviderDescriptor = {
   id: "cloudflare-sandbox",
   kind: "sandbox",
   version: "0.12.9",
-  capabilities: ["shell.linux", "python", "node"],
+  capabilities: ["shell.linux", "runtime.python", "runtime.node"],
 };
 
 export interface SessionPlan {

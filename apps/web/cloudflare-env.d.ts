@@ -12,6 +12,8 @@ interface CloudflareEnv {
   DB: D1Database;
   /** R2 bucket holding nightly D1 exports and archives (D-020); optional locally. */
   EXPORTS?: R2Bucket;
+  /** "true" when the session Worker is deployed with the Sandbox container (Stage 02). */
+  SANDBOX_ENABLED?: string;
   NEXTJS_ENV: string;
   /** development | production | test (D-033 dev bypass only in development). */
   HIVEMIND_ENV: string;

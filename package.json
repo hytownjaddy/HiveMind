@@ -36,7 +36,8 @@
     "verify:py": "uv run --directory services/lab-worker task verify",
     "verify:all": "bun run verify && bun run verify:py",
     "test:core": "bun --cwd packages/core test",
-    "hivemind": "bun packages/cli/src/main.ts"
+    "hivemind": "bun packages/cli/src/main.ts",
+    "bench:class-c": "bun packages/cli/scripts/class-c-bench.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

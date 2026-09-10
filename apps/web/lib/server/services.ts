@@ -69,9 +69,9 @@ export async function services() {
       archetypes: defaultArchetypeRegistry(),
       health: () => health.report(),
       lastExport: async () => (exportStore === undefined ? null : exportStore.latest()),
-      // The web Worker cannot see the session Worker's bindings; the session
-      // Worker offers the Sandbox whenever it is deployed with one (Stage 02).
-      sandboxEnabled: true,
+      // Mirrors the session Worker's SANDBOX_ENABLED (the web Worker cannot see
+      // its bindings); flip both when the Sandbox container is deployed.
+      sandboxEnabled: env.SANDBOX_ENABLED === "true",
       now: () => isoNow(),
     }),
   };

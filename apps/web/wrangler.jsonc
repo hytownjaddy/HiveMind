@@ -28,6 +28,7 @@
   "vars": {
     "NEXTJS_ENV": "development",
     "HIVEMIND_ENV": "development",
+    "SANDBOX_ENABLED": "false",
     // Cloudflare Access (D-033). Local dev bypasses via .dev.vars.
     "ACCESS_TEAM_DOMAIN": "https://royal-breeze-2b7c.cloudflareaccess.com",
     "ACCESS_AUD": "0c109a114e394c77ac0d9805e440acd8773a717c4bdfbf521142876f7022ebf4",
@@ -58,6 +59,7 @@
       "vars": {
         "NEXTJS_ENV": "production",
         "HIVEMIND_ENV": "production",
+        "SANDBOX_ENABLED": "false",
         "ACCESS_TEAM_DOMAIN": "https://royal-breeze-2b7c.cloudflareaccess.com",
         "ACCESS_AUD": "0c109a114e394c77ac0d9805e440acd8773a717c4bdfbf521142876f7022ebf4",
       },

@@ -495,3 +495,68 @@ Supersedes D-040. `hivemindjrr.com` was never registered. The zone on Cloudflare
 application protects that hostname (team `royal-breeze-2b7c.cloudflareaccess.com`), and
 the lab worker's Tunnel hostname will be `lab-worker.jryans.dev` (Stage 02). Every
 reference to `hivemindjrr.com` outside this log is updated; D-040 stays as history.
+
+---
+
+## Stage 02 proposals and decisions (2026-09-09)
+
+## D-048 · 2026-09-09 · Proposed (Stage 02 benchmark decision) · Class C runs on the lab worker when one is online; the Cloudflare Sandbox is the fallback and the Class A home
+
+The single-node Linux benchmark (`docs/benchmarks/class-c.md`) places `shell.linux`-only
+specs on a registered lab worker first and on the Sandbox only when no worker is online.
+Reasons: the worker gives a full Linux userland with `CAP_NET_ADMIN`, real interfaces,
+`iptables`-enforced egress, and the same image the multi-node labs use, so a Class C
+exercise behaves exactly like the first node of a Class B one; the Sandbox is rootless
+with no `NET_ADMIN`, so routing-table exercises (D-042) cannot run there faithfully; and
+the worker's start time (under two seconds on the CI runner) meets acceptance 2 with a
+wide margin. The Sandbox keeps Class A (coding, Stage 07) and stands in for Class C when
+the host is down. The preference is data (`CLASS_C_PREFERENCE` in
+`packages/core/src/labs/selection.ts`) and is revisited by re-running the benchmark.
+
+Consequence: the Sandbox needs Cloudflare Containers, which need the Workers Paid plan;
+the account is on Workers Free as of 2026-09-09. `apps/session-worker/wrangler.jsonc`
+deploys without the Sandbox; `wrangler.sandbox.jsonc` adds it and
+`tools/deploy.sh session <env> --sandbox` deploys it once the plan allows. The platform
+half of the benchmark (edge start latency, cost) is measured then.
+
+## D-049 · 2026-09-09 · Proposed (Stage 02) · Service tokens may operate labs for the single learner (`lab:operate`)
+
+The `hivemind lab` CLI authenticates with the Access service token, which the session
+gateway would otherwise reject because it is not a learner. A token granted the
+`lab:operate` scope acts for the one learner with a bound identity (D-001, D-008); if
+zero or several learners are bound the request gets 403 `no_operator_learner`. Scopes are
+still keyed by the token's Client ID (D-045 mechanics). Multi-user later means an explicit
+learner selection on the token, not a change to sessions.
+
+## D-050 · 2026-09-09 · Proposed (Stage 02) · Topology archetypes are YAML plus a named TypeScript generator; the worker renders LabSpec, never archetypes
+
+`content/topologies/<id>.yaml` (contract `TopologyArchetype`) declares the seeded
+parameters, digest-pinned images per role, resources, egress policy, TTL, aliases, and
+the id of a generator in `packages/core/src/labs/generators`. `instantiateTopology`
+(seed → parameters → `LabSpec` → `spec_hash`) is the only place variation is resolved, so
+the session object, the CLI, and Stage 03's problem instantiation share it. The Python
+worker receives a concrete `LabSpec` and renders it to containerlab and FRR files; it
+never sees an archetype. Archetype YAML compiles into
+`packages/core/src/labs/archetypes.generated.json` (`hivemind topology compile`; drift
+fails the unit suite) because Workers cannot read the filesystem. A generator change
+that alters output requires bumping every archetype version that names it (invariant 5).
+
+## D-051 · 2026-09-09 · Proposed (Stage 02) · Recordings are asciicast v2 per node, redacted before any durable write
+
+One `.cast` per node per session under `recordings/<session>/<node>-<stamp>.cast` in R2
+(`hivemind-artifacts`, 90-day lifecycle rule on the prefix; pinning is a later
+explicit copy). The header (`RecordingHeader`) names the redaction filter version. The
+live relay to the learner is unredacted; the D-019 filter (`packages/core/src/labs/redaction.ts`,
+`REDACTION_VERSION`) runs on the recording path before frames reach the object's SQLite,
+so no durable store ever holds an unredacted terminal byte. Terminal bytes never enter
+D1; the durable event log keeps lifecycle, notices, and provider log lines only.
+
+## D-052 · 2026-09-09 · Proposed (Stage 02) · The loopback agent is the test double for lab workers
+
+`apps/session-worker/src/gateway/loopback.ts` emulates the Python agent's wire behaviour
+(job intake, asynchronous events, per-node PTY WebSockets with scrollback replay) inside
+the session Worker, registered as `loopback-worker` when `PROVIDER_LOOPBACK=true` and
+never in production. workerd tests and `wrangler dev` exercise the real LabSession code
+paths (job push, callbacks, deadlines, relay, recordings) without a host; provider code
+is tested against Docker and containerlab in the Linux CI jobs and on the host. Magic
+seeds (`424242` fail, `434343` hang, `444444` slow) drive failure paths deterministically.

@@ -17,7 +17,7 @@ fi
 usage() {
   cat <<'USAGE'
 Usage:
-  tools/deploy.sh [session|web|secrets|migrate|all] [dev|production]
+  tools/deploy.sh [session|web|secrets|migrate|all] [dev|production] [--sandbox]
 
 Commands:
   session   Deploy the session Worker (gateway + LabSession Durable Object)
@@ -47,6 +47,11 @@ USAGE
 
 command="${1:-all}"
 target="${2:-dev}"
+SESSION_CONFIG="apps/session-worker/wrangler.jsonc"
+for arg in "$@"; do
+  # --sandbox deploys the session Worker with the Cloudflare Sandbox container (Workers Paid).
+  [[ "$arg" == "--sandbox" ]] && SESSION_CONFIG="apps/session-worker/wrangler.sandbox.jsonc"
+done
 case "$target" in
   dev) ENV_ARGS=() ;;
   production) ENV_ARGS=(--env production) ;;
@@ -62,7 +67,7 @@ ensure_logged_in() {
 
 deploy_session() {
   echo "==> Deploying session Worker ($target)"
-  "$WRANGLER" deploy -c apps/session-worker/wrangler.jsonc "${ENV_ARGS[@]}"
+  "$WRANGLER" deploy -c "$SESSION_CONFIG" "${ENV_ARGS[@]}"
 }
 
 deploy_web() {
