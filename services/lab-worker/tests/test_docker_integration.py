@@ -91,9 +91,15 @@ async def test_provision_exec_pty_and_destroy_leave_nothing(runtime: DockerRunti
         assert (
             await provider.exec(SESSION, "host1", ["test", "-e", "/var/run/docker.sock"], 5)
         ).exit_code != 0
-        # Fork bomb hits the pid limit; the node keeps answering (acceptance 6).
+        # Fork bomb hits the pid limit (acceptance 6): the host and the daemon stay
+        # healthy, the container stays up, and a restart gives the learner a fresh
+        # process tree with the same filesystem.
         bomb = await provider.exec(SESSION, "host1", ["sh", "-c", "b(){ b|b & }; b; sleep 2"], 15)
         assert bomb.duration_ms >= 0
+        assert await runtime.version()  # the daemon still answers
+        wedged = await runtime.container(f"hm-{SESSION.lower()}-host1")
+        assert wedged is not None and wedged.status == "running"
+        await provider.restart(SESSION, "host1")
         alive = await provider.exec(SESSION, "host1", ["echo", "alive"], 10)
         assert alive.stdout.strip() == "alive"
         # Memory hog is killed by the cgroup; the node keeps answering.

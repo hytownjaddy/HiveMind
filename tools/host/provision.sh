@@ -30,26 +30,27 @@ STATE_DIR="/var/lib/hivemind-worker"
 ENV_FILE="/etc/hivemind/worker.env"
 UNIT_NAME="hivemind-worker"
 
+log() { printf '==> %s\n' "$*" >&2; }
+fail() { printf 'provision: %s\n' "$*" >&2; exit 1; }
+
 SOURCE="/opt/hivemind"
 WITH_TUNNEL=1
 WITH_IMAGES=1
 CI=0
 CHECK=0
-for arg in "$@"; do
-  case "$arg" in
-    --source=*) SOURCE="${arg#*=}" ;;
-    --source) shift; SOURCE="${1:-/opt/hivemind}" ;;
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --source=*) SOURCE="${1#*=}" ;;
+    --source) shift; SOURCE="${1:?--source needs a path}" ;;
     --no-tunnel) WITH_TUNNEL=0 ;;
     --no-images) WITH_IMAGES=0 ;;
     --ci) CI=1; WITH_TUNNEL=0 ;;
     --check) CHECK=1 ;;
     -h|--help) sed -n 2,22p "$0"; exit 0 ;;
-    *) ;;
+    *) fail "unknown argument: $1" ;;
   esac
+  shift
 done
-
-log() { printf '==> %s\n' "$*" >&2; }
-fail() { printf 'provision: %s\n' "$*" >&2; exit 1; }
 
 require_root() {
   if [[ "$(id -u)" -ne 0 ]]; then

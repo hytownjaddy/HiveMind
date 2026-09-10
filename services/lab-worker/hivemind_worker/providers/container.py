@@ -141,6 +141,11 @@ class ContainerProvider:
         shell = labels.get(LABEL_SHELL) or "/bin/sh"
         return await self.runtime.open_pty(container, shell, cols, rows, {})
 
+    async def restart(self, session_id: str, node: str) -> None:
+        """Fresh process tree, same filesystem: the reset after a fork bomb or a wedged shell."""
+        container = await self._container(session_id, node)
+        await self.runtime.call(container.restart, timeout=2)
+
     async def destroy(self, session_id: str) -> bool:
         containers = await self.runtime.containers_with_label(CONTAINER_LABEL_SESSION, session_id)
         found = False
