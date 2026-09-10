@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from pathlib import Path
+from typing import cast
 
 import aiohttp
 from aiohttp import web
@@ -27,13 +28,14 @@ def disk_quotas_supported(info: dict[str, object], mounts: str) -> bool:
         return False
     root = str(info.get("DockerRootDir", "/var/lib/docker"))
     backing = ""
-    for status in info.get("DriverStatus") or []:
-        if (
-            isinstance(status, list | tuple)
-            and len(status) == 2
-            and status[0] == "Backing Filesystem"
-        ):
-            backing = str(status[1]).lower()
+    driver_status = info.get("DriverStatus")
+    entries: list[object] = (
+        list(cast(list[object], driver_status)) if isinstance(driver_status, list) else []
+    )
+    for status in entries:
+        pair = cast(list[object], status) if isinstance(status, list) else []
+        if len(pair) == 2 and pair[0] == "Backing Filesystem":
+            backing = str(pair[1]).lower()
     if backing != "xfs":
         return False
     best = ""
