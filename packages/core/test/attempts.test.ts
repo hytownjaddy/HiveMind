@@ -1,6 +1,7 @@
 import {
   attemptFixture,
   attemptResultFixture,
+  linuxSingleInstance,
   problemInstanceFixture,
 } from "@hivemind/schema/fixtures";
 import { env } from "cloudflare:test";
@@ -14,11 +15,15 @@ import { fixedClock } from "./clock";
 describe("attempts are append-only (invariant 9)", () => {
   it("inserts, records a result once, and refuses rewrites and deletes", async () => {
     await new ProblemInstanceRepository(env.DB).insert(problemInstanceFixture);
-    await new LabSessionIndexRepository(env.DB, fixedClock()).upsert({
+    await new LabSessionIndexRepository(env.DB, fixedClock()).create({
       id: "HM-LAB-829143",
       learner_id: "HM-LRN-000001",
       requires: ["routing.frr"],
       status: "completed",
+      archetype: "linux.single",
+      archetype_version: "1.0.0",
+      seed: 1,
+      topology: linuxSingleInstance,
       problem_instance_id: problemInstanceFixture.id,
     });
     const attempts = new AttemptRepository(env.DB);

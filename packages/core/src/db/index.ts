@@ -26,7 +26,10 @@ export async function allRows<T>(statement: D1PreparedStatement): Promise<T[]> {
   return results;
 }
 
-/** Next zero-padded sequence for a `HM-XX-nnnn` id column. */
+/**
+ * Next zero-padded sequence for a `HM-<kind>-nnnn` id column. The digits start
+ * after the second dash, whatever the length of the kind (`WO`, `LAB`, `PI`).
+ */
 export async function nextSequence(
   db: Database,
   table: string,
@@ -34,7 +37,7 @@ export async function nextSequence(
 ): Promise<number> {
   const row = await db
     .prepare(
-      `SELECT MAX(CAST(SUBSTR(${column}, INSTR(${column}, '-') + 4) AS INTEGER)) AS max FROM ${table}`,
+      `SELECT MAX(CAST(SUBSTR(${column}, INSTR(SUBSTR(${column}, 4), '-') + 4) AS INTEGER)) AS max FROM ${table}`,
     )
     .first<{ max: number | null }>();
   return (row?.max ?? 0) + 1;

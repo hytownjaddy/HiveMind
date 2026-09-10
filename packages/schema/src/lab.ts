@@ -31,6 +31,7 @@ export const labLinkSchema = z.strictObject({
   a: z.string().min(1).describe("node:interface"),
   b: z.string().min(1).describe("node:interface"),
 });
+export type LabLink = z.infer<typeof labLinkSchema>;
 
 export const labResourcesSchema = z.strictObject({
   cpu_millicores: positiveIntSchema,

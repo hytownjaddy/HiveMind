@@ -10,6 +10,7 @@ interface TestBindings {
   EXPORTS: R2Bucket;
   TEST_MIGRATIONS: D1Migration[];
   TEST_DOWN_0002: string;
+  TEST_DOWN_0003: string;
   TEST_RESTORE_EXPORT?: string;
 }
 

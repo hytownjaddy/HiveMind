@@ -10,6 +10,7 @@ const SCAFFOLD_TABLES = [
   "skills",
   "users",
 ];
+const STAGE02_TABLES = ["lab_session_events", "lab_workers"];
 const FOUNDATION_TABLES = [
   "algorithm_versions",
   "attempts",
@@ -53,9 +54,49 @@ function statements(sql: string): string[] {
     .filter((statement) => statement.length > 0);
 }
 
+async function columns(table: string): Promise<string[]> {
+  const { results } = await env.DB.prepare(`PRAGMA table_info(${table})`).all<{
+    name: string;
+  }>();
+  return results.map((row) => row.name);
+}
+
+async function applyDown(sql: string): Promise<void> {
+  for (const statement of statements(sql)) {
+    await env.DB.prepare(statement).run();
+  }
+}
+
+async function applyUp(name: string): Promise<void> {
+  const up = env.TEST_MIGRATIONS.find((migration) => migration.name === name);
+  expect(up).toBeDefined();
+  for (const query of up?.queries ?? []) {
+    await env.DB.prepare(query).run();
+  }
+}
+
+describe("migration 0003", () => {
+  it("adds the worker registry, session columns, and event log, and rolls back", async () => {
+    expect(await tables()).toEqual([...FOUNDATION_TABLES, ...STAGE02_TABLES].sort());
+    expect(await columns("lab_sessions")).toEqual(
+      expect.arrayContaining([
+        "provider_class",
+        "worker_id",
+        "topology_json",
+        "nodes_json",
+      ]),
+    );
+    await applyDown(env.TEST_DOWN_0003);
+    expect(await tables()).toEqual([...FOUNDATION_TABLES].sort());
+    expect(await columns("lab_sessions")).not.toContain("worker_id");
+    await applyUp("0003_lab_runtime.sql");
+    expect(await tables()).toEqual([...FOUNDATION_TABLES, ...STAGE02_TABLES].sort());
+  });
+});
+
 describe("migration 0002", () => {
   it("creates the Stage 01 schema with the seeded learner", async () => {
-    expect(await tables()).toEqual([...FOUNDATION_TABLES].sort());
+    expect(await tables()).toEqual([...FOUNDATION_TABLES, ...STAGE02_TABLES].sort());
     const learner = await env.DB.prepare(
       "SELECT id, display_name, email FROM learners",
     ).first<{ id: string; display_name: string; email: string | null }>();
@@ -63,17 +104,12 @@ describe("migration 0002", () => {
   });
 
   it("has a down script that restores the scaffold schema, and applies again afterwards", async () => {
-    for (const statement of statements(env.TEST_DOWN_0002)) {
-      await env.DB.prepare(statement).run();
-    }
+    await applyDown(env.TEST_DOWN_0003);
+    await applyDown(env.TEST_DOWN_0002);
     expect(await tables()).toEqual([...SCAFFOLD_TABLES].sort());
-    const up = env.TEST_MIGRATIONS.find(
-      (migration) => migration.name === "0002_foundation.sql",
-    );
-    expect(up).toBeDefined();
-    for (const query of up?.queries ?? []) {
-      await env.DB.prepare(query).run();
-    }
+    await applyUp("0002_foundation.sql");
     expect(await tables()).toEqual([...FOUNDATION_TABLES].sort());
+    await applyUp("0003_lab_runtime.sql");
+    expect(await tables()).toEqual([...FOUNDATION_TABLES, ...STAGE02_TABLES].sort());
   });
 });

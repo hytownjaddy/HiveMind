@@ -18,6 +18,10 @@ export default defineConfig(async () => {
               "../../apps/web/migrations/down/0002_foundation.down.sql",
               "utf8",
             ),
+            TEST_DOWN_0003: readFileSync(
+              "../../apps/web/migrations/down/0003_lab_runtime.down.sql",
+              "utf8",
+            ),
             // Restore drill input (docs/runbooks/recovery.md); empty when not running the drill.
             TEST_RESTORE_EXPORT:
               process.env["HIVEMIND_RESTORE_EXPORT"] !== undefined &&

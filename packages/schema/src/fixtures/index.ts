@@ -928,3 +928,5 @@ export const FIXTURES: readonly Fixture[] = [
   })),
   ...STAGE02_FIXTURES,
 ];
+
+export * from "./stage02";
