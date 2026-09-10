@@ -3,21 +3,24 @@
   "name": "hivemind-session-dev",
   "main": "src/index.ts",
   "compatibility_date": "2026-08-15",
+  "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
   "vars": {
     // Browser origins allowed to call this Worker directly (local `next dev`),
     // plus the trusted origin the web Worker stamps on proxied requests.
     "ALLOWED_ORIGINS": "http://localhost:3000,http://127.0.0.1:3000,https://hivemind-web.internal",
-    // Which LabProvider backs sessions. "echo" is the in-object dev stub;
-    // real providers (docker, containerlab, frr, k8s) live on lab hosts.
-    "LAB_PROVIDER": "echo",
     // Cloudflare Access (D-033). Local dev bypasses via .dev.vars.
     "ACCESS_TEAM_DOMAIN": "https://royal-breeze-2b7c.cloudflareaccess.com",
     "ACCESS_AUD": "0c109a114e394c77ac0d9805e440acd8773a717c4bdfbf521142876f7022ebf4",
     "HIVEMIND_ENV": "development",
+    // Providers (D-035): the Sandbox binding below and any lab worker that heartbeats;
+    // the loopback agent stands in for a lab worker outside production.
+    "SANDBOX_ENABLED": "true",
+    "SANDBOX_SLEEP_AFTER": "20m",
+    "PROVIDER_LOOPBACK": "true",
   },
-  // Same D1 database as the web Worker: identity → learner_id mapping and the
-  // lab_sessions index (D-030).
+  // Same D1 database as the web Worker: identity → learner_id mapping, the
+  // lab_sessions index, the worker registry, and the session event log (D-030).
   "d1_databases": [
     {
       "binding": "DB",
@@ -26,23 +29,40 @@
       "migrations_dir": "../web/migrations",
     },
   ],
+  // Recordings (asciicast, redacted) and other session artifacts (D-019).
+  "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "hivemind-artifacts-dev" }],
+  "services": [{ "binding": "SELF", "service": "hivemind-session-dev" }],
   "durable_objects": {
-    "bindings": [{ "name": "LAB_SESSIONS", "class_name": "LabSession" }],
+    "bindings": [
+      { "name": "LAB_SESSIONS", "class_name": "LabSession" },
+      { "name": "Sandbox", "class_name": "Sandbox" },
+    ],
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LabSession"] }],
-  // Future bindings (RFP §82-84). Uncomment once the resources exist:
-  // "queues": { "producers": [{ "binding": "LAB_JOBS", "queue": "hivemind-lab-jobs" }] },
-  // "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "hivemind-artifacts" }],
+  "containers": [
+    {
+      "class_name": "Sandbox",
+      "image": "./sandbox/Dockerfile",
+      "instance_type": "basic",
+      "max_instances": 4,
+    },
+  ],
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["LabSession"] },
+    { "tag": "v2", "new_sqlite_classes": ["Sandbox"] },
+  ],
   "env": {
     "production": {
       "name": "hivemind-session",
+      "compatibility_flags": ["nodejs_compat"],
       "observability": { "enabled": true },
       "vars": {
         "ALLOWED_ORIGINS": "https://hivemind-web.internal",
-        "LAB_PROVIDER": "echo",
         "ACCESS_TEAM_DOMAIN": "https://royal-breeze-2b7c.cloudflareaccess.com",
         "ACCESS_AUD": "0c109a114e394c77ac0d9805e440acd8773a717c4bdfbf521142876f7022ebf4",
         "HIVEMIND_ENV": "production",
+        "SANDBOX_ENABLED": "true",
+        "SANDBOX_SLEEP_AFTER": "20m",
+        "PROVIDER_LOOPBACK": "false",
       },
       "d1_databases": [
         {
@@ -52,10 +72,26 @@
           "migrations_dir": "../web/migrations",
         },
       ],
+      "r2_buckets": [{ "binding": "ARTIFACTS", "bucket_name": "hivemind-artifacts" }],
+      "services": [{ "binding": "SELF", "service": "hivemind-session" }],
       "durable_objects": {
-        "bindings": [{ "name": "LAB_SESSIONS", "class_name": "LabSession" }],
+        "bindings": [
+          { "name": "LAB_SESSIONS", "class_name": "LabSession" },
+          { "name": "Sandbox", "class_name": "Sandbox" },
+        ],
       },
-      "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LabSession"] }],
+      "containers": [
+        {
+          "class_name": "Sandbox",
+          "image": "./sandbox/Dockerfile",
+          "instance_type": "basic",
+          "max_instances": 4,
+        },
+      ],
+      "migrations": [
+        { "tag": "v1", "new_sqlite_classes": ["LabSession"] },
+        { "tag": "v2", "new_sqlite_classes": ["Sandbox"] },
+      ],
     },
   },
 }

@@ -345,3 +345,22 @@ describe("recordings", () => {
     expect(parsed.events[2]).toEqual([2, "r", "120x40"]);
   });
 });
+
+describe("lifecycle graph (RFP §86)", () => {
+  it("allows the forward path, failure from anywhere, and nothing after final states", async () => {
+    const { canTransition, provisionTimeoutMs } = await import("./lifecycle");
+    expect(canTransition("queued", "provisioning")).toBe(true);
+    expect(canTransition("provisioning", "baseline_check")).toBe(true);
+    expect(canTransition("baseline_check", "ready")).toBe(true);
+    expect(canTransition("ready", "active")).toBe(true);
+    expect(canTransition("active", "destroying")).toBe(true);
+    expect(canTransition("destroying", "destroyed")).toBe(true);
+    expect(canTransition("queued", "ready")).toBe(false);
+    expect(canTransition("ready", "ready")).toBe(false);
+    expect(canTransition("provisioning", "failed")).toBe(true);
+    expect(canTransition("destroyed", "provisioning")).toBe(false);
+    expect(canTransition("failed", "destroying")).toBe(false);
+    expect(provisionTimeoutMs(1)).toBe(105_000);
+    expect(provisionTimeoutMs(100)).toBe(600_000);
+  });
+});

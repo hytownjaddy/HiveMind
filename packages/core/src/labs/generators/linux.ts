@@ -1,7 +1,7 @@
 import type { LabNode, LabNodeConfig, LabSpec } from "@hivemind/schema";
 
 import { intParameter } from "../parameters";
-import { imageFor, specEnvelope, type GeneratorInput } from "./index";
+import { imageFor, specEnvelope, type GeneratorInput } from "./shared";
 
 /*
  * Linux archetypes (D-012: Linux first). `linux.single` is one host on the

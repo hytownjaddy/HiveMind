@@ -111,12 +111,24 @@ class SessionServerMessage4(BaseModel):
     """
 
     model_config = ConfigDict(extra="forbid")
+    data: Annotated[str, Field(max_length=16384, min_length=1)]
+    node: Annotated[str, Field(max_length=128, min_length=1, pattern="^[a-z0-9][a-z0-9._-]*$")]
+    protocol_version: Literal[2]
+    type: Literal["pty_output"]
+
+
+class SessionServerMessage5(BaseModel):
+    """
+    Session Worker → client WebSocket message
+    """
+
+    model_config = ConfigDict(extra="forbid")
     node: Annotated[str, Field(max_length=128, min_length=1, pattern="^[a-z0-9][a-z0-9._-]*$")]
     protocol_version: Literal[2]
     type: Literal["pty_ready"]
 
 
-class SessionServerMessage5(BaseModel):
+class SessionServerMessage6(BaseModel):
     """
     Session Worker → client WebSocket message
     """
@@ -128,7 +140,7 @@ class SessionServerMessage5(BaseModel):
     type: Literal["pty_exit"]
 
 
-class SessionServerMessage6(BaseModel):
+class SessionServerMessage7(BaseModel):
     """
     Session Worker → client WebSocket message
     """
@@ -141,7 +153,7 @@ class SessionServerMessage6(BaseModel):
     type: Literal["rejected"]
 
 
-class SessionServerMessage7(BaseModel):
+class SessionServerMessage8(BaseModel):
     """
     Session Worker → client WebSocket message
     """
@@ -162,6 +174,7 @@ class SessionServerMessage(
         | SessionServerMessage5
         | SessionServerMessage6
         | SessionServerMessage7
+        | SessionServerMessage8
     ]
 ):
     root: Annotated[
@@ -171,7 +184,8 @@ class SessionServerMessage(
         | SessionServerMessage4
         | SessionServerMessage5
         | SessionServerMessage6
-        | SessionServerMessage7,
+        | SessionServerMessage7
+        | SessionServerMessage8,
         Field(title="SessionServerMessage"),
     ]
     """

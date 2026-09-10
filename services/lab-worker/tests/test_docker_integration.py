@@ -11,7 +11,9 @@ import asyncio
 import json
 import os
 import time
+from collections.abc import Callable
 from pathlib import Path
+from typing import cast
 
 import pytest
 from pydantic import TypeAdapter
@@ -61,9 +63,11 @@ def spec() -> topology_instance.TopologyInstance:
 
 async def leftovers(runtime: DockerRuntime) -> tuple[int, int]:
     containers = await runtime.containers_with_label(CONTAINER_LABEL_SESSION)
-    networks = await runtime.call(
-        runtime.client.networks.list, filters={"label": CONTAINER_LABEL_SESSION}
+    list_networks = cast(
+        Callable[..., list[object]],
+        runtime.client.networks.list,  # pyright: ignore[reportUnknownMemberType]
     )
+    networks = await runtime.call(list_networks, filters={"label": CONTAINER_LABEL_SESSION})
     return len(containers), len(networks)
 
 

@@ -1,8 +1,8 @@
 import type {
-  LabRejectionCode,
-  LabServerMessage,
-  LabSessionSummary,
-  SequencedLabEvent,
+  SequencedSessionEvent,
+  SessionRejectionCode,
+  SessionServerMessage,
+  SessionSummary,
 } from "@hivemind/schema";
 import { create } from "zustand";
 
@@ -17,23 +17,21 @@ export interface LabStore {
   readonly sessionId: string | null;
   readonly status: ConnectionStatus;
   readonly lastError: string | null;
-  readonly lastRejection: LabRejectionCode | null;
+  readonly lastRejection: SessionRejectionCode | null;
   readonly connectionId: string | null;
   readonly clockOffsetMs: number;
   readonly reconnectAttempt: number;
-  readonly session: LabSessionSummary | null;
+  readonly session: SessionSummary | null;
   readonly latestSequence: number;
-  /** Non-terminal events (status changes, notices) for the activity log. */
-  readonly log: readonly SequencedLabEvent[];
+  /** Durable events (status changes, notices, logs) for the activity log. */
+  readonly log: readonly SequencedSessionEvent[];
+  /** Nodes whose PTY reported ready. */
+  readonly readyNodes: readonly string[];
   reset(sessionId: string): void;
   setStatus(status: ConnectionStatus): void;
   setLastError(error: string | null): void;
   setReconnectAttempt(attempt: number): void;
-  applyMessage(message: LabServerMessage): ApplyResult;
-}
-
-function isLogWorthy(event: SequencedLabEvent): boolean {
-  return event.event.type !== "terminal_output";
+  applyMessage(message: SessionServerMessage): ApplyResult;
 }
 
 export const useLabStore = create<LabStore>((set, get) => ({
@@ -47,6 +45,7 @@ export const useLabStore = create<LabStore>((set, get) => ({
   session: null,
   latestSequence: 0,
   log: [],
+  readyNodes: [],
 
   reset(sessionId) {
     set({
@@ -60,6 +59,7 @@ export const useLabStore = create<LabStore>((set, get) => ({
       session: null,
       latestSequence: 0,
       log: [],
+      readyNodes: [],
     });
   },
 
@@ -79,8 +79,8 @@ export const useLabStore = create<LabStore>((set, get) => ({
     switch (message.type) {
       case "welcome": {
         set({
-          connectionId: message.connectionId,
-          clockOffsetMs: message.serverTime - Date.now(),
+          connectionId: message.connection_id,
+          clockOffsetMs: Date.parse(message.server_time) - Date.now(),
           status: "synchronizing",
         });
         return { kind: "ok" };
@@ -88,11 +88,12 @@ export const useLabStore = create<LabStore>((set, get) => ({
       case "snapshot": {
         set({
           session: message.session,
-          latestSequence: message.latestSequence,
-          log: message.recentEvents.filter(isLogWorthy).slice(-MAX_LOG_ENTRIES),
+          latestSequence: message.latest_sequence,
+          log: message.recent_events.slice(-MAX_LOG_ENTRIES),
           status: "online",
           reconnectAttempt: 0,
           lastError: null,
+          readyNodes: [],
         });
         return { kind: "ok" };
       }
@@ -104,7 +105,7 @@ export const useLabStore = create<LabStore>((set, get) => ({
         if (message.sequence !== latestSequence + 1) {
           return { kind: "resync" };
         }
-        const sequenced: SequencedLabEvent = {
+        const sequenced: SequencedSessionEvent = {
           sequence: message.sequence,
           revision: message.revision,
           at: message.at,
@@ -118,19 +119,33 @@ export const useLabStore = create<LabStore>((set, get) => ({
                   ...session,
                   status: message.event.to,
                   revision: message.revision,
-                  updatedAt: message.at,
+                  updated_at: message.at,
                 }
               : { ...session, revision: Math.max(session.revision, message.revision) };
         set({
           latestSequence: message.sequence,
           session: nextSession,
-          log: isLogWorthy(sequenced) ? [...log, sequenced].slice(-MAX_LOG_ENTRIES) : log,
+          log: [...log, sequenced].slice(-MAX_LOG_ENTRIES),
         });
+        return { kind: "ok" };
+      }
+      case "pty_output": {
+        return { kind: "ok" };
+      }
+      case "pty_ready": {
+        const { readyNodes } = get();
+        if (!readyNodes.includes(message.node)) {
+          set({ readyNodes: [...readyNodes, message.node] });
+        }
+        return { kind: "ok" };
+      }
+      case "pty_exit": {
+        set({ readyNodes: get().readyNodes.filter((node) => node !== message.node) });
         return { kind: "ok" };
       }
       case "rejected": {
         set({ lastRejection: message.code });
-        return message.code === "resync-required" ? { kind: "resync" } : { kind: "ok" };
+        return message.code === "resync_required" ? { kind: "resync" } : { kind: "ok" };
       }
       case "resync_required": {
         return { kind: "resync" };

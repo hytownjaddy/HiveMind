@@ -84,6 +84,7 @@
   "SessionClientMessage@2.0.0": "90940e398dc61f5f90ca1d5e9c34a0b7f31ffde5bcf4450593492edb9568c87b",
   "SessionEvent@2.0.0": "98c54302a6c293f26d771ba95fbc8125b6d96278f275a3093578ba534a4607c8",
   "SessionServerMessage@2.0.0": "79e647a05953188648d5bcb47ac05935a459132a54b7eb6104b57e4e11c74eb8",
+  "SessionServerMessage@2.1.0": "9f9d95baeeb4af28f8afa12176db08aa94c668b723b11d2215ccdff74bc49f65",
   "SessionSummary@2.0.0": "b408eedfc26b3e24d87e462deb5ac3b71fbd1b745b5b0d97327c745ef45354c7",
   "SkillDefinition@1.0.0": "b6e1722e3100b8149bc693ffd6ae0cf415c2e5c7c22a2859b4040065f2ebf917",
   "SkillDefinition@1.1.0": "f7b3eea630391d5a7bac8b3b3389d03e437352465eda5999fb9403a69eed691c",

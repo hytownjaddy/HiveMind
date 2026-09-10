@@ -21,30 +21,3 @@ export * from "./lab-worker";
 export * from "./recording";
 export * from "./session-transport";
 export * from "./contracts";
-
-// Session transport v1 (scaffold wire format; realigned in Stage 02).
-export {
-  CLOSE_CODES,
-  MAX_TERMINAL_CHUNK_BYTES,
-  connectionIdSchema,
-  createLabSessionRequestSchema,
-  labCapabilitySchema,
-  labClientMessageSchema,
-  labEventSchema,
-  labRejectionCodeSchema,
-  labServerMessageSchema,
-  labSessionSummarySchema,
-  problemRefSchema,
-  sequencedLabEventSchema,
-  terminalDataSchema,
-  terminalSizeSchema,
-  type CreateLabSessionRequest,
-  type LabCapability,
-  type LabClientMessage,
-  type LabEvent,
-  type LabRejectionCode,
-  type LabServerMessage,
-  type LabSessionSummary,
-  type SequencedLabEvent,
-} from "./lab-session";
-export { PROTOCOL_VERSION, protocolVersionSchema, type ProtocolVersion } from "./version";

@@ -11,6 +11,8 @@ export const SERVICE_SCOPES = [
   "content:publish",
   "worker:callback",
   "export:read",
+  /** Operate labs on behalf of the single learner (Stage 02, `hivemind lab`). */
+  "lab:operate",
 ] as const;
 export const serviceScopeSchema = z.enum(SERVICE_SCOPES);
 export type ServiceScope = z.infer<typeof serviceScopeSchema>;

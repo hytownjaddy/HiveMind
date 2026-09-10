@@ -18,3 +18,4 @@ schemas/
 **/.pytest_cache
 **/.ruff_cache
 packages/core/src/labs/archetypes.generated.json
+services/lab-worker/tests/fixtures/

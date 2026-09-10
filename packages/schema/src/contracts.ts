@@ -224,7 +224,7 @@ export const CONTRACTS: readonly ContractEntry[] = [
   ),
   entry(
     "SessionServerMessage",
-    "2.0.0",
+    "2.1.0",
     "Session Worker → client WebSocket message",
     sessionServerMessageSchema,
   ),

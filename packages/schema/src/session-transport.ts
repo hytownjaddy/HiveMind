@@ -193,6 +193,13 @@ export const sessionServerMessageSchema = z.discriminatedUnion("type", [
     at: timestampSchema,
     event: sessionEventSchema,
   }),
+  /** Live terminal bytes; not sequenced and never stored in the event log (D-019). */
+  z.strictObject({
+    ...versioned,
+    type: z.literal("pty_output"),
+    node: slugSchema,
+    data: ptyDataSchema,
+  }),
   z.strictObject({
     ...versioned,
     type: z.literal("pty_ready"),

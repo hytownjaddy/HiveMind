@@ -7,3 +7,4 @@ export * from "./selection";
 export * from "./redaction";
 export * from "./recording";
 export * from "./registry";
+export * from "./lifecycle";

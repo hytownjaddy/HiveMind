@@ -1,7 +1,7 @@
 import {
-  labSessionSummarySchema,
-  type CreateLabSessionRequest,
-  type LabSessionSummary,
+  sessionSummarySchema,
+  type CreateSessionRequest,
+  type SessionSummary,
 } from "@hivemind/schema";
 
 import { sessionHttpOrigin } from "./origin";
@@ -9,7 +9,7 @@ import { sessionHttpOrigin } from "./origin";
 /*
  * Browser calls to the session Worker (same origin in production; the web
  * Worker proxies /session/* and Access supplies the identity). Stage 04
- * mounts the Lab Workspace on top of this.
+ * mounts the Lab Workspace on top of this transport v2.
  */
 
 export class SessionError extends Error {
@@ -29,7 +29,7 @@ async function sessionFetch(
   return fetchImpl(`${sessionHttpOrigin()}${path}`, { ...init, credentials: "include" });
 }
 
-async function parseSummary(response: Response): Promise<LabSessionSummary> {
+async function parseSummary(response: Response): Promise<SessionSummary> {
   if (!response.ok) {
     let code = `http-${String(response.status)}`;
     try {
@@ -42,13 +42,13 @@ async function parseSummary(response: Response): Promise<LabSessionSummary> {
     }
     throw new SessionError(code, response.status);
   }
-  return labSessionSummarySchema.parse(await response.json());
+  return sessionSummarySchema.parse(await response.json());
 }
 
 export async function createLabSession(
-  request: CreateLabSessionRequest,
+  request: CreateSessionRequest,
   fetchImpl: typeof fetch = fetch,
-): Promise<LabSessionSummary> {
+): Promise<SessionSummary> {
   return parseSummary(
     await sessionFetch(
       "/session/labs",
@@ -65,7 +65,7 @@ export async function createLabSession(
 export async function fetchLabSession(
   sessionId: string,
   fetchImpl: typeof fetch = fetch,
-): Promise<LabSessionSummary> {
+): Promise<SessionSummary> {
   return parseSummary(
     await sessionFetch(
       `/session/labs/${encodeURIComponent(sessionId)}`,
@@ -78,7 +78,7 @@ export async function fetchLabSession(
 export async function destroyLabSession(
   sessionId: string,
   fetchImpl: typeof fetch = fetch,
-): Promise<LabSessionSummary> {
+): Promise<SessionSummary> {
   return parseSummary(
     await sessionFetch(
       `/session/labs/${encodeURIComponent(sessionId)}/destroy`,

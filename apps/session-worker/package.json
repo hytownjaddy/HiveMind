@@ -10,8 +10,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@hivemind/core": "workspace:*",
     "@hivemind/schema": "workspace:*",
-    "@hivemind/core": "workspace:*"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@cloudflare/sandbox": "0.12.9",

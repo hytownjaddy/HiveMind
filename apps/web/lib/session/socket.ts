@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  CLOSE_CODES,
-  PROTOCOL_VERSION,
-  labServerMessageSchema,
-  type LabClientMessage,
+  SESSION_CLOSE_CODES,
+  SESSION_PROTOCOL_VERSION,
+  sessionServerMessageSchema,
+  type SessionClientMessage,
 } from "@hivemind/schema";
 
 import { reconnectDelayMs } from "./backoff";
@@ -15,6 +15,7 @@ import { useLabStore } from "./store";
 export type WebSocketFactory = (url: string) => WebSocket;
 
 export type TerminalListener = (chunk: {
+  node: string;
   kind: "replay" | "output";
   data: string;
 }) => void;
@@ -24,19 +25,21 @@ const TERMINAL_BUFFER_CHARS = 64 * 1024;
 
 function hasCurrentProtocolVersion(
   value: unknown,
-): value is { readonly protocolVersion: typeof PROTOCOL_VERSION } {
+): value is { readonly protocol_version: typeof SESSION_PROTOCOL_VERSION } {
   return (
     value !== null &&
     typeof value === "object" &&
-    "protocolVersion" in value &&
-    value.protocolVersion === PROTOCOL_VERSION
+    "protocol_version" in value &&
+    value.protocol_version === SESSION_PROTOCOL_VERSION
   );
 }
 
 /**
- * Browser side of one lab session: ownership check, socket
- * lifecycle, ordered event application, resync, and bounded reconnect.
- * Terminal bytes bypass the store and go straight to subscribed listeners.
+ * Browser side of one lab session (transport v2): ownership check, socket
+ * lifecycle, ordered durable events, resync, bounded reconnect, and per-node
+ * terminals. Terminal bytes bypass the store and go straight to subscribed
+ * listeners; a reconnect re-opens every node the workspace had opened so the
+ * provider replays its scrollback.
  */
 export class LabSocket {
   private socket: WebSocket | null = null;
@@ -45,8 +48,9 @@ export class LabSocket {
   private resyncTimer: ReturnType<typeof setTimeout> | null = null;
   private resyncRequested = false;
   private readonly terminalListeners = new Set<TerminalListener>();
-  /** Screen contents since the last snapshot, so late subscribers can repaint. */
-  private terminalBuffer: string | null = null;
+  /** Screen contents per node since the last open, so late subscribers can repaint. */
+  private readonly terminalBuffers = new Map<string, string>();
+  private readonly openNodes = new Map<string, { cols: number; rows: number }>();
   private visibilityHandler: (() => void) | null = null;
   private onlineHandler: (() => void) | null = null;
 
@@ -61,7 +65,7 @@ export class LabSocket {
     const store = useLabStore.getState();
     store.reset(this.sessionId);
     store.setStatus("connecting");
-    this.terminalBuffer = null;
+    this.terminalBuffers.clear();
     await fetchLabSession(this.sessionId, this.fetchImpl);
     this.bindLifecycle();
     this.openSocket();
@@ -79,40 +83,57 @@ export class LabSocket {
 
   onTerminal(listener: TerminalListener): () => void {
     this.terminalListeners.add(listener);
-    if (this.terminalBuffer !== null) {
-      listener({ kind: "replay", data: this.terminalBuffer });
+    for (const [node, data] of this.terminalBuffers) {
+      listener({ node, kind: "replay", data });
     }
     return () => {
       this.terminalListeners.delete(listener);
     };
   }
 
-  sendTerminalInput(data: string): void {
-    this.send({ protocolVersion: PROTOCOL_VERSION, type: "terminal_input", data });
-  }
-
-  sendTerminalResize(cols: number, rows: number): void {
+  /** Open (or repaint) a node terminal; re-sent automatically after a reconnect. */
+  openTerminal(node: string, cols: number, rows: number): void {
+    this.openNodes.set(node, { cols, rows });
+    this.terminalBuffers.set(node, "");
     this.send({
-      protocolVersion: PROTOCOL_VERSION,
-      type: "terminal_resize",
+      protocol_version: SESSION_PROTOCOL_VERSION,
+      type: "pty_open",
+      node,
       size: { cols, rows },
     });
   }
 
-  private send(message: LabClientMessage): void {
+  sendTerminalInput(node: string, data: string): void {
+    this.send({
+      protocol_version: SESSION_PROTOCOL_VERSION,
+      type: "pty_input",
+      node,
+      data,
+    });
+  }
+
+  sendTerminalResize(node: string, cols: number, rows: number): void {
+    this.openNodes.set(node, { cols, rows });
+    this.send({
+      protocol_version: SESSION_PROTOCOL_VERSION,
+      type: "pty_resize",
+      node,
+      size: { cols, rows },
+    });
+  }
+
+  private send(message: SessionClientMessage): void {
     if (this.socket === null || this.socket.readyState !== WebSocket.OPEN) {
       return;
     }
     this.socket.send(JSON.stringify(message));
   }
 
-  private emitTerminal(kind: "replay" | "output", data: string): void {
-    this.terminalBuffer =
-      kind === "replay"
-        ? data
-        : ((this.terminalBuffer ?? "") + data).slice(-TERMINAL_BUFFER_CHARS);
+  private emitTerminal(node: string, data: string): void {
+    const current = this.terminalBuffers.get(node) ?? "";
+    this.terminalBuffers.set(node, (current + data).slice(-TERMINAL_BUFFER_CHARS));
     for (const listener of this.terminalListeners) {
-      listener({ kind, data });
+      listener({ node, kind: "output", data });
     }
   }
 
@@ -139,17 +160,15 @@ export class LabSocket {
         parsed = JSON.parse(event.data) as unknown;
       } catch {
         useLabStore.getState().setLastError("malformed-message");
-        this.requestResync();
         return;
       }
       if (!hasCurrentProtocolVersion(parsed)) {
+        useLabStore.getState().setLastError("protocol-version-mismatch");
         this.intentionalClose = true;
-        useLabStore.getState().setLastError("incompatible-protocol");
-        useLabStore.getState().setStatus("offline");
-        socket.close(1002, "incompatible protocol");
+        socket.close(1000, "protocol version mismatch");
         return;
       }
-      const message = labServerMessageSchema.safeParse(parsed);
+      const message = sessionServerMessageSchema.safeParse(parsed);
       if (!message.success) {
         useLabStore.getState().setLastError("incompatible-message");
         this.requestResync();
@@ -158,19 +177,18 @@ export class LabSocket {
       const result = useLabStore.getState().applyMessage(message.data);
       if (message.data.type === "snapshot") {
         this.clearResync();
-        const replay = message.data.recentEvents
-          .filter((entry) => entry.event.type === "terminal_output")
-          .map((entry) =>
-            entry.event.type === "terminal_output" ? entry.event.data : "",
-          )
-          .join("");
-        this.emitTerminal("replay", replay);
-      } else if (
-        message.data.type === "event" &&
-        message.data.event.type === "terminal_output" &&
-        result.kind === "ok"
-      ) {
-        this.emitTerminal("output", message.data.event.data);
+        // Re-open every terminal the workspace had; the provider replays scrollback.
+        for (const [node, size] of this.openNodes) {
+          this.terminalBuffers.set(node, "");
+          this.send({
+            protocol_version: SESSION_PROTOCOL_VERSION,
+            type: "pty_open",
+            node,
+            size,
+          });
+        }
+      } else if (message.data.type === "pty_output") {
+        this.emitTerminal(message.data.node, message.data.data);
       }
       if (result.kind === "resync") {
         this.requestResync();
@@ -183,7 +201,7 @@ export class LabSocket {
       }
       this.socket = null;
       this.clearResync();
-      if (event.code === CLOSE_CODES.finished) {
+      if (event.code === SESSION_CLOSE_CODES.finished) {
         useLabStore.getState().setStatus("finished");
         this.unbindLifecycle();
         return;
@@ -214,14 +232,14 @@ export class LabSocket {
     this.resyncRequested = true;
     socket.send(
       JSON.stringify({
-        protocolVersion: PROTOCOL_VERSION,
+        protocol_version: SESSION_PROTOCOL_VERSION,
         type: "resync",
-        latestSequence: store.latestSequence,
-      } satisfies LabClientMessage),
+        latest_sequence: store.latestSequence,
+      } satisfies SessionClientMessage),
     );
     this.resyncTimer = setTimeout(() => {
       if (this.socket === socket && this.resyncRequested) {
-        socket.close(CLOSE_CODES.resync, "resync timeout");
+        socket.close(SESSION_CLOSE_CODES.resync, "resync timeout");
       }
     }, RESYNC_TIMEOUT_MS);
   }

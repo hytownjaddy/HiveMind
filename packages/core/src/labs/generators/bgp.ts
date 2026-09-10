@@ -1,7 +1,7 @@
 import type { LabLink, LabNode, LabNodeConfig, LabSpec } from "@hivemind/schema";
 
 import { intParameter, stringParameter } from "../parameters";
-import { imageFor, specEnvelope, type GeneratorInput } from "./index";
+import { imageFor, specEnvelope, type GeneratorInput } from "./shared";
 
 /*
  * BGP archetypes (D-012: BGP immediately after Linux). Addressing is

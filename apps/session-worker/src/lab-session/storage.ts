@@ -1,18 +1,24 @@
+import { isoNow } from "@hivemind/core";
 import {
-  labEventSchema,
-  type LabEvent,
-  type LabSessionSummary,
+  labProviderDescriptorSchema,
+  sessionEventSchema,
+  topologyInstanceSchema,
+  type ExecutionClass,
   type LabStatus,
-  type SequencedLabEvent,
+  type SequencedSessionEvent,
+  type SessionEvent,
+  type SessionSummary,
 } from "@hivemind/schema";
 
 import {
   IDLE_TTL_MS,
   MAX_EVENTS,
+  MAX_RECORDING_FRAMES,
   MAX_TELEMETRY_ROWS,
   SCHEMA_VERSION,
   type DeadlineKind,
   type InternalCreateRequest,
+  type RecordingFrameRow,
   type SessionRecord,
   type StoredDeadline,
 } from "./types";
@@ -21,16 +27,23 @@ interface SessionRow {
   [key: string]: SqlStorageValue;
   session_id: string;
   learner_id: string;
-  capability: string;
-  problem_ref: string | null;
   status: string;
   schema_version: number;
   revision: number;
   created_at: number;
   updated_at: number;
   last_activity_at: number;
-  cols: number;
-  rows: number;
+  hard_ttl_at: number;
+  topology_json: string;
+  provider_json: string;
+  provider_class: string;
+  worker_id: string | null;
+  nodes_json: string;
+  handle: string | null;
+  reason: string | null;
+  recording_keys_json: string;
+  problem_instance_id: string | null;
+  current_job_id: string | null;
 }
 
 interface EventRow {
@@ -54,9 +67,29 @@ interface NumberRow {
   value: number;
 }
 
+interface FrameRow {
+  [key: string]: SqlStorageValue;
+  node: string;
+  at_ms: number;
+  kind: string;
+  data: string;
+}
+
+interface SizeRow {
+  [key: string]: SqlStorageValue;
+  node: string;
+  cols: number;
+  rows: number;
+}
+
+export function iso(ms: number): string {
+  return isoNow(new Date(ms));
+}
+
 /**
  * Embedded SQLite persistence for one LabSession. SQLite is authoritative after
- * hibernation or restart; nothing important lives only in memory.
+ * hibernation or restart; nothing important lives only in memory. Recording
+ * frames are stored already redacted (D-019).
  */
 export class LabSessionRepository {
   constructor(private readonly storage: DurableObjectStorage) {}
@@ -71,16 +104,23 @@ export class LabSessionRepository {
         id INTEGER PRIMARY KEY CHECK (id = 1),
         session_id TEXT NOT NULL,
         learner_id TEXT NOT NULL,
-        capability TEXT NOT NULL,
-        problem_ref TEXT,
         status TEXT NOT NULL,
         schema_version INTEGER NOT NULL,
         revision INTEGER NOT NULL,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL,
         last_activity_at INTEGER NOT NULL,
-        cols INTEGER NOT NULL DEFAULT 80,
-        rows INTEGER NOT NULL DEFAULT 24
+        hard_ttl_at INTEGER NOT NULL,
+        topology_json TEXT NOT NULL,
+        provider_json TEXT NOT NULL,
+        provider_class TEXT NOT NULL,
+        worker_id TEXT,
+        nodes_json TEXT NOT NULL,
+        handle TEXT,
+        reason TEXT,
+        recording_keys_json TEXT NOT NULL DEFAULT '{}',
+        problem_instance_id TEXT,
+        current_job_id TEXT
       )`);
     this.sql.exec(`
       CREATE TABLE IF NOT EXISTS events (
@@ -104,6 +144,23 @@ export class LabSessionRepository {
         expected_status TEXT
       )`);
     this.sql.exec(`CREATE INDEX IF NOT EXISTS idx_deadlines_due ON deadlines (due_at)`);
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS recording_frames (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        node TEXT NOT NULL,
+        at_ms INTEGER NOT NULL,
+        kind TEXT NOT NULL,
+        data TEXT NOT NULL
+      )`);
+    this.sql.exec(
+      `CREATE INDEX IF NOT EXISTS idx_frames_node ON recording_frames (node, id)`,
+    );
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS pty_sizes (
+        node TEXT PRIMARY KEY,
+        cols INTEGER NOT NULL,
+        rows INTEGER NOT NULL
+      )`);
   }
 
   /* ---------------------------------------------------------------- session */
@@ -118,33 +175,50 @@ export class LabSessionRepository {
     return {
       sessionId: row.session_id,
       learnerId: row.learner_id,
-      capability: row.capability,
-      problemRef: row.problem_ref,
       status: row.status as LabStatus,
       schemaVersion: row.schema_version,
       revision: row.revision,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       lastActivityAt: row.last_activity_at,
-      cols: row.cols,
-      rows: row.rows,
+      hardTtlAt: row.hard_ttl_at,
+      topology: topologyInstanceSchema.parse(JSON.parse(row.topology_json)),
+      provider: labProviderDescriptorSchema.parse(JSON.parse(row.provider_json)),
+      providerClass: row.provider_class as ExecutionClass,
+      workerId: row.worker_id,
+      nodes: JSON.parse(row.nodes_json) as SessionRecord["nodes"],
+      handle: row.handle,
+      reason: row.reason,
+      recordingKeys: JSON.parse(row.recording_keys_json) as Record<string, string>,
+      problemInstanceId: row.problem_instance_id,
+      currentJobId: row.current_job_id,
     };
   }
 
   create(request: InternalCreateRequest, now: number): SessionRecord {
+    const nodes = request.topology.lab_spec.nodes.map((node) => ({
+      name: node.name,
+      role: node.role,
+    }));
     this.sql.exec(
       `INSERT INTO session (
-         id, session_id, learner_id, capability, problem_ref, status, schema_version,
-         revision, created_at, updated_at, last_activity_at
-       ) VALUES (1, ?, ?, ?, ?, 'queued', ?, 0, ?, ?, ?)`,
+         id, session_id, learner_id, status, schema_version, revision, created_at, updated_at,
+         last_activity_at, hard_ttl_at, topology_json, provider_json, provider_class, worker_id,
+         nodes_json, handle, reason, recording_keys_json, problem_instance_id, current_job_id
+       ) VALUES (1, ?, ?, 'queued', ?, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, '{}', ?, NULL)`,
       request.sessionId,
       request.learnerId,
-      request.capability,
-      request.problemRef,
       SCHEMA_VERSION,
       now,
       now,
       now,
+      now + request.hardTtlMinutes * 60_000,
+      JSON.stringify(request.topology),
+      JSON.stringify(request.provider),
+      request.providerClass,
+      request.workerId,
+      JSON.stringify(nodes),
+      request.problemInstanceId,
     );
     const created = this.load();
     if (created === null) {
@@ -153,12 +227,10 @@ export class LabSessionRepository {
     return created;
   }
 
-  /** Learner traffic that does not change session state. */
   recordActivity(now: number): void {
     this.sql.exec("UPDATE session SET last_activity_at = ? WHERE id = 1", now);
   }
 
-  /** Bump the revision for a state change; returns the new revision. */
   private bumpRevision(now: number): number {
     this.sql.exec(
       "UPDATE session SET revision = revision + 1, updated_at = ?, last_activity_at = ? WHERE id = 1",
@@ -170,33 +242,71 @@ export class LabSessionRepository {
       .one().value;
   }
 
-  setStatus(status: LabStatus, now: number): number {
-    this.sql.exec("UPDATE session SET status = ? WHERE id = 1", status);
+  setStatus(status: LabStatus, now: number, reason?: string | null): number {
+    if (reason === undefined) {
+      this.sql.exec("UPDATE session SET status = ? WHERE id = 1", status);
+    } else {
+      this.sql.exec(
+        "UPDATE session SET status = ?, reason = ? WHERE id = 1",
+        status,
+        reason,
+      );
+    }
     return this.bumpRevision(now);
   }
 
-  setTerminalSize(cols: number, rows: number): void {
-    this.sql.exec("UPDATE session SET cols = ?, rows = ? WHERE id = 1", cols, rows);
+  setNodes(nodes: SessionRecord["nodes"], handle: string | null): void {
+    this.sql.exec(
+      "UPDATE session SET nodes_json = ?, handle = ? WHERE id = 1",
+      JSON.stringify(nodes),
+      handle,
+    );
   }
 
-  summary(record: SessionRecord): LabSessionSummary {
+  setJob(jobId: string | null): void {
+    this.sql.exec("UPDATE session SET current_job_id = ? WHERE id = 1", jobId);
+  }
+
+  setRecordingKeys(keys: Readonly<Record<string, string>>): void {
+    this.sql.exec(
+      "UPDATE session SET recording_keys_json = ? WHERE id = 1",
+      JSON.stringify(keys),
+    );
+  }
+
+  summary(record: SessionRecord): SessionSummary {
     const idle = this.getDeadlineByKind("idle_expiry");
     return {
-      sessionId: record.sessionId,
+      id: record.sessionId,
+      learner_id: record.learnerId,
       status: record.status,
-      capability: record.capability,
-      problemRef: record.problemRef,
+      archetype: record.topology.archetype_id,
+      archetype_version: record.topology.archetype_version,
+      seed: record.topology.seed,
+      parameters: record.topology.parameters,
+      requires: [...record.topology.lab_spec.requires],
+      provider_id: record.provider.id,
+      provider_class: record.providerClass,
+      worker_id: record.workerId,
+      nodes: record.nodes.map((node) => ({
+        name: node.name,
+        role: node.role,
+        ...(node.address === undefined ? {} : { address: node.address }),
+      })),
       revision: record.revision,
-      createdAt: record.createdAt,
-      updatedAt: record.updatedAt,
-      expiresAt: idle?.dueAt ?? null,
+      created_at: iso(record.createdAt),
+      updated_at: iso(record.updatedAt),
+      expires_at: idle === null ? null : iso(idle.dueAt),
+      hard_ttl_at: iso(record.hardTtlAt),
+      reason: record.reason,
+      recording_key: Object.values(record.recordingKeys)[0] ?? null,
     };
   }
 
   /* ----------------------------------------------------------------- events */
 
-  appendEvent(revision: number, event: LabEvent, now: number): SequencedLabEvent {
-    const eventJson = JSON.stringify(labEventSchema.parse(event));
+  appendEvent(revision: number, event: SessionEvent, now: number): SequencedSessionEvent {
+    const eventJson = JSON.stringify(sessionEventSchema.parse(event));
     const { value: sequence } = this.sql
       .exec<NumberRow>(
         "INSERT INTO events (revision, created_at, event_json) VALUES (?, ?, ?) RETURNING sequence AS value",
@@ -211,7 +321,7 @@ export class LabSessionRepository {
        )`,
       MAX_EVENTS,
     );
-    return { sequence, revision, at: now, event };
+    return { sequence, revision, at: iso(now), event };
   }
 
   latestSequence(): number {
@@ -220,7 +330,7 @@ export class LabSessionRepository {
       .one().value;
   }
 
-  listRecentEvents(limit: number): SequencedLabEvent[] {
+  listRecentEvents(limit: number): SequencedSessionEvent[] {
     return this.sql
       .exec<EventRow>("SELECT * FROM events ORDER BY sequence DESC LIMIT ?", limit)
       .toArray()
@@ -228,7 +338,7 @@ export class LabSessionRepository {
       .map(rowToEvent);
   }
 
-  listEventsAfter(sequence: number, limit: number): SequencedLabEvent[] {
+  listEventsAfter(sequence: number, limit: number): SequencedSessionEvent[] {
     return this.sql
       .exec<EventRow>(
         "SELECT * FROM events WHERE sequence > ? ORDER BY sequence ASC LIMIT ?",
@@ -241,7 +351,6 @@ export class LabSessionRepository {
 
   /* -------------------------------------------------------------- telemetry */
 
-  /** Learner-side actions kept for replay and methodology scoring (RFP §49-50). */
   recordTelemetry(kind: string, payload: unknown, now: number): void {
     this.sql.exec(
       "INSERT INTO telemetry (created_at, kind, payload_json) VALUES (?, ?, ?)",
@@ -257,9 +366,66 @@ export class LabSessionRepository {
     );
   }
 
-  telemetryCount(): number {
-    return this.sql.exec<NumberRow>("SELECT COUNT(*) AS value FROM telemetry").one()
-      .value;
+  /* ------------------------------------------------------------- recordings */
+
+  appendFrame(frame: RecordingFrameRow): void {
+    this.sql.exec(
+      "INSERT INTO recording_frames (node, at_ms, kind, data) VALUES (?, ?, ?, ?)",
+      frame.node,
+      frame.at_ms,
+      frame.kind,
+      frame.data,
+    );
+    this.sql.exec(
+      `DELETE FROM recording_frames WHERE node = ? AND id <= (
+         SELECT id FROM recording_frames WHERE node = ? ORDER BY id DESC LIMIT 1 OFFSET ?
+       )`,
+      frame.node,
+      frame.node,
+      MAX_RECORDING_FRAMES,
+    );
+  }
+
+  listFrames(node: string): RecordingFrameRow[] {
+    return this.sql
+      .exec<FrameRow>(
+        "SELECT node, at_ms, kind, data FROM recording_frames WHERE node = ? ORDER BY id ASC",
+        node,
+      )
+      .toArray()
+      .map((row) => ({
+        node: row.node,
+        at_ms: row.at_ms,
+        kind: row.kind as RecordingFrameRow["kind"],
+        data: row.data,
+      }));
+  }
+
+  recordedNodes(): string[] {
+    return this.sql
+      .exec<{ [key: string]: SqlStorageValue; node: string }>(
+        "SELECT DISTINCT node FROM recording_frames ORDER BY node",
+      )
+      .toArray()
+      .map((row) => row.node);
+  }
+
+  setPtySize(node: string, cols: number, rows: number): void {
+    this.sql.exec(
+      "INSERT INTO pty_sizes (node, cols, rows) VALUES (?, ?, ?) ON CONFLICT(node) DO UPDATE SET cols = excluded.cols, rows = excluded.rows",
+      node,
+      cols,
+      rows,
+    );
+  }
+
+  ptySize(node: string): { cols: number; rows: number } {
+    const row = this.sql
+      .exec<SizeRow>("SELECT * FROM pty_sizes WHERE node = ?", node)
+      .toArray()[0];
+    return row === undefined
+      ? { cols: 80, rows: 24 }
+      : { cols: row.cols, rows: row.rows };
   }
 
   /* -------------------------------------------------------------- deadlines */
@@ -296,6 +462,11 @@ export class LabSessionRepository {
     this.sql.exec("DELETE FROM deadlines");
   }
 
+  /** Tests only: bring one deadline kind forward so the next alarm consumes it. */
+  expireDeadlines(kind: string): void {
+    this.sql.exec("UPDATE deadlines SET due_at = 0 WHERE kind = ?", kind);
+  }
+
   getDeadlineByKind(kind: DeadlineKind): StoredDeadline | null {
     const row = this.sql
       .exec<DeadlineRow>("SELECT * FROM deadlines WHERE kind = ? LIMIT 1", kind)
@@ -326,12 +497,12 @@ export class LabSessionRepository {
   }
 }
 
-function rowToEvent(row: EventRow): SequencedLabEvent {
+function rowToEvent(row: EventRow): SequencedSessionEvent {
   return {
     sequence: row.sequence,
     revision: row.revision,
-    at: row.created_at,
-    event: labEventSchema.parse(JSON.parse(row.event_json)),
+    at: iso(row.created_at),
+    event: sessionEventSchema.parse(JSON.parse(row.event_json)),
   };
 }
 

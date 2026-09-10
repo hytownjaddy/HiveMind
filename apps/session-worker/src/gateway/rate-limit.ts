@@ -4,7 +4,7 @@ interface BurstBucket {
 }
 
 const WINDOW_MS = 10_000;
-const MAX_REQUESTS = 30;
+const MAX_REQUESTS = 120;
 const MAX_BUCKETS = 5_000;
 const buckets = new Map<string, BurstBucket>();
 

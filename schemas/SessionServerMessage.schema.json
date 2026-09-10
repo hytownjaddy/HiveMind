@@ -1,5 +1,5 @@
 {
-  "$comment": "HiveMind contract SessionServerMessage v2.0.0; generated from packages/schema, do not edit",
+  "$comment": "HiveMind contract SessionServerMessage v2.1.0; generated from packages/schema, do not edit",
   "$id": "SessionServerMessage.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "Session Worker → client WebSocket message",
@@ -116,6 +116,37 @@
         "revision",
         "at",
         "event"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "maxLength": 16384,
+          "minLength": 1,
+          "type": "string"
+        },
+        "node": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$",
+          "type": "string"
+        },
+        "protocol_version": {
+          "const": 2,
+          "type": "number"
+        },
+        "type": {
+          "const": "pty_output",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "type",
+        "node",
+        "data"
       ],
       "type": "object"
     },

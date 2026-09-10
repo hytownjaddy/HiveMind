@@ -23,6 +23,7 @@
       "dependencies": {
         "@hivemind/core": "workspace:*",
         "@hivemind/schema": "workspace:*",
+        "zod": "^4.5.4",
       },
       "devDependencies": {
         "@cloudflare/sandbox": "0.12.9",

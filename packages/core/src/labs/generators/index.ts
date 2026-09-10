@@ -1,9 +1,6 @@
-import type { LabSpec, TopologyArchetype } from "@hivemind/schema";
-
-import type { ResolvedParameters } from "../parameters";
-import type { SeededRandom } from "../seed";
 import { dualSpine, routeReflector } from "./bgp";
 import { linuxPair, linuxSingle } from "./linux";
+import type { TopologyGenerator } from "./shared";
 
 /*
  * Generators turn an archetype plus resolved parameters into a concrete
@@ -13,13 +10,7 @@ import { linuxPair, linuxSingle } from "./linux";
  * output for existing archetypes requires bumping those archetype versions.
  */
 
-export interface GeneratorInput {
-  readonly archetype: TopologyArchetype;
-  readonly parameters: ResolvedParameters;
-  readonly random: SeededRandom;
-}
-
-export type TopologyGenerator = (input: GeneratorInput) => LabSpec;
+export * from "./shared";
 
 export const GENERATORS: Readonly<Record<string, TopologyGenerator>> = {
   "linux.single": linuxSingle,
@@ -34,41 +25,4 @@ export function generatorFor(id: string): TopologyGenerator {
     throw new Error(`unknown topology generator: ${id}`);
   }
   return generator;
-}
-
-/** Lab-level fields every generator copies from the archetype. */
-export function specEnvelope(
-  archetype: TopologyArchetype,
-): Pick<
-  LabSpec,
-  | "id"
-  | "version"
-  | "title"
-  | "requires"
-  | "resources"
-  | "network"
-  | "ttl_minutes"
-  | "snapshot"
-> {
-  return {
-    id: archetype.id,
-    version: archetype.version,
-    title: archetype.title,
-    requires: [...archetype.requires],
-    resources: { ...archetype.resources },
-    network: {
-      egress: archetype.network.egress,
-      allowlist: [...archetype.network.allowlist],
-    },
-    ttl_minutes: archetype.ttl_minutes,
-    snapshot: archetype.snapshot,
-  };
-}
-
-export function imageFor(archetype: TopologyArchetype, role: string): string {
-  const image = archetype.images[role];
-  if (image === undefined) {
-    throw new Error(`archetype ${archetype.id} declares no image for role ${role}`);
-  }
-  return image;
 }
